@@ -5,6 +5,11 @@
       "source": "firecrawl/cli",
       "sourceType": "github",
       "computedHash": "a256ac70fb21fac608ded68a4dd94948a658533b6ef6fb2e0e8a8eb5c48a766b"
+    },
+    "agent-browser": {
+      "source": "agent-browser",
+      "sourceType": "npm",
+      "computedHash": "b2e54fa784581734c689611860de39916364d4e4b9cf17472b8e2afdaaa9d320"
     }
   }
 }

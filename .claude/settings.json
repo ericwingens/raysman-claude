@@ -1,0 +1,70 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude-flow *)",
+      "Bash(node *)",
+      "Bash(npx *)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude-flow@alpha daemon start --background 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  },
+  "claudeFlow": {
+    "daemon": {
+      "autoStart": true,
+      "workers": {
+        "map": {
+          "enabled": true,
+          "interval": 300
+        },
+        "audit": {
+          "enabled": true,
+          "interval": 600
+        },
+        "optimize": {
+          "enabled": true,
+          "interval": 900
+        },
+        "consolidate": {
+          "enabled": true,
+          "interval": 1800
+        },
+        "testgaps": {
+          "enabled": true,
+          "interval": 1200
+        }
+      }
+    },
+    "memory": {
+      "backend": "hybrid",
+      "path": ".swarm/memory.db",
+      "features": {
+        "hnswIndexing": true,
+        "patternLearning": true,
+        "temporalDecay": true,
+        "migrationTracking": true
+      }
+    },
+    "swarm": {
+      "topology": "hierarchical-mesh",
+      "maxAgents": 15,
+      "autoScaling": true,
+      "protocol": "message-bus"
+    },
+    "learning": {
+      "patternLearning": true,
+      "neuralTraining": true,
+      "coordinationPatterns": true
+    }
+  }
+}

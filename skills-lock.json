@@ -5,6 +5,11 @@
       "source": "firecrawl/cli",
       "sourceType": "github",
       "computedHash": "a256ac70fb21fac608ded68a4dd94948a658533b6ef6fb2e0e8a8eb5c48a766b"
+    },
+    "notebooklm": {
+      "source": "pleaseprompto/notebooklm-skill",
+      "sourceType": "github",
+      "computedHash": "2902e68071784c81597644309206b6b127e49b62a145cc9cbbbb73bfaeeeb86c"
     }
   }
 }

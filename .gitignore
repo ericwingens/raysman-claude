@@ -1,0 +1,4 @@
+.agents/skills/**/.venv/
+.agents/skills/**/__pycache__/
+.agents/skills/**/data/browser_state/
+.agents/skills/**/data/auth_info.json

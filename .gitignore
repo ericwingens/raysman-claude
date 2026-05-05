@@ -1,0 +1,5 @@
+# RuFlo daemon runtime files
+.claude-flow/
+
+# Swarm memory database
+.swarm/

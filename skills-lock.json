@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "agent-workflow": {
+      "source": "ruvnet/ruflo",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/agent-workflow/SKILL.md",
+      "computedHash": "e7ccf93a23cd9bcae7ddded0ec766a16dc74d4ceff169cebba4d73a67dd64d1d"
+    },
     "firecrawl": {
       "source": "firecrawl/cli",
       "sourceType": "github",

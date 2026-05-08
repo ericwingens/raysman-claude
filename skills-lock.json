@@ -6,6 +6,12 @@
       "sourceType": "github",
       "computedHash": "a256ac70fb21fac608ded68a4dd94948a658533b6ef6fb2e0e8a8eb5c48a766b"
     },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
+    },
     "notebooklm": {
       "source": "pleaseprompto/notebooklm-skill",
       "sourceType": "github",

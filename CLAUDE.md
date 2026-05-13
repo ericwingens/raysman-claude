@@ -22,6 +22,18 @@ Using gstack skills: After install, skills like /qa, /ship, /review, /investigat
 and /browse are available. Use /browse for all web browsing.
 Use ~/.claude/skills/gstack/... for gstack file paths (the global path).
 
+## Apify MCP
+
+The Apify MCP server is configured in `.mcp.json`. It authenticates with a
+Bearer token, so export `APIFY_TOKEN` (from https://console.apify.com/account/integrations)
+before starting Claude Code:
+
+```bash
+export APIFY_TOKEN=apify_api_...
+```
+
+If `APIFY_TOKEN` is unset, the `apify` server will fail to authenticate.
+
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.

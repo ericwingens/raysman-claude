@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "agent-swarm": {
+      "source": "ruvnet/ruflo",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/agent-swarm/SKILL.md",
+      "computedHash": "c0d2fb2ea2e82b472d812c4dcb9dd4f840b45dd880081252b7af3460cb54a109"
+    },
     "agent-workflow": {
       "source": "ruvnet/ruflo",
       "sourceType": "github",

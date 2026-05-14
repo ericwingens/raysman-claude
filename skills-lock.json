@@ -28,6 +28,12 @@
       "source": "pleaseprompto/notebooklm-skill",
       "sourceType": "github",
       "computedHash": "2902e68071784c81597644309206b6b127e49b62a145cc9cbbbb73bfaeeeb86c"
+    },
+    "workflow-automation": {
+      "source": "ruvnet/ruflo",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/workflow-automation/SKILL.md",
+      "computedHash": "2ac64f04c26d4a4ece85497db5b858f546f9268880fb4159a9ad6b364b7222ec"
     }
   }
 }

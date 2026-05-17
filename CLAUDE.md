@@ -22,6 +22,21 @@ Using gstack skills: After install, skills like /qa, /ship, /review, /investigat
 and /browse are available. Use /browse for all web browsing.
 Use ~/.claude/skills/gstack/... for gstack file paths (the global path).
 
+### Network allowlist (Claude Code on the web)
+
+The browser-based skills (/qa, /browse) need a Playwright Chromium download
+that is blocked under the default **Trusted** network policy. When configuring
+the cloud environment, set **Network access** to **Custom**, keep **"Also
+include default list of common package managers"** checked, and add:
+
+```text
+*.playwright.dev
+```
+
+Network changes only apply to new sessions. After saving, start a fresh
+session and re-run `cd ~/.claude/skills/gstack && ./setup --team` so the
+Chromium download succeeds.
+
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.

@@ -1,0 +1,11 @@
+{
+  "name": "raysman-skills",
+  "version": "0.1.0",
+  "description": "Bundles the firecrawl, grill-me, and notebooklm skills.",
+  "author": {
+    "name": "Eric Wingens",
+    "email": "eric.wingens@gmail.com"
+  },
+  "keywords": ["skills", "research", "web", "productivity"],
+  "skills": "./.agents/skills/"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "raysman-claude",
+  "owner": {
+    "name": "Eric Wingens",
+    "email": "eric.wingens@gmail.com"
+  },
+  "description": "Claude Code plugins for the raysman-claude workspace.",
+  "plugins": [
+    {
+      "name": "raysman-skills",
+      "source": "./",
+      "description": "Bundles the firecrawl, grill-me, and notebooklm skills.",
+      "category": "productivity",
+      "keywords": ["skills", "research", "web", "productivity"]
+    }
+  ]
+}

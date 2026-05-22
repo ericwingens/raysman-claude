@@ -16,6 +16,12 @@
       "source": "pleaseprompto/notebooklm-skill",
       "sourceType": "github",
       "computedHash": "2902e68071784c81597644309206b6b127e49b62a145cc9cbbbb73bfaeeeb86c"
+    },
+    "seo-audit": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-audit/SKILL.md",
+      "computedHash": "f2dc52130189068981f21e1c0bdc4471ac7cd9b08d8a1320604411aa0f950385"
     }
   }
 }

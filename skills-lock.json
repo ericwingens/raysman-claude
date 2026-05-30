@@ -101,6 +101,12 @@
       "skillPath": "skills/waapi/SKILL.md",
       "computedHash": "91d57ea8e36f47ddef497ccd27ffa55b774bb53d988d4f8b6f67860a767930f6"
     },
+    "watch": {
+      "source": "bradautomates/claude-video",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "b1a3150007df622e26f3d1b02557c424c1957740c3b2a9a9c5b05ba5889c472d"
+    },
     "website-to-hyperframes": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

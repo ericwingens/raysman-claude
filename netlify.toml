@@ -1,0 +1,9 @@
+# Deploy the Org Brain Next.js app (lives in the org-brain/ subfolder).
+# Netlify auto-detects Next.js and installs its runtime to handle SSR + the
+# /api routes as serverless functions.
+[build]
+  base = "org-brain"
+  command = "npm run build"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

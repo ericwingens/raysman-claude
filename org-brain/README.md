@@ -56,7 +56,17 @@ Open the **Org Graph** and the **Copilot**. Everything works on local seed data.
 
 ## Editing the graph (in-app)
 
-Once Supabase is connected, the **Org Graph** becomes editable — no redeploys:
+Two ways to manage agents/items:
+
+**A) Standalone dashboard (`public/dashboard.html`)** — a single, dependency-free
+file that opens in any browser. It ships with the seed graph embedded, so it
+works **offline** as a table + form editor and can **export** updated JSON. Point
+it at your deployed site URL (⚙ Connection) to do **live CRUD** against the API.
+It's also served by the app at `/(dashboard.html)` (same-origin, no setup). Best
+for spreadsheet-style bulk editing.
+
+**B) In the graph view** — once Supabase is connected, the **Org Graph** itself
+becomes editable, no redeploys:
 
 - **Add node** — toolbar button (top-left). Pick a type, fill name / department /
   business function / description, and set `props` JSON (e.g. a sub-agent's

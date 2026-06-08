@@ -54,6 +54,35 @@ Open the **Org Graph** and the **Copilot**. Everything works on local seed data.
 4. `npm run dev` — the app now reads from Supabase, searches via pgvector, and
    the copilot answers with Claude (`claude-sonnet-4-6` by default).
 
+## Editing the graph (in-app)
+
+Once Supabase is connected, the **Org Graph** becomes editable — no redeploys:
+
+- **Add node** — toolbar button (top-left). Pick a type, fill name / department /
+  business function / description, and set `props` JSON (e.g. a sub-agent's
+  `model`, `purpose`, `tools`).
+- **Edit / delete** — click any node → the detail drawer has **Edit** and
+  **Delete**. Deleting a node also removes its edges.
+- **Connections** — in the drawer, **Add** wires an edge (pick a relationship
+  type + target node); the unlink icon removes one.
+- **Load seed data** — appears when the Supabase `nodes` table is empty; it
+  upserts the bundled seed straight from the running app (no local `ingest`
+  needed).
+
+Every save re-embeds the node's description with Voyage (when configured) so the
+copilot's vector search stays current.
+
+**Where edits go:** writes hit `/api/nodes`, `/api/nodes/[id]`, `/api/edges`,
+`/api/edges/[id]` (server-side, service-role key). The live site that runs in
+offline mode (no Supabase) shows the graph **read-only** — the toolbar says so,
+and write endpoints return `409 editing_not_configured`.
+
+**Protecting writes (optional):** set `ORG_BRAIN_EDIT_TOKEN` to require a shared
+secret. The UI prompts for it once (stored in `localStorage`) and sends it as the
+`x-edit-token` header; the server rejects mismatches with `401`. Leave it unset
+for an open, private instance. For multi-user/role-based access, put real auth
+in front (e.g. Supabase Auth + RLS policies).
+
 ### Regenerate / customize the brain content
 
 ```bash

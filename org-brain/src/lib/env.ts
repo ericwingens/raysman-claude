@@ -16,6 +16,10 @@ export const env = {
 
   asanaToken: process.env.ASANA_ACCESS_TOKEN ?? "",
   apolloKey: process.env.APOLLO_API_KEY ?? "",
+
+  // Optional shared secret to gate write operations (create/edit/delete).
+  // When unset, editing is open (fine for a private/personal instance).
+  editToken: process.env.ORG_BRAIN_EDIT_TOKEN ?? "",
 };
 
 /** True when a Supabase backend is configured (server side). */
@@ -34,4 +38,13 @@ export function hasAnthropic(): boolean {
 
 export function hasVoyage(): boolean {
   return Boolean(env.voyageApiKey);
+}
+
+/** Editing requires a writable backend (Supabase service role). */
+export function isEditable(): boolean {
+  return hasSupabaseServer();
+}
+
+export function requiresEditToken(): boolean {
+  return Boolean(env.editToken);
 }

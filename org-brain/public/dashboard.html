@@ -63,7 +63,8 @@
   <span class="grow"></span>
   <div class="right">
     <button id="btnSettings">⚙ Connection</button>
-    <button id="btnImport">⤓ Import JSON</button>
+    <button id="btnBulk">⤓ Bulk import</button>
+    <button id="btnImport">⥂ Replace</button>
     <button id="btnExport">⤒ Export JSON</button>
     <button class="primary" id="btnAdd">+ Add item</button>
   </div>
@@ -2548,11 +2549,133 @@ function importJson(){
   inp.click();
 }
 
+// ---------- bulk import ----------
+function parseCSV(text){
+  const rows=[];let i=0,field='',row=[],inq=false;
+  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  while(i<text.length){
+    const c=text[i];
+    if(inq){
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i+=2;continue;} inq=false;i++;continue; }
+      field+=c;i++;continue;
+    }
+    if(c==='"'){inq=true;i++;continue;}
+    if(c===','){row.push(field);field='';i++;continue;}
+    if(c==='\n'){row.push(field);rows.push(row);row=[];field='';i++;continue;}
+    field+=c;i++;
+  }
+  if(field.length||row.length){row.push(field);rows.push(row);}
+  return rows.filter(r=>!(r.length===1&&r[0].trim()===''));
+}
+const CSV_KNOWN={id:'id',type:'type',name:'name',department:'department',dept:'department',business_function:'business_function',function:'business_function',content:'content',description:'content'};
+function rowsToNodes(headers,dataRows,defType){
+  const hs=headers.map(h=>h.trim());
+  return dataRows.map(cells=>{
+    const node={type:defType,name:'',department:null,business_function:null,content:'',props:{}};
+    const issues=[];
+    hs.forEach((h,idx)=>{
+      const raw=(cells[idx]==null?'':cells[idx]).trim();
+      if(raw==='')return;
+      const lc=h.toLowerCase(), key=CSV_KNOWN[lc];
+      if(key==='type'){ if(TYPES.includes(raw))node.type=raw; else issues.push('type→'+defType); }
+      else if(key==='name')node.name=raw;
+      else if(key==='department')node.department=raw;
+      else if(key==='business_function')node.business_function=(raw==='core'||raw==='enabling')?raw:null;
+      else if(key==='content')node.content=raw;
+      else if(key==='id')node.id=raw;
+      else if(lc==='props'){ try{Object.assign(node.props,JSON.parse(raw));}catch(e){issues.push('bad props json');} }
+      else if(lc==='tools'){ node.props.tools=raw.split(/[;,]/).map(s=>s.trim()).filter(Boolean); }
+      else { node.props[h]=raw; }
+    });
+    if(!node.name)issues.push('missing name');
+    return {node,issues};
+  });
+}
+async function runImport(items,edges){
+  let ok=0,fail=0;
+  if(state.mode==='live'){
+    for(const it of items){ try{ await liveCreateNode(it.node); ok++; }catch(e){ fail++; } }
+    for(const e of (edges||[])){ try{ await liveCreateEdge(e.source,e.target,e.rel_type); }catch(_){ } }
+    await reloadLive();
+  }else{
+    for(const it of items){ const id=(it.node.id&&!byId(it.node.id))?it.node.id:genId(it.node.type,it.node.name); state.nodes.push(Object.assign({},it.node,{id})); ok++; }
+    for(const e of (edges||[])){ if(byId(e.source)&&byId(e.target)) state.edges.push({id:'e_'+Math.random().toString(36).slice(2,8),source:e.source,target:e.target,rel_type:e.rel_type}); }
+  }
+  render();
+  return {ok,fail};
+}
+function renderBulkPreview(box,items,edges){
+  const valid=items.filter(x=>!x.issues.includes('missing name')).length;
+  const skipped=items.length-valid;
+  const head='<div class="hint" style="margin-bottom:.4rem">'+valid+' of '+items.length+' importable'+(edges?(' · '+edges.length+' links'):'')+(skipped?(' · '+skipped+' skipped (no name)'):'')+'</div>';
+  const rowsHtml=items.slice(0,300).map(x=>'<tr><td>'+esc(x.node.name||'—')+'</td><td><span class="chip" style="background:'+TYPE_COLOR[x.node.type]+'22;color:'+TYPE_COLOR[x.node.type]+'">'+TYPE_LABEL[x.node.type]+'</span></td><td class="hint">'+esc(x.node.department||'—')+'</td><td class="hint">'+(x.issues.length?('<span style="color:#f59e0b">'+esc(x.issues.join(', '))+'</span>'):'ok')+'</td></tr>').join('');
+  box.querySelector('#b_preview').innerHTML=head+'<div style="max-height:240px;overflow:auto;border:1px solid var(--border);border-radius:.4rem"><table><thead><tr><th>Name</th><th>Type</th><th>Dept</th><th>Status</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>';
+  const imp=box.querySelector('#b_import'); imp.disabled=valid===0; imp.textContent='Import '+valid+' item'+(valid===1?'':'s');
+}
+function openBulk(){
+  overlay.innerHTML='';
+  const box=document.createElement('div'); box.className='overlay';
+  box.innerHTML=`<div class="modal" style="max-width:720px">
+    <h2>Bulk import items</h2>
+    <p class="hint">Paste or choose a <b>CSV</b> (with a header row) or <b>JSON</b> (an array of items, or {nodes,edges}). Recognised CSV columns: name, type, department, business_function, content/description, tools (comma-separated), props (JSON), id. Any other column becomes a property. <a id="b_tmpl" href="#">Download CSV template</a></p>
+    <div class="grid2">
+      <div class="field"><p class="label">Choose file</p><input id="b_file" type="file" accept=".csv,.json,text/csv,application/json"></div>
+      <div class="field"><p class="label">Default type (blank/invalid)</p><select id="b_type">${TYPES.map(t=>'<option value="'+t+'"'+(t==='subagent'?' selected':'')+'>'+TYPE_LABEL[t]+'</option>').join('')}</select></div>
+    </div>
+    <div class="field"><p class="label">…or paste here</p><textarea id="b_text" class="mono" placeholder="name,type,department,content,tools&#10;SEO Sub-Agent,subagent,dept_growth,Draft SEO briefs,&quot;t_apollo,t_gsc&quot;"></textarea></div>
+    <div style="display:flex;gap:.5rem"><button id="b_parse">Preview</button></div>
+    <div id="b_preview" style="margin-top:.85rem"></div>
+    <div id="b_err" class="err" style="display:none"></div>
+    <div style="display:flex;gap:.5rem;margin-top:1rem"><button class="primary" id="b_import" disabled>Import</button><button id="b_cancel">Close</button></div>
+  </div>`;
+  overlay.appendChild(box);
+  box.onclick=e=>{if(e.target===box)overlay.innerHTML='';};
+  box.querySelector('#b_cancel').onclick=()=>overlay.innerHTML='';
+  box.querySelector('#b_tmpl').onclick=e=>{e.preventDefault();const csv='name,type,department,business_function,content,tools\n"SEO Sub-Agent",subagent,dept_growth,core,"Plan and draft SEO content briefs","t_apollo,t_gsc"\n"Onboarding Agent",subagent,dept_hr,enabling,"Generate onboarding plans",t_asana\n';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='items-template.csv';a.click();};
+  const fileInp=box.querySelector('#b_file');
+  fileInp.onchange=()=>{const f=fileInp.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{box.querySelector('#b_text').value=fr.result;};fr.readAsText(f);};
+
+  let parsed=null,parsedEdges=null;
+  box.querySelector('#b_parse').onclick=()=>{
+    const errEl=box.querySelector('#b_err'); errEl.style.display='none';
+    const text=box.querySelector('#b_text').value.trim();
+    const defType=box.querySelector('#b_type').value;
+    if(!text){errEl.textContent='Nothing to parse yet.';errEl.style.display='block';return;}
+    parsedEdges=null;
+    try{
+      let items, asJson=null;
+      try{asJson=JSON.parse(text);}catch(e){}
+      if(asJson){
+        const arr=Array.isArray(asJson)?asJson:(asJson.nodes||[]);
+        items=arr.map(o=>{const node={type:TYPES.includes(o.type)?o.type:defType,name:(o.name||'').trim(),department:o.department==null?null:o.department,business_function:(o.business_function==='core'||o.business_function==='enabling')?o.business_function:null,content:o.content||'',props:o.props||{}};if(o.id)node.id=o.id;const issues=[];if(!node.name)issues.push('missing name');if(o.type&&!TYPES.includes(o.type))issues.push('type→'+defType);return {node,issues};});
+        if(asJson.edges&&Array.isArray(asJson.edges))parsedEdges=asJson.edges.filter(e=>e.source&&e.target&&e.rel_type).map(e=>({source:e.source,target:e.target,rel_type:e.rel_type}));
+      }else{
+        const rows=parseCSV(text);
+        if(rows.length<2){errEl.textContent='CSV needs a header row plus at least one data row.';errEl.style.display='block';return;}
+        items=rowsToNodes(rows[0],rows.slice(1),defType);
+      }
+      parsed=items;
+      renderBulkPreview(box,items,parsedEdges);
+    }catch(e){errEl.textContent='Parse error: '+e.message;errEl.style.display='block';}
+  };
+  box.querySelector('#b_import').onclick=async()=>{
+    if(!parsed)return;
+    const valid=parsed.filter(x=>!x.issues.includes('missing name'));
+    const btn=box.querySelector('#b_import'); btn.disabled=true; btn.textContent='Importing…';
+    try{
+      const res=await runImport(valid,parsedEdges);
+      overlay.innerHTML='';
+      alert('Imported '+res.ok+' item(s)'+(res.fail?(' · '+res.fail+' failed'):'')+(state.mode==='local'?'.\nRemember to Export JSON to keep changes.':'.'));
+    }catch(e){const errEl=box.querySelector('#b_err');errEl.textContent='Import failed: '+e.message;errEl.style.display='block';btn.disabled=false;}
+  };
+}
+
 // ---------- wire up ----------
 $('#btnAdd').onclick=()=>openEditor(null);
 $('#btnSettings').onclick=openSettings;
 $('#btnExport').onclick=exportJson;
 $('#btnImport').onclick=importJson;
+$('#btnBulk').onclick=openBulk;
 $('#search').oninput=e=>{state.search=e.target.value;render();};
 
 load();

@@ -4,6 +4,9 @@
 [build]
   base = "org-brain"
   command = "npm run build"
+  # Next.js output dir (relative to base → org-brain/.next). Pinning this here
+  # makes netlify.toml authoritative and overrides the UI's bad "publish" default.
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

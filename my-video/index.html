@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: #0a0b10;
+        font-family: "JetBrains Mono", monospace;
+        color: #f3f4f7;
+      }
+      .display { font-family: "Archivo Black", sans-serif; }
+
+      /* ── Scene containers ───────────────────────────────────────── */
+      .scene {
+        position: absolute; top: 0; left: 0;
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: #0a0b10;
+      }
+      #s1 { z-index: 1; }
+      #s2 { z-index: 2; opacity: 0; }
+      #s3 { z-index: 3; opacity: 0; }
+      #s4 { z-index: 4; opacity: 0; }
+      #s5 { z-index: 5; opacity: 0; }
+
+      .pad { position: absolute; inset: 0; padding: 120px 150px; }
+
+      /* ── Shared decoratives ─────────────────────────────────────── */
+      .glow {
+        position: absolute; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,176,46,0.22) 0%, rgba(255,176,46,0) 70%);
+        pointer-events: none;
+      }
+      .grid-dots {
+        position: absolute; inset: 0; pointer-events: none;
+        background-image: radial-gradient(rgba(174,182,198,0.10) 1.5px, transparent 1.5px);
+        background-size: 54px 54px;
+      }
+      .rule { height: 2px; background: #ffb02e; transform-origin: left center; }
+      .ghost {
+        position: absolute; font-family: "Archivo Black", sans-serif;
+        color: rgba(243,244,247,0.04); pointer-events: none; white-space: nowrap;
+      }
+      .corner {
+        position: absolute; width: 26px; height: 26px;
+        border: 2px solid rgba(255,176,46,0.45);
+      }
+
+      .eyebrow {
+        font-size: 22px; letter-spacing: 0.34em; color: #ffb02e;
+        font-variant-caps: all-small-caps; font-weight: 700;
+      }
+
+      /* ── Scene 1 ─────────────────────────────────────────────────── */
+      #s1 .pad { display: flex; flex-direction: column; justify-content: center; gap: 30px; }
+      #s1 .headline { font-size: 168px; line-height: 0.96; letter-spacing: -0.03em; }
+      #s1 .headline .amber { color: #ffb02e; }
+      #s1 .sub { font-size: 30px; color: #aeb6c6; font-weight: 300; letter-spacing: 0.02em; max-width: 920px; }
+
+      /* ── Scene 2 ─────────────────────────────────────────────────── */
+      #s2 .pad { display: flex; align-items: center; gap: 90px; }
+      .code-panel {
+        flex: 0 0 1020px; background: #14161e; border: 2px solid #262a36;
+        border-radius: 18px; box-shadow: 0 40px 90px rgba(0,0,0,0.55);
+        padding: 34px 40px 40px;
+      }
+      .code-bar { display: flex; gap: 12px; margin-bottom: 30px; }
+      .code-bar i { width: 15px; height: 15px; border-radius: 50%; background: #3a3f4d; display: block; }
+      .code-line { font-size: 34px; line-height: 1.7; white-space: pre; }
+      .code-line .k { color: #6f7891; }   /* punctuation / tags */
+      .code-line .a { color: #ffb02e; }    /* attribute names */
+      .code-line .v { color: #7fd1a8; }    /* values */
+      .code-line .t { color: #f3f4f7; }    /* text content */
+      #s2 .note { flex: 1; }
+      #s2 .note h3 { font-family: "Archivo Black", sans-serif; font-size: 60px; line-height: 1.04; letter-spacing: -0.02em; }
+      #s2 .note p { margin-top: 22px; font-size: 28px; line-height: 1.55; color: #aeb6c6; font-weight: 300; }
+
+      /* ── Scene 3 (SLAM) ──────────────────────────────────────────── */
+      #s3 .pad { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 26px; }
+      #s3 .slam { font-size: 124px; line-height: 0.95; letter-spacing: -0.035em; }
+      #s3 .slam .amber { color: #ffb02e; }
+      #s3 .meter { display: flex; align-items: baseline; gap: 26px; font-variant-numeric: tabular-nums; }
+      #s3 .counter { font-size: 92px; font-weight: 700; color: #ffb02e; letter-spacing: -0.02em; }
+      #s3 .meter .of { font-size: 40px; color: #6f7891; }
+      #s3 .meter .fps { font-size: 26px; color: #aeb6c6; letter-spacing: 0.22em; font-variant-caps: all-small-caps; }
+      #s3 .slam-sub { font-size: 30px; color: #aeb6c6; font-weight: 300; letter-spacing: 0.04em; }
+
+      /* ── Scene 4 (trio) ──────────────────────────────────────────── */
+      #s4 .pad { display: flex; flex-direction: column; justify-content: center; gap: 60px; }
+      #s4 .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+      #s4 .feat { padding: 0 56px; border-left: 2px solid #262a36; }
+      #s4 .feat:first-child { border-left: none; padding-left: 0; }
+      #s4 .feat .idx { font-size: 24px; color: #ffb02e; letter-spacing: 0.2em; }
+      #s4 .feat h4 { font-family: "Archivo Black", sans-serif; font-size: 64px; line-height: 1.0; letter-spacing: -0.02em; margin: 22px 0 18px; }
+      #s4 .feat p { font-size: 25px; line-height: 1.5; color: #aeb6c6; font-weight: 300; }
+
+      /* ── Scene 5 (CTA) ───────────────────────────────────────────── */
+      #s5 .pad { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 40px; text-align: center; }
+      #s5 .wordmark { font-size: 176px; letter-spacing: -0.04em; }
+      #s5 .wordmark .amber { color: #ffb02e; }
+      #s5 .cmd {
+        font-size: 34px; color: #f3f4f7; background: #14161e;
+        border: 2px solid #2c313f; border-radius: 999px; padding: 22px 46px; letter-spacing: 0.01em;
+      }
+      #s5 .cmd .prompt { color: #ffb02e; }
+      #s5 .tagline { font-size: 24px; color: #6f7891; letter-spacing: 0.28em; font-variant-caps: all-small-caps; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="18"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- ══ SCENE 1 — HOOK ══ -->
+      <div id="s1" class="scene">
+        <div class="grid-dots" id="s1-grid"></div>
+        <div class="glow" data-layout-allow-overflow id="s1-glow" style="width: 1100px; height: 1100px; top: -360px; right: -240px;"></div>
+        <div class="ghost" id="s1-ghost" data-layout-ignore style="bottom: 40px; left: -30px; font-size: 460px;">&lt;/&gt;</div>
+        <div class="corner" style="top: 70px; left: 70px; border-right: none; border-bottom: none;"></div>
+        <div class="corner" style="bottom: 70px; right: 70px; border-left: none; border-top: none;"></div>
+        <div class="pad">
+          <div class="eyebrow" id="s1-eye">HyperFrames &nbsp;//&nbsp; HTML-native video</div>
+          <div class="rule" id="s1-rule" style="width: 380px;"></div>
+          <div class="display headline">
+            <div id="s1-h1">HTML IS THE</div>
+            <div id="s1-h2">SOURCE OF <span class="amber">TRUTH</span></div>
+          </div>
+          <div class="sub" id="s1-sub">A composition is just an HTML file. Timing, motion, and media — all in markup.</div>
+        </div>
+      </div>
+
+      <!-- ══ SCENE 2 — AUTHOR ══ -->
+      <div id="s2" class="scene">
+        <div class="glow" data-layout-allow-overflow id="s2-glow" style="width: 900px; height: 900px; bottom: -320px; left: -200px;"></div>
+        <div class="pad">
+          <div class="code-panel" id="s2-panel">
+            <div class="code-bar"><i></i><i></i><i></i></div>
+            <div class="code-line s2cl"><span class="k">&lt;div</span> <span class="a">data-start</span><span class="k">=</span><span class="v">"0"</span></div>
+            <div class="code-line s2cl"><span class="k">     </span><span class="a">data-duration</span><span class="k">=</span><span class="v">"4"</span></div>
+            <div class="code-line s2cl"><span class="k">     </span><span class="a">data-track-index</span><span class="k">=</span><span class="v">"1"</span><span class="k">&gt;</span></div>
+            <div class="code-line s2cl"><span class="t">  Hello, frame.</span></div>
+            <div class="code-line s2cl"><span class="k">&lt;/div&gt;</span></div>
+          </div>
+          <div class="note">
+            <h3 id="s2-h">Write a<br />composition.</h3>
+            <p id="s2-p">No SDK. No timeline to wire by hand. <span style="color:#ffb02e">data-*</span> attributes drive the clock; GSAP drives the motion.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCENE 3 — SLAM ══ -->
+      <div id="s3" class="scene">
+        <div class="glow" data-layout-allow-overflow id="s3-glow" style="width: 1300px; height: 1300px; top: 50%; left: 50%; transform: translate(-50%,-50%);"></div>
+        <div class="ghost" id="s3-ghost" data-layout-ignore style="top: 30px; right: 40px; font-size: 380px;">30</div>
+        <div class="pad">
+          <div class="eyebrow" id="s3-eye">Deterministic by design</div>
+          <div class="display slam" data-layout-allow-overflow>
+            <div id="s3-l1">EVERY FRAME,</div>
+            <div id="s3-l2"><span class="amber">FRAME-PERFECT</span></div>
+          </div>
+          <div class="rule" id="s3-rule" style="width: 520px;"></div>
+          <div class="meter">
+            <span class="counter" id="s3-counter">000</span>
+            <span class="of" id="s3-of">/ 540</span>
+            <span class="fps" id="s3-fps">frames @ 30 fps</span>
+          </div>
+          <div class="slam-sub" id="s3-sub">Seek to any frame. It renders identically, every time.</div>
+        </div>
+      </div>
+
+      <!-- ══ SCENE 4 — TRIO ══ -->
+      <div id="s4" class="scene">
+        <div class="glow" data-layout-allow-overflow id="s4-glow" style="width: 1000px; height: 1000px; top: -340px; right: 30%;"></div>
+        <div class="pad">
+          <div class="eyebrow" id="s4-eye">Batteries included</div>
+          <div class="cols">
+            <div class="feat" id="s4-c1">
+              <div class="idx">01</div>
+              <h4>CAPTIONS</h4>
+              <p>Word-level subtitles synced straight to your audio track.</p>
+            </div>
+            <div class="feat" id="s4-c2">
+              <div class="idx">02</div>
+              <h4>SHADERS</h4>
+              <p>GPU scene transitions — iris, warp, glitch, light leak.</p>
+            </div>
+            <div class="feat" id="s4-c3">
+              <div class="idx">03</div>
+              <h4>REACTIVE</h4>
+              <p>Map beats and amplitude to motion. Visuals move with sound.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCENE 5 — CTA ══ -->
+      <div id="s5" class="scene">
+        <div class="glow" data-layout-allow-overflow id="s5-glow" style="width: 1200px; height: 1200px; top: 50%; left: 50%; transform: translate(-50%,-50%);"></div>
+        <div class="grid-dots" id="s5-grid"></div>
+        <div class="pad">
+          <div class="display wordmark" id="s5-mark">Hyper<span class="amber">Frames</span></div>
+          <div class="cmd" id="s5-cmd"><span class="prompt">$</span> npx skills add heygen-com/hyperframes</div>
+          <div class="tagline" id="s5-tag">HTML in. Video out.</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ── Transition beat times ──────────────────────────────────────
+      const T1 = 3.6, T2 = 7.2, T3 = 11.2, T4 = 14.6, FADE = 17.5;
+
+      /* ════════════════ SCENE 1 — HOOK (0 – T1) ════════════════ */
+      tl.fromTo("#s1-eye", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 0.2);
+      tl.fromTo("#s1-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.out" }, 0.35);
+      tl.fromTo("#s1-h1", { opacity: 0, y: 64 }, { opacity: 1, y: 0, duration: 0.7, ease: "expo.out" }, 0.5);
+      tl.fromTo("#s1-h2", { opacity: 0, y: 64 }, { opacity: 1, y: 0, duration: 0.7, ease: "expo.out" }, 0.66);
+      tl.fromTo("#s1-sub", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 1.05);
+      // ambient (decoratives only, attached to tl)
+      tl.fromTo("#s1-glow", { scale: 0.92, opacity: 0.8 }, { scale: 1.08, opacity: 1, duration: 1.8, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.2);
+      tl.fromTo("#s1-ghost", { x: -40, opacity: 1 }, { x: 10, duration: 3.4, ease: "sine.inOut" }, 0.2);
+
+      /* ════════════════ SCENE 2 — AUTHOR (T1 – T2) ════════════════ */
+      tl.fromTo("#s2-panel", { opacity: 0, y: 50, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }, T1 + 0.15);
+      tl.fromTo("#s2 .s2cl", { opacity: 0, x: 26 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out", stagger: 0.1 }, T1 + 0.35);
+      tl.fromTo("#s2-h", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.4)" }, T1 + 0.45);
+      tl.fromTo("#s2-p", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, T1 + 0.75);
+      tl.fromTo("#s2-glow", { scale: 0.95 }, { scale: 1.1, duration: 2.0, ease: "sine.inOut", yoyo: true, repeat: 1 }, T1 + 0.1);
+
+      /* ════════════════ SCENE 3 — SLAM (T2 – T3) ════════════════ */
+      tl.fromTo("#s3-eye", { opacity: 0, letterSpacing: "0.6em" }, { opacity: 1, letterSpacing: "0.34em", duration: 0.5, ease: "power2.out" }, T2 + 0.2);
+      tl.fromTo("#s3-l1", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T2 + 0.35);
+      // the SLAM — heavy scale-down impact
+      tl.fromTo("#s3-l2", { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.42, ease: "power4.out" }, T2 + 0.6);
+      tl.fromTo("#s3-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "expo.out" }, T2 + 0.95);
+      tl.fromTo("#s3-counter, #s3-of, #s3-fps", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.08 }, T2 + 1.05);
+      tl.fromTo("#s3-sub", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "none" }, T2 + 1.4);
+      // deterministic count-up 000 → 540 (driven by timeline, fully seekable)
+      const fc = { v: 0 };
+      tl.to(fc, {
+        v: 540, duration: 2.4, ease: "power1.out",
+        onUpdate: () => {
+          const el = document.getElementById("s3-counter");
+          if (el) el.textContent = String(Math.round(fc.v)).padStart(3, "0");
+        }
+      }, T2 + 1.1);
+      // ambient glow pulse
+      tl.fromTo("#s3-glow", { scale: 0.9, opacity: 0.85 }, { scale: 1.12, opacity: 1, duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, T2 + 0.3);
+      tl.fromTo("#s3-ghost", { y: 0, opacity: 1 }, { y: 24, duration: 3.2, ease: "sine.inOut" }, T2 + 0.2);
+
+      /* ════════════════ SCENE 4 — TRIO (T3 – T4) ════════════════ */
+      tl.fromTo("#s4-eye", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, T3 + 0.2);
+      tl.fromTo("#s4-c1", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.55, ease: "expo.out" }, T3 + 0.35);
+      tl.fromTo("#s4-c2", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.55, ease: "back.out(1.3)" }, T3 + 0.5);
+      tl.fromTo("#s4-c3", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, T3 + 0.65);
+      tl.fromTo("#s4-glow", { scale: 0.95, x: -20 }, { scale: 1.1, x: 20, duration: 2.0, ease: "sine.inOut", yoyo: true, repeat: 1 }, T3 + 0.2);
+
+      /* ════════════════ SCENE 5 — CTA (T4 – 18) ════════════════ */
+      tl.fromTo("#s5-mark", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, T4 + 0.2);
+      tl.fromTo("#s5-cmd", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.55, ease: "back.out(1.5)" }, T4 + 0.55);
+      tl.fromTo("#s5-tag", { opacity: 0, letterSpacing: "0.5em" }, { opacity: 1, letterSpacing: "0.28em", duration: 0.6, ease: "power2.out" }, T4 + 0.8);
+      tl.fromTo("#s5-glow", { scale: 0.9, opacity: 0.8 }, { scale: 1.06, opacity: 1, duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, T4 + 0.2);
+
+      /* ════════════════ TRANSITIONS (operate on scene CONTAINERS) ════════════════ */
+      // T1: blur crossfade  S1 → S2
+      tl.to("#s1", { opacity: 0, filter: "blur(20px)", duration: 0.5, ease: "power2.in" }, T1);
+      tl.set("#s1", { visibility: "hidden" }, T1 + 0.5);
+      tl.fromTo("#s2", { opacity: 0, filter: "blur(20px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.55, ease: "power2.out" }, T1);
+
+      // T2: push slide (directional)  S2 → S3
+      tl.to("#s2", { xPercent: -100, duration: 0.45, ease: "power3.in" }, T2);
+      tl.set("#s2", { visibility: "hidden" }, T2 + 0.45);
+      tl.fromTo("#s3", { xPercent: 100, opacity: 1 }, { xPercent: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, T2);
+
+      // T3: zoom through (outgoing on top)  S3 → S4
+      tl.set("#s3", { zIndex: 10 }, T3);
+      tl.to("#s3", { scale: 1.25, opacity: 0, filter: "blur(20px)", duration: 0.5, ease: "power3.in" }, T3);
+      tl.set("#s3", { visibility: "hidden" }, T3 + 0.5);
+      tl.fromTo("#s4", { scale: 0.78, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "expo.out" }, T3);
+
+      // T4: crossfade  S4 → S5
+      tl.to("#s4", { opacity: 0, duration: 0.45, ease: "power2.in" }, T4);
+      tl.set("#s4", { visibility: "hidden" }, T4 + 0.45);
+      tl.fromTo("#s5", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, T4);
+
+      // Final scene exit (only the last scene may fade out)
+      tl.to("#s5", { opacity: 0, duration: 0.5, ease: "power2.in" }, FADE);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

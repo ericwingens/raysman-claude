@@ -1,0 +1,12 @@
+{
+  "name": "gstack-guard",
+  "displayName": "gstack Guard",
+  "version": "0.1.0",
+  "description": "Enforces a global gstack install before any skill runs, and ships gstack setup + skill-routing guidance.",
+  "author": {
+    "name": "Eric Wingens",
+    "email": "eric.wingens@gmail.com"
+  },
+  "keywords": ["gstack", "skills", "hooks", "governance"],
+  "license": "MIT"
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "raysman-claude",
+  "description": "Claude Code plugins for the raysman-claude workspace, including gstack enforcement and skill-routing guidance.",
+  "owner": {
+    "name": "Eric Wingens",
+    "email": "eric.wingens@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "gstack-guard",
+      "source": "./plugins/gstack-guard",
+      "description": "Blocks skill usage until gstack is installed globally, and ships gstack setup + skill-routing guidance as a skill.",
+      "author": {
+        "name": "Eric Wingens"
+      },
+      "category": "productivity",
+      "keywords": ["gstack", "skills", "hooks", "governance"]
+    }
+  ]
+}

@@ -16,6 +16,16 @@
       },
       "category": "productivity",
       "keywords": ["gstack", "skills", "hooks", "governance"]
+    },
+    {
+      "name": "claude-md-management",
+      "source": "./plugins/claude-md-management",
+      "description": "Author, audit, and keep CLAUDE.md files lean and high-signal, with a hook that warns when a CLAUDE.md grows too large.",
+      "author": {
+        "name": "Eric Wingens"
+      },
+      "category": "productivity",
+      "keywords": ["claude-md", "memory", "documentation", "governance", "hooks"]
     }
   ]
 }

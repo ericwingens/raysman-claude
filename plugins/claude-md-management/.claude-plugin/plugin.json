@@ -1,0 +1,12 @@
+{
+  "name": "claude-md-management",
+  "displayName": "CLAUDE.md Management",
+  "version": "0.1.0",
+  "description": "Author, audit, and keep CLAUDE.md files lean and high-signal, with a hook that warns when a CLAUDE.md grows too large.",
+  "author": {
+    "name": "Eric Wingens",
+    "email": "eric.wingens@gmail.com"
+  },
+  "keywords": ["claude-md", "memory", "documentation", "governance", "hooks"],
+  "license": "MIT"
+}

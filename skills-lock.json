@@ -71,6 +71,12 @@
       "sourceType": "github",
       "computedHash": "2902e68071784c81597644309206b6b127e49b62a145cc9cbbbb73bfaeeeb86c"
     },
+    "project-management": {
+      "source": "miles990/claude-software-skills",
+      "sourceType": "github",
+      "skillPath": "tools-integrations/project-management/SKILL.md",
+      "computedHash": "7a34f97b00f89225d6f7760cff905d262a03e7bfaa17bd448ea0274b9dc80010"
+    },
     "remotion-to-hyperframes": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

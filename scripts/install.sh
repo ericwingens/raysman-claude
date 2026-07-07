@@ -131,16 +131,32 @@ echo "Installing ${#AGENT_FILES[@]} agent(s) into: $DEST"
 
 [ "$DRY_RUN" -eq 0 ] && mkdir -p "$DEST"
 
+# Claude Code requires the frontmatter `name` to be a lowercase-hyphenated
+# identifier, but the vendored agents ship Title-Case names. On copy we rewrite
+# the first `name:` in the frontmatter to the file slug so the agent registers
+# and is invocable by that slug. Symlinks can't be rewritten, so --link leaves
+# the source name untouched (it may not conform).
+normalize_name() {
+  local src="$1" slug="$2" dst="$3"
+  awk -v slug="$slug" '
+    NR==1 && $0 ~ /^---[[:space:]]*$/ { infm=1; print; next }
+    infm && $0 ~ /^---[[:space:]]*$/  { infm=0; print; next }
+    infm && !done && $0 ~ /^name:/    { print "name: " slug; done=1; next }
+    { print }
+  ' "$src" > "$dst"
+}
+
 for f in "${AGENT_FILES[@]}"; do
+  slug="$(basename "$f" .md)"
   target="$DEST/$(basename "$f")"
   if [ "$DRY_RUN" -eq 1 ]; then
-    echo "  would install $(basename "$f")"
+    echo "  would install $slug"
     continue
   fi
   if [ "$LINK" -eq 1 ]; then
     ln -sf "$f" "$target"
   else
-    cp "$f" "$target"
+    normalize_name "$f" "$slug" "$target"
   fi
 done
 

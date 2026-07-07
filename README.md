@@ -63,8 +63,29 @@ Prefer to do it by hand? Copy a single division straight in:
 cp engineering/*.md ~/.claude/agents/
 ```
 
-Then activate an agent in any session — e.g. *"Activate Frontend Developer and
-help me build a React component."*
+Then activate an agent in any session — e.g. *"Use the
+`engineering-frontend-developer` subagent to build a React component."*
+
+> **Note on names:** Claude Code requires a subagent's `name` to be a
+> lowercase-hyphenated slug, but the vendored agents ship Title-Case names.
+> The installer rewrites `name` to the file slug on **copy**, so installed
+> agents register and are invoked by their slug (e.g. `engineering-code-reviewer`).
+> `--link` mode can't rewrite the source, so linked agents keep the upstream
+> name. The division files in this repo are left faithful to upstream.
+
+### Pre-installed (project-level)
+
+A curated dev-workflow set is checked into [`.claude/agents/`](./.claude/agents),
+so it's active for anyone who opens this repo — no install step:
+
+`engineering-code-reviewer`, `engineering-minimal-change-engineer`,
+`engineering-git-workflow-master`, `engineering-technical-writer`,
+`engineering-prompt-engineer`, `engineering-codebase-onboarding-engineer`,
+`engineering-software-architect`, `specialized-mcp-builder`,
+`security-senior-secops`, `testing-reality-checker`.
+
+Run `/agents` to see them, then invoke by slug or by intent. Add more with
+`./scripts/install.sh --agent <slug> --path .claude/agents`.
 
 ### Divisions
 

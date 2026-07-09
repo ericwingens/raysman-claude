@@ -1,0 +1,12 @@
+{
+  "name": "video-vision",
+  "displayName": "Video Vision",
+  "version": "0.1.0",
+  "description": "Analyze videos by sampling frames with ffmpeg so Claude can read them as images and reason about the contents.",
+  "author": {
+    "name": "Eric Wingens",
+    "email": "eric.wingens@gmail.com"
+  },
+  "keywords": ["video", "vision", "ffmpeg", "frames", "multimodal"],
+  "license": "MIT"
+}

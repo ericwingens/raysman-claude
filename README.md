@@ -16,6 +16,7 @@ in any Claude Code session:
 | Plugin | Description |
 | :----- | :---------- |
 | [`gstack-guard`](./plugins/gstack-guard) | Blocks skill usage until gstack is installed globally, and ships gstack setup + skill-routing guidance. |
+| [`video-vision`](./plugins/video-vision) | Analyze videos by sampling frames with ffmpeg so Claude can read them as images and reason about the contents. |
 
 Install a plugin:
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "raysman-claude",
-  "description": "Claude Code plugins for the raysman-claude workspace, including gstack enforcement and skill-routing guidance.",
+  "description": "Claude Code plugins for the raysman-claude workspace, including gstack enforcement, skill-routing guidance, and video frame analysis.",
   "owner": {
     "name": "Eric Wingens",
     "email": "eric.wingens@gmail.com"
@@ -16,6 +16,16 @@
       },
       "category": "productivity",
       "keywords": ["gstack", "skills", "hooks", "governance"]
+    },
+    {
+      "name": "video-vision",
+      "source": "./plugins/video-vision",
+      "description": "Analyze videos by sampling frames with ffmpeg so Claude can read them as images and reason about the contents.",
+      "author": {
+        "name": "Eric Wingens"
+      },
+      "category": "productivity",
+      "keywords": ["video", "vision", "ffmpeg", "frames", "multimodal"]
     }
   ]
 }

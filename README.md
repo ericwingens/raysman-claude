@@ -56,6 +56,26 @@ scripts/install-council-global.sh /some/dir  # or an explicit target
 The installer is fully offline (no network, no external repo) — it sources
 straight from this repo's `.claude/` copy.
 
+## Agency Agents
+
+The [Agency Agents](https://github.com/msitarzewski/agency-agents) roster (269
+specialized subagents across 17 divisions — engineering, design, marketing,
+security, and more) is vendored into `.claude/agents/` so the agents auto-load
+in every session on this repo (project-level `.claude/` is restored on each
+fresh web container).
+
+They were installed with the upstream native Claude Code installer, which copies
+the source `.md` + YAML frontmatter agents straight into the agents directory (no
+conversion needed):
+
+```bash
+# from a checkout of msitarzewski/agency-agents
+./scripts/install.sh --tool claude-code --path <repo>/.claude/agents
+```
+
+Activate one in a session by referencing it by name, e.g.
+`"Activate the Frontend Developer and help me build a React component."`
+
 ## gstack
 
 This repo also requires gstack for AI-assisted work — see [CLAUDE.md](./CLAUDE.md).

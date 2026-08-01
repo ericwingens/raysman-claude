@@ -31,6 +31,23 @@ claude plugin validate .                       # validates marketplace.json
 claude plugin validate ./plugins/gstack-guard  # validates the plugin
 ```
 
+## MCP servers
+
+`.mcp.json` defines project-scoped MCP servers that load in every session on this
+repo (project-level config is restored on each fresh web container).
+
+| Server | Transport | URL |
+| :----- | :-------- | :-- |
+| `moda` | HTTP | `https://mcp.moda.app/mcp` |
+
+Project MCP servers require a one-time approval per user before Claude Code
+activates them — run `claude` and approve when prompted, or `claude mcp list` to
+check status. Add another HTTP server with:
+
+```shell
+claude mcp add --transport http --scope project <name> <url>
+```
+
 ## Council of High Intelligence
 
 The [`/council`](https://github.com/0xNyk/council-of-high-intelligence) skill and

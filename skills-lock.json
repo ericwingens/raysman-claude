@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "agent-reach": {
+      "source": "Panniantong/Agent-Reach",
+      "sourceType": "github",
+      "skillPath": "agent_reach/skill/SKILL.md",
+      "computedHash": "b3e4a7e1f0bf5b82fc7a88a61bbf0f9b0a3a2bb7aa0b4f3f65a29669cb8e717a"
+    },
     "animejs": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

@@ -33,7 +33,7 @@ export default function Onboarding({ done }) {
 }
 
 function Cluster() {
-  const av = ["mia", "nadia", "sofia", "leo", "jonas", "amir"];
+  const av = ["mia", "nadia", "sofia", "lea", "jana", "amira"];
   const pos = [[50, 42, 120], [168, 70, 84], [250, 150, 96], [70, 150, 80], [150, 235, 110], [262, 258, 72]];
   return (
     <div className="cluster">

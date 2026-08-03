@@ -44,7 +44,7 @@ export function ProfileFull({ id, ctx }) {
             <button className="round md" style={{ flex: "none", border: "1px solid var(--line)" }} onClick={() => ctx.push("tip", id)}><Ico name="gift" /></button>
           </div>
           <div className="set-row" style={{ borderBottom: "none", padding: "6px 2px 0" }}>
-            <div><div className="lbl">Geschlecht</div><div className="val">{["mia", "nadia", "sofia"].includes(id) ? "Weiblich" : "Männlich"}</div></div>
+            <div><div className="lbl">Geschlecht</div><div className="val">Weiblich</div></div>
           </div>
           <div className="set-row" style={{ borderBottom: "1px solid var(--line)", paddingTop: 6 }}>
             <div><div className="lbl">Bio</div><p style={{ fontSize: 14.5, lineHeight: 1.5, color: "var(--ink-2)", margin: "4px 0 8px" }}>{c.bio}</p></div>

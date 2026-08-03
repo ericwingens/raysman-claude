@@ -21,8 +21,24 @@ export function grad(seed) {
   );
 }
 
-// Returns a React style object for a gradient placeholder photo.
+// Real demo photos (AI-generated fictional people, shipped in public/img/).
+const PHOTO_IDS = ["amira", "nadia", "sofia", "jana", "mia", "lea", "you"]; // longest-prefix-safe order
+const POST_PHOTO = { p1: "mia", p2: "nadia", p3: "sofia", p4: "lea" };
+const IMG_BASE = `${import.meta.env.BASE_URL}img/`;
+// Slight per-seed crop variation so galleries don't look like one repeated image.
+// Faces are centered in the source crops — vary only the vertical offset slightly.
+const POSITIONS = ["center 22%", "center 15%", "center 28%", "center 18%", "center 25%"];
+
 export function photoStyle(seed) {
+  const hit = PHOTO_IDS.find((p) => seed === p || seed.startsWith(p)) || POST_PHOTO[seed];
+  if (hit) {
+    return {
+      backgroundImage: `url(${IMG_BASE}${hit}.jpg)`,
+      backgroundColor: "#333",
+      backgroundSize: "cover",
+      backgroundPosition: POSITIONS[hashStr(seed) % POSITIONS.length],
+    };
+  }
   return { backgroundImage: grad(seed), backgroundColor: "#333", backgroundSize: "cover" };
 }
 

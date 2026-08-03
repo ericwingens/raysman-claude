@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { photoStyle, Ico } from "../lib.jsx";
+import { photoStyle, Ico, RingLogo } from "../lib.jsx";
 
 /*
  * Welcome + Register flow, 1:1 after the Figma board:
@@ -17,8 +17,8 @@ export default function Onboarding({ done }) {
         <Cluster />
         <div className="content">
           <div className="brandrow" style={{ justifyContent: "center", marginBottom: 2 }}>
-            <span className="ring-logo" style={{ width: 40, height: 40 }} />
-            <span className="wordmark" style={{ fontSize: 30 }}>ring<b>.</b></span>
+            <RingLogo size={44} />
+            <span className="wordmark" style={{ fontSize: 30 }}>ring</span>
           </div>
           <h2>Match. Ring.<br />Connect.</h2>
           <p>Finde Menschen und Creator, die zu dir passen — like dich durch, ruf direkt an und unterstütze deine Favoriten mit Abos, Tips & exklusiven Inhalten.</p>

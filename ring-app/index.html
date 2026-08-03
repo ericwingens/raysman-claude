@@ -32,23 +32,12 @@
   --radius:22px;
   --safe-top:14px;
 }
-@media (prefers-color-scheme: dark){
-  :root{
-    --ink:#FBF5EE; --ink-2:#C9C0B6; --muted:#9A938B; --line:#2C2620;
-    --paper:#141009; --cream:#1B150F; --card:#1E1811; --card-2:#241D15;
-    --shadow:0 20px 50px -18px rgba(0,0,0,.7);
-    --shadow-sm:0 10px 26px -14px rgba(0,0,0,.65);
-  }
-}
-:root[data-theme="light"]{
+/* Ring commits to the light look of the original Figma design — no dark theme.
+   Explicit light tokens also on [data-theme="dark"] so a viewer's dark toggle can't darken the app. */
+:root[data-theme="light"],:root[data-theme="dark"]{
   --ink:#17130F; --ink-2:#4A423B; --muted:#8B8680; --line:#EFE9E2;
   --paper:#FFFFFF; --cream:#FFF8F2; --card:#FFFFFF; --card-2:#FBF6F0;
   --shadow:0 18px 44px -18px rgba(60,32,8,.34); --shadow-sm:0 8px 22px -12px rgba(60,32,8,.30);
-}
-:root[data-theme="dark"]{
-  --ink:#FBF5EE; --ink-2:#C9C0B6; --muted:#9A938B; --line:#2C2620;
-  --paper:#141009; --cream:#1B150F; --card:#1E1811; --card-2:#241D15;
-  --shadow:0 20px 50px -18px rgba(0,0,0,.7); --shadow-sm:0 10px 26px -14px rgba(0,0,0,.65);
 }
 
 *{box-sizing:border-box}
@@ -63,8 +52,6 @@ body{
   -webkit-font-smoothing:antialiased;
   display:grid;place-items:center;padding:26px 12px;min-height:100%;
 }
-@media (prefers-color-scheme: dark){ body{ background:radial-gradient(1200px 700px at 15% -10%, rgba(253,180,60,.10), transparent 60%),radial-gradient(1000px 700px at 110% 10%, rgba(245,71,31,.10), transparent 55%),#0C0906; } }
-:root[data-theme="dark"] body{ background:radial-gradient(1200px 700px at 15% -10%, rgba(253,180,60,.10), transparent 60%),radial-gradient(1000px 700px at 110% 10%, rgba(245,71,31,.10), transparent 55%),#0C0906; }
 button{font-family:inherit}
 .tnum{font-variant-numeric:tabular-nums}
 
@@ -99,15 +86,10 @@ button{font-family:inherit}
 .wallet-chip:active{transform:scale(.96)}
 .wallet-chip .coin{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#fff6,transparent 60%),#fff3;display:grid;place-items:center;font-size:10px}
 
-/* ---------- Brand / ring logo ---------- */
+/* ---------- Brand / original ring swirl logo ---------- */
 .brandrow{display:flex;align-items:center;gap:10px}
-.ring-logo{width:34px;height:34px;position:relative;flex:none}
-.ring-logo::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 220deg,var(--amber),var(--orange) 40%,var(--red) 65%,transparent 66%);-webkit-mask:radial-gradient(circle,transparent 40%,#000 42%);mask:radial-gradient(circle,transparent 40%,#000 42%);animation:spin 7s linear infinite}
-.ring-logo::after{content:"";position:absolute;inset:30%;border-radius:50%;background:var(--brand-grad)}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.ring-logo::before{animation:none}}
-.wordmark{font-size:23px;font-weight:800;letter-spacing:-.03em}
-.wordmark b{background:var(--brand-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ringmark{flex:none;display:block}
+.wordmark{font-size:23px;font-weight:800;letter-spacing:-.03em;color:var(--ink)}
 
 /* ---------- Buttons ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:none;cursor:pointer;font-weight:700;font-size:16px;padding:15px 22px;border-radius:999px;transition:transform .14s, filter .2s;width:100%}
@@ -122,7 +104,6 @@ button{font-family:inherit}
 .seg{display:flex;gap:4px;background:var(--card-2);border:1px solid var(--line);padding:4px;border-radius:999px}
 .seg button{flex:1;border:none;background:transparent;color:var(--muted);font-weight:700;font-size:13.5px;padding:9px 0;border-radius:999px;cursor:pointer;transition:.2s}
 .seg button.on{background:var(--paper);color:var(--ink);box-shadow:var(--shadow-sm)}
-:root[data-theme="dark"] .seg button.on{background:#312820}
 
 /* ---------- Discover swipe cards ---------- */
 .deck{position:relative;height:560px;margin:6px 4px 0;touch-action:pan-y}
@@ -291,7 +272,6 @@ button{font-family:inherit}
 /* toast */
 .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:14px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow);z-index:95;opacity:0;transition:.3s;max-width:82%;text-align:center;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-:root[data-theme="dark"] .toast{background:#2C2620}
 
 .money{font-weight:800;font-variant-numeric:tabular-nums}
 .center{text-align:center}
@@ -360,6 +340,16 @@ const CHATS=[
   {cid:"amir",last:"🔒 Neue Nachricht freischalten — 1,99 €",time:"gestern",unread:1,online:false,paid:true},
   {cid:"nadia",last:"Hab dir was geschickt 😊",time:"Mo",unread:0,online:false},
 ];
+
+/* ---- original ring swirl logo (recreated from the Figma mockup) ---- */
+function ringLogo(sz){
+  let d="";const steps=150,turns=3,cx=20,cy=20,rMax=16.6,rMin=2.2;
+  for(let i=0;i<=steps;i++){
+    const t=i/steps,th=-Math.PI/2+turns*2*Math.PI*t,r=rMin+(rMax-rMin)*(1-t);
+    d+=(i?"L":"M")+(cx+r*Math.cos(th)).toFixed(1)+" "+(cy+r*Math.sin(th)).toFixed(1);
+  }
+  return `<svg class="ringmark" width="${sz}" height="${sz}" viewBox="0 0 40 40" fill="none" aria-hidden="true"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FDB43C"/><stop offset=".55" stop-color="#F5761A"/><stop offset="1" stop-color="#F5471F"/></linearGradient></defs><path d="${d}" stroke="url(#rg)" stroke-width="2.8" stroke-linecap="round"/></svg>`;
+}
 
 /* ---- state ---- */
 const state={
@@ -437,7 +427,7 @@ function go(v){state.view=v;render();document.getElementById("screen").scrollTop
 function renderDiscover(pad){
   pad.innerHTML=`
   <div class="appbar">
-    <div><div class="brandrow"><span class="ring-logo"></span><span class="wordmark">ring<b>.</b></span></div>
+    <div><div class="brandrow">${ringLogo(34)}<span class="wordmark">ring</span></div>
     <div class="sub">Menschen & Creator in deiner Nähe</div></div>
     <button class="wallet-chip" onclick="openWallet()"><span class="coin">${I.bolt}</span><span data-bal>${EUR(state.balance)}</span></button>
   </div>
@@ -600,8 +590,8 @@ function renderChats(pad){
 /* ---------- ME ---------- */
 function renderMe(pad){
   pad.innerHTML=`
-  <div class="appbar"><div class="brandrow"><span class="ring-logo"></span><span class="wordmark">ring<b>.</b></span></div>
-    <button class="iconbtn" onclick="toggleTheme()">${I.moon}</button></div>
+  <div class="appbar"><div class="brandrow">${ringLogo(34)}<span class="wordmark">ring</span></div>
+    <button class="iconbtn" onclick="toast('Benachrichtigungen')">${I.bell}</button></div>
   <div style="text-align:center;padding:10px 0 6px">
     <div class="avatar ring" style="width:96px;height:96px;margin:0 auto"><div style="${photoStyle('you')}"></div></div>
     <h1 style="margin:12px 0 2px;font-size:23px">Du · <span style="font-weight:600;color:var(--muted)">28</span></h1>
@@ -843,10 +833,7 @@ function endCall(broke){
   if(broke)setTimeout(openWallet,400);
 }
 
-/* ---- theme + clock ---- */
-function toggleTheme(){const cur=document.documentElement.getAttribute("data-theme");
-  const next=cur==="dark"?"light":(cur==="light"?"dark":(matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark"));
-  document.documentElement.setAttribute("data-theme",next);toast(next==="dark"?"Dark Mode":"Light Mode");}
+/* ---- clock ---- */
 function clock(){const d=new Date();document.getElementById("clock").textContent=d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");}
 clock();setInterval(clock,10000);
 
@@ -860,7 +847,7 @@ function onboarding(){
     <div class="statusbar" style="visibility:hidden"><span>9:41</span></div>
     <div class="cluster" id="cluster"></div>
     <div class="content">
-      <div class="brandrow" style="justify-content:center;margin-bottom:2px"><span class="ring-logo" style="width:40px;height:40px"></span><span class="wordmark" style="font-size:30px">ring<b>.</b></span></div>
+      <div class="brandrow" style="justify-content:center;margin-bottom:2px">${ringLogo(44)}<span class="wordmark" style="font-size:30px">ring</span></div>
       <h2>Match. Ring.<br>Connect.</h2>
       <p>Finde Menschen und Creator, die zu dir passen — like dich durch, ruf direkt an und unterstütze deine Favoriten mit Abos, Tips & exklusiven Inhalten.</p>
       <button class="btn btn-primary" onclick="finishOnboarding()">Los geht's</button>
@@ -889,7 +876,7 @@ window.go=go;window.swipe=swipe;window.superLike=superLike;window.afterSwipeCall
 window.openProfile=openProfile;window.openChat=openChat;window.openTip=openTip;window.pickTip=pickTip;window.sendTip=sendTip;
 window.subscribe=subscribe;window.openWallet=openWallet;window.pickPack=pickPack;window.topUp=topUp;
 window.likePost=likePost;window.unlockPost=unlockPost;window.unlockDM=unlockDM;window.sendMsg=sendMsg;
-window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverlay;window.toggleTheme=toggleTheme;
+window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverlay;
 window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;window.buildDeck=buildDeck;window.state=state;
 </script>
 </body>

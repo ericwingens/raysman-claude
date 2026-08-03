@@ -84,22 +84,14 @@ export default function App() {
     if (broke) setTimeout(() => push("wallet"), 400);
   };
 
-  // ---- theme + clock ----
+  // ---- clock ----
   const [now, setNow] = useState(new Date());
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 10000); return () => clearInterval(t); }, []);
-  const toggleTheme = () => {
-    const el = document.documentElement;
-    const cur = el.getAttribute("data-theme");
-    const next = cur === "dark" ? "light" : cur === "light" ? "dark"
-      : matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark";
-    el.setAttribute("data-theme", next);
-    toast(next === "dark" ? "Dark Mode" : "Light Mode");
-  };
 
   const ctx = {
     balance, setBalance, subs, setSubs, unlocked, setUnlocked,
     likedPosts, setLikedPosts, likedPeople, setLikedPeople,
-    toast, spend, push, pop, popAll, startCall, endCall, toggleTheme, setPhase,
+    toast, spend, push, pop, popAll, startCall, endCall, setPhase,
   };
 
   const Screen = { discover: Discover, explore: Explore, feed: Feed, chats: Chats, me: Me }[view];

@@ -60,3 +60,29 @@ const SVG = {
 export function Ico({ name }) {
   return <span style={{ display: "contents" }} dangerouslySetInnerHTML={{ __html: SVG[name] || "" }} />;
 }
+
+// Original ring swirl logo, recreated from the Figma mockup (orange spiral).
+const RING_D = (() => {
+  let d = "";
+  const steps = 150, turns = 3, cx = 20, cy = 20, rMax = 16.6, rMin = 2.2;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps, th = -Math.PI / 2 + turns * 2 * Math.PI * t, r = rMin + (rMax - rMin) * (1 - t);
+    d += (i ? "L" : "M") + (cx + r * Math.cos(th)).toFixed(1) + " " + (cy + r * Math.sin(th)).toFixed(1);
+  }
+  return d;
+})();
+
+export function RingLogo({ size = 34 }) {
+  return (
+    <svg className="ringmark" width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#FDB43C" />
+          <stop offset=".55" stopColor="#F5761A" />
+          <stop offset="1" stopColor="#F5471F" />
+        </linearGradient>
+      </defs>
+      <path d={RING_D} stroke="url(#rg)" strokeWidth="2.8" strokeLinecap="round" />
+    </svg>
+  );
+}

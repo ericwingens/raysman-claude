@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { byId } from "../data.js";
-import { photoStyle, EUR, Ico } from "../lib.jsx";
+import { photoStyle, EUR, Ico, RingLogo } from "../lib.jsx";
 
 /*
  * Me — Profile Settings 1:1 after the Figma board:
@@ -14,8 +14,8 @@ export default function Me({ ctx }) {
   return (
     <>
       <div className="appbar" style={{ padding: "6px 0 10px" }}>
-        <div className="brandrow"><span className="ring-logo" /><span className="wordmark">ring<b>.</b></span></div>
-        <button className="iconbtn" onClick={ctx.toggleTheme}><Ico name="moon" /></button>
+        <div className="brandrow"><RingLogo /><span className="wordmark">ring</span></div>
+        <button className="iconbtn" onClick={() => ctx.toast("Benachrichtigungen")}><Ico name="bell" /></button>
       </div>
 
       <div style={{ textAlign: "center", padding: "10px 0 6px" }}>

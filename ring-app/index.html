@@ -150,7 +150,7 @@ button{font-family:inherit}
 .round.md{width:54px;height:54px}
 .round.pass svg{color:var(--heart)}
 .round.like{background:var(--brand-grad)}.round.like svg{color:#fff;width:30px;height:30px}
-.round.call{background:var(--live)}.round.call svg{color:#fff}
+.round.dial{background:var(--live)}.round.dial svg{color:#fff}
 .round.star svg{color:var(--gold)}
 
 /* ---------- Generic cards / lists ---------- */
@@ -444,7 +444,7 @@ function renderDiscover(pad){
   <div class="deck" id="deck"></div>
   <div class="deck-actions">
     <button class="round md pass" onclick="swipe('left')" aria-label="Pass">${I.x}</button>
-    <button class="round md call" onclick="afterSwipeCall()" aria-label="Anrufen">${I.phone}</button>
+    <button class="round md dial" onclick="afterSwipeCall()" aria-label="Anrufen">${I.phone}</button>
     <button class="round lg like" onclick="swipe('right')" aria-label="Like">${I.heart}</button>
     <button class="round md star" onclick="superLike()" aria-label="Super Ring">${I.star}</button>
   </div>

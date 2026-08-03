@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Ring — Match. Ring. Connect.</title>
+<style>
+/* ============================================================
+   RING — Dating trifft Creator-Economy
+   Design tokens (light + dark), warm-biased neutrals
+   ============================================================ */
+:root{
+  --orange:#F5761A;            /* brand / primary CTA */
+  --orange-ink:#C9560A;
+  --amber:#FDB43C;
+  --red:#F5471F;
+  --heart:#FF3D71;             /* the dating spark */
+  --live:#25C26E;
+  --gold:#E7A419;
+
+  --ink:#17130F;               /* near-black, warm */
+  --ink-2:#4A423B;
+  --muted:#8B8680;             /* warm grey */
+  --line:#EFE9E2;
+  --paper:#FFFFFF;
+  --cream:#FFF8F2;             /* warm section ground */
+  --card:#FFFFFF;
+  --card-2:#FBF6F0;
+  --shadow:0 18px 44px -18px rgba(60,32,8,.34);
+  --shadow-sm:0 8px 22px -12px rgba(60,32,8,.30);
+  --brand-grad:linear-gradient(135deg,var(--amber),var(--orange) 46%,var(--red));
+  --radius:22px;
+  --safe-top:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ink:#FBF5EE; --ink-2:#C9C0B6; --muted:#9A938B; --line:#2C2620;
+    --paper:#141009; --cream:#1B150F; --card:#1E1811; --card-2:#241D15;
+    --shadow:0 20px 50px -18px rgba(0,0,0,.7);
+    --shadow-sm:0 10px 26px -14px rgba(0,0,0,.65);
+  }
+}
+:root[data-theme="light"]{
+  --ink:#17130F; --ink-2:#4A423B; --muted:#8B8680; --line:#EFE9E2;
+  --paper:#FFFFFF; --cream:#FFF8F2; --card:#FFFFFF; --card-2:#FBF6F0;
+  --shadow:0 18px 44px -18px rgba(60,32,8,.34); --shadow-sm:0 8px 22px -12px rgba(60,32,8,.30);
+}
+:root[data-theme="dark"]{
+  --ink:#FBF5EE; --ink-2:#C9C0B6; --muted:#9A938B; --line:#2C2620;
+  --paper:#141009; --cream:#1B150F; --card:#1E1811; --card-2:#241D15;
+  --shadow:0 20px 50px -18px rgba(0,0,0,.7); --shadow-sm:0 10px 26px -14px rgba(0,0,0,.65);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(253,180,60,.16), transparent 60%),
+    radial-gradient(1000px 700px at 110% 10%, rgba(245,71,31,.13), transparent 55%),
+    #EDE6DE;
+  -webkit-font-smoothing:antialiased;
+  display:grid;place-items:center;padding:26px 12px;min-height:100%;
+}
+@media (prefers-color-scheme: dark){ body{ background:radial-gradient(1200px 700px at 15% -10%, rgba(253,180,60,.10), transparent 60%),radial-gradient(1000px 700px at 110% 10%, rgba(245,71,31,.10), transparent 55%),#0C0906; } }
+:root[data-theme="dark"] body{ background:radial-gradient(1200px 700px at 15% -10%, rgba(253,180,60,.10), transparent 60%),radial-gradient(1000px 700px at 110% 10%, rgba(245,71,31,.10), transparent 55%),#0C0906; }
+button{font-family:inherit}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- Phone shell ---------- */
+.phone{
+  width:min(430px,96vw); height:min(920px,92vh); position:relative;
+  background:var(--paper); border-radius:44px; overflow:hidden;
+  box-shadow:var(--shadow), 0 0 0 10px #0b0906, 0 0 0 12px rgba(255,255,255,.06);
+  display:flex;flex-direction:column;
+}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:26px;background:#0b0906;border-bottom-left-radius:16px;border-bottom-right-radius:16px;z-index:60}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 26px 4px;font-size:13px;font-weight:600;color:var(--ink);z-index:40}
+.statusbar .dots{display:flex;gap:5px;align-items:center}
+.statusbar .bar{width:17px;height:11px;border:1.4px solid var(--ink);border-radius:3px;position:relative}
+.statusbar .bar::after{content:"";position:absolute;inset:1.6px;right:5px;background:var(--ink);border-radius:1px}
+
+/* ---------- App scaffold ---------- */
+.app{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.pad{padding:6px 18px 120px}
+
+.appbar{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 10px;gap:12px}
+.appbar h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.appbar .sub{font-size:12.5px;color:var(--muted);font-weight:500;margin-top:2px}
+.iconbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--ink);flex:none;transition:transform .15s, background .2s}
+.iconbtn:active{transform:scale(.92)}
+.iconbtn svg{width:20px;height:20px}
+
+/* wallet chip */
+.wallet-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;background:var(--brand-grad);color:#fff;font-weight:700;font-size:13.5px;border:none;cursor:pointer;box-shadow:var(--shadow-sm)}
+.wallet-chip:active{transform:scale(.96)}
+.wallet-chip .coin{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#fff6,transparent 60%),#fff3;display:grid;place-items:center;font-size:10px}
+
+/* ---------- Brand / ring logo ---------- */
+.brandrow{display:flex;align-items:center;gap:10px}
+.ring-logo{width:34px;height:34px;position:relative;flex:none}
+.ring-logo::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 220deg,var(--amber),var(--orange) 40%,var(--red) 65%,transparent 66%);-webkit-mask:radial-gradient(circle,transparent 40%,#000 42%);mask:radial-gradient(circle,transparent 40%,#000 42%);animation:spin 7s linear infinite}
+.ring-logo::after{content:"";position:absolute;inset:30%;border-radius:50%;background:var(--brand-grad)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ring-logo::before{animation:none}}
+.wordmark{font-size:23px;font-weight:800;letter-spacing:-.03em}
+.wordmark b{background:var(--brand-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:none;cursor:pointer;font-weight:700;font-size:16px;padding:15px 22px;border-radius:999px;transition:transform .14s, filter .2s;width:100%}
+.btn:active{transform:scale(.975)}
+.btn-primary{background:var(--brand-grad);color:#fff;box-shadow:0 12px 26px -12px rgba(245,118,26,.75)}
+.btn-ghost{background:var(--card-2);color:var(--ink);border:1px solid var(--line)}
+.btn-outline{background:transparent;color:var(--orange);border:1.6px solid var(--orange)}
+.btn svg{width:19px;height:19px}
+.btn-sm{padding:10px 16px;font-size:13.5px}
+
+/* ---------- Segmented ---------- */
+.seg{display:flex;gap:4px;background:var(--card-2);border:1px solid var(--line);padding:4px;border-radius:999px}
+.seg button{flex:1;border:none;background:transparent;color:var(--muted);font-weight:700;font-size:13.5px;padding:9px 0;border-radius:999px;cursor:pointer;transition:.2s}
+.seg button.on{background:var(--paper);color:var(--ink);box-shadow:var(--shadow-sm)}
+:root[data-theme="dark"] .seg button.on{background:#312820}
+
+/* ---------- Discover swipe cards ---------- */
+.deck{position:relative;height:560px;margin:6px 4px 0;touch-action:pan-y}
+.swipe{position:absolute;inset:0;border-radius:26px;overflow:hidden;box-shadow:var(--shadow);will-change:transform;user-select:none;cursor:grab;background:#222}
+.swipe .photo{position:absolute;inset:0}
+.swipe .grad{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(10,6,2,.15) 58%,rgba(10,6,2,.85))}
+.swipe .meta{position:absolute;left:0;right:0;bottom:0;padding:20px;color:#fff}
+.swipe .name{font-size:26px;font-weight:800;display:flex;align-items:center;gap:8px;letter-spacing:-.01em}
+.swipe .name .age{font-weight:500;opacity:.92}
+.swipe .row{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);color:#fff}
+.chip.live{background:var(--live)}
+.chip.price{background:rgba(0,0,0,.42)}
+.badge-verif{color:#fff;background:#3B9CFF;border-radius:50%;width:19px;height:19px;display:inline-grid;place-items:center;font-size:11px;flex:none}
+.tag{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.35);color:#fff}
+.stamp{position:absolute;top:34px;font-size:34px;font-weight:900;letter-spacing:.04em;padding:6px 16px;border:4px solid;border-radius:14px;opacity:0;transform:rotate(-16deg);pointer-events:none}
+.stamp.like{left:22px;color:var(--live);border-color:var(--live)}
+.stamp.nope{right:22px;color:var(--heart);border-color:var(--heart);transform:rotate(16deg)}
+
+.deck-actions{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:16px}
+.round{border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;background:var(--card);box-shadow:var(--shadow-sm);transition:transform .14s}
+.round:active{transform:scale(.9)}
+.round svg{width:24px;height:24px}
+.round.lg{width:66px;height:66px}
+.round.md{width:54px;height:54px}
+.round.pass svg{color:var(--heart)}
+.round.like{background:var(--brand-grad)}.round.like svg{color:#fff;width:30px;height:30px}
+.round.call{background:var(--live)}.round.call svg{color:#fff}
+.round.star svg{color:var(--gold)}
+
+/* ---------- Generic cards / lists ---------- */
+.section-title{font-size:15px;font-weight:800;margin:20px 2px 12px;letter-spacing:-.01em;display:flex;align-items:center;justify-content:space-between}
+.section-title a{color:var(--orange);font-size:13px;font-weight:700;text-decoration:none;cursor:pointer}
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+
+.story{flex:none;width:70px;text-align:center;cursor:pointer}
+.story .av{width:64px;height:64px;border-radius:50%;padding:3px;background:var(--brand-grad);margin:0 auto}
+.story .av.seen{background:var(--line)}
+.story .av > div{width:100%;height:100%;border-radius:50%;border:2.5px solid var(--paper);background-size:cover;position:relative;overflow:hidden}
+.story .lv{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);background:var(--live);color:#fff;font-size:8.5px;font-weight:800;padding:1.5px 6px;border-radius:999px;border:1.5px solid var(--paper)}
+.story .nm{font-size:11px;color:var(--muted);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.creator-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ccard{border-radius:18px;overflow:hidden;position:relative;aspect-ratio:3/4;box-shadow:var(--shadow-sm);cursor:pointer;background:#222}
+.ccard .grad{position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(8,4,1,.82))}
+.ccard .top{position:absolute;top:9px;left:9px;right:9px;display:flex;justify-content:space-between}
+.ccard .bot{position:absolute;left:11px;right:11px;bottom:11px;color:#fff}
+.ccard .bot .n{font-weight:800;font-size:15px;display:flex;align-items:center;gap:5px}
+.ccard .bot .s{font-size:11.5px;opacity:.9;display:flex;align-items:center;gap:5px;margin-top:3px}
+
+/* ---------- Feed ---------- */
+.post{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+.post-head{display:flex;align-items:center;gap:11px;padding:13px 14px}
+.avatar{width:44px;height:44px;border-radius:50%;background-size:cover;flex:none;position:relative}
+.avatar.ring{padding:2px;background:var(--brand-grad)}
+.avatar.ring > div{width:100%;height:100%;border-radius:50%;border:2px solid var(--card);background-size:cover}
+.post-head .n{font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:5px}
+.post-head .t{font-size:12px;color:var(--muted)}
+.post-media{position:relative;aspect-ratio:4/5;background:#222}
+.post-media .locked{position:absolute;inset:0;display:grid;place-items:center;gap:12px;color:#fff;text-align:center;padding:24px;background:rgba(10,6,2,.30);backdrop-filter:blur(18px)}
+.post-media .locked .lk{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.post-media .locked h4{margin:0;font-size:17px;font-weight:800}
+.post-media .locked p{margin:0;font-size:13px;opacity:.85;max-width:230px}
+.post-actions{display:flex;align-items:center;gap:18px;padding:12px 15px 6px;color:var(--ink)}
+.post-actions .a{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13.5px;cursor:pointer}
+.post-actions .a svg{width:23px;height:23px}
+.post-actions .a.on svg{color:var(--heart);fill:var(--heart)}
+.post-actions .spacer{margin-left:auto}
+.post-cap{padding:2px 15px 15px;font-size:14px;line-height:1.45}
+.post-cap b{font-weight:700}
+
+/* ---------- Chats ---------- */
+.chat-row{display:flex;align-items:center;gap:13px;padding:12px 4px;cursor:pointer;border-bottom:1px solid var(--line)}
+.chat-row .n{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px}
+.chat-row .last{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.chat-row .meta{margin-left:auto;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.chat-row .time{font-size:11.5px;color:var(--muted)}
+.pill-unread{background:var(--brand-grad);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:999px;display:grid;place-items:center;padding:0 6px}
+.presence{position:absolute;right:-1px;bottom:-1px;width:13px;height:13px;border-radius:50%;background:var(--live);border:2.5px solid var(--card)}
+
+/* ---------- Sheet / modal ---------- */
+.sheet-scrim{position:absolute;inset:0;background:rgba(8,4,1,.5);opacity:0;pointer-events:none;transition:opacity .3s;z-index:70;backdrop-filter:blur(2px)}
+.sheet-scrim.show{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:94%;background:var(--paper);border-radius:26px 26px 0 0;transform:translateY(102%);transition:transform .34s cubic-bezier(.22,1,.36,1);z-index:71;display:flex;flex-direction:column;overflow:hidden}
+.sheet.show{transform:translateY(0)}
+.sheet .grip{width:40px;height:5px;border-radius:999px;background:var(--line);margin:9px auto 2px;flex:none}
+.sheet-body{overflow-y:auto;scrollbar-width:none;padding:6px 18px 26px}
+.sheet-body::-webkit-scrollbar{display:none}
+
+/* full screen sheet (profile / call) */
+.full{position:absolute;inset:0;background:var(--paper);z-index:72;transform:translateX(100%);transition:transform .34s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;overflow:hidden}
+.full.show{transform:translateX(0)}
+.full .fscreen{flex:1;overflow-y:auto;scrollbar-width:none}
+.full .fscreen::-webkit-scrollbar{display:none}
+.back{position:absolute;top:calc(var(--safe-top) + 30px);left:16px;z-index:5}
+
+/* profile header */
+.phero{position:relative;height:420px;background:#222}
+.phero .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,4,1,.2) 0,transparent 30% 55%,rgba(8,4,1,.9))}
+.phero .info{position:absolute;left:18px;right:18px;bottom:18px;color:#fff}
+.phero .nm{font-size:29px;font-weight:800;display:flex;align-items:center;gap:8px}
+.stat-row{display:flex;gap:22px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.stat-row .s b{font-size:18px;font-weight:800;display:block}
+.stat-row .s span{font-size:12px;color:var(--muted)}
+
+.tier{border:1.6px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;position:relative;background:var(--card)}
+.tier.best{border-color:var(--orange);box-shadow:0 10px 30px -16px rgba(245,118,26,.6)}
+.tier .badge{position:absolute;top:-11px;right:14px;background:var(--brand-grad);color:#fff;font-size:11px;font-weight:800;padding:4px 11px;border-radius:999px}
+.tier .tn{font-weight:800;font-size:16px}
+.tier .tp{font-weight:800;font-size:22px;margin:6px 0 2px}
+.tier .tp span{font-size:13px;color:var(--muted);font-weight:600}
+.tier ul{list-style:none;padding:0;margin:10px 0 14px;display:flex;flex-direction:column;gap:7px}
+.tier li{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:center}
+.tier li svg{width:16px;height:16px;color:var(--live);flex:none}
+
+.gallery{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.gitem{aspect-ratio:1;border-radius:12px;overflow:hidden;position:relative;background:#222;cursor:pointer}
+.gitem .lock{position:absolute;inset:0;display:grid;place-items:center;background:rgba(8,4,1,.32);backdrop-filter:blur(12px);color:#fff}
+.gitem .pv{position:absolute;bottom:6px;left:6px;font-size:10px;font-weight:800;background:rgba(0,0,0,.5);color:#fff;padding:3px 7px;border-radius:999px}
+
+/* ---------- Call screen ---------- */
+.call{position:absolute;inset:0;z-index:80;transform:translateY(102%);transition:transform .34s cubic-bezier(.22,1,.36,1);overflow:hidden;color:#fff}
+.call.show{transform:translateY(0)}
+.call .bg{position:absolute;inset:0}
+.call .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,3,1,.55),rgba(6,3,1,.2) 30%,rgba(6,3,1,.85))}
+.call .top{position:absolute;top:calc(var(--safe-top) + 30px);left:0;right:0;text-align:center}
+.call .who{font-size:24px;font-weight:800}
+.call .status{font-size:13.5px;opacity:.85;margin-top:3px}
+.call .ticker{display:inline-flex;flex-direction:column;align-items:center;margin-top:16px;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border-radius:18px;padding:12px 22px;border:1px solid rgba(255,255,255,.15)}
+.call .ticker .cost{font-size:30px;font-weight:800;letter-spacing:-.01em}
+.call .ticker .rate{font-size:11.5px;opacity:.8;text-transform:uppercase;letter-spacing:.06em}
+.call .self{position:absolute;top:calc(var(--safe-top) + 30px);right:16px;width:96px;height:132px;border-radius:16px;overflow:hidden;border:2px solid rgba(255,255,255,.4);box-shadow:var(--shadow)}
+.call .controls{position:absolute;left:0;right:0;bottom:40px;display:flex;flex-direction:column;gap:16px;align-items:center;padding:0 24px}
+.call .ctrow{display:flex;gap:18px;justify-content:center}
+.call .cbtn{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);border:none;color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .14s}
+.call .cbtn:active{transform:scale(.9)}
+.call .cbtn.end{background:var(--heart)}
+.call .cbtn.tip{background:var(--brand-grad)}
+.call .cbtn svg{width:24px;height:24px}
+
+/* ---------- Bottom tab bar ---------- */
+.tabbar{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;align-items:flex-end;padding:9px 8px calc(env(safe-area-inset-bottom,10px) + 12px);background:color-mix(in srgb,var(--paper) 88%, transparent);backdrop-filter:blur(18px);border-top:1px solid var(--line);z-index:50}
+.tab{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-weight:700;padding:4px 8px;flex:1;position:relative}
+.tab svg{width:25px;height:25px}
+.tab.on{color:var(--orange)}
+.tab .dot{position:absolute;top:1px;right:calc(50% - 16px);width:8px;height:8px;background:var(--heart);border-radius:50%;border:1.5px solid var(--paper)}
+.tab.center{flex:0}
+.tab.center .fab{width:52px;height:52px;border-radius:50%;background:var(--brand-grad);display:grid;place-items:center;color:#fff;box-shadow:0 12px 24px -10px rgba(245,118,26,.8);margin-bottom:2px;margin-top:-14px}
+.tab.center .fab svg{width:26px;height:26px}
+
+/* ---------- Onboarding ---------- */
+.onb{position:absolute;inset:0;z-index:90;background:var(--paper);display:flex;flex-direction:column;transition:opacity .4s, transform .4s}
+.onb.hide{opacity:0;transform:scale(.98);pointer-events:none}
+.onb .cluster{position:relative;flex:1;min-height:0;overflow:hidden}
+.onb .blob{position:absolute;border-radius:50%;background:var(--brand-grad);opacity:.12;filter:blur(6px)}
+.onb .pp{position:absolute;border-radius:50%;background-size:cover;box-shadow:var(--shadow);border:4px solid var(--paper)}
+.onb .heart-i{position:absolute;color:var(--heart);opacity:.85}
+.onb .content{padding:12px 26px 34px;text-align:center;display:flex;flex-direction:column;gap:14px}
+.onb h2{font-size:29px;font-weight:800;letter-spacing:-.02em;margin:0;text-wrap:balance;line-height:1.12}
+.onb p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:0}
+.onb .fine{font-size:11.5px;color:var(--muted)}
+.onb .fine b{color:var(--orange)}
+.link{color:var(--ink);font-weight:700;cursor:pointer}
+
+/* toast */
+.toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:14px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow);z-index:95;opacity:0;transition:.3s;max-width:82%;text-align:center;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+:root[data-theme="dark"] .toast{background:#2C2620}
+
+.money{font-weight:800;font-variant-numeric:tabular-nums}
+.center{text-align:center}
+.muted{color:var(--muted)}
+.hearts-fly{position:absolute;pointer-events:none;z-index:100}
+
+.field{width:100%;border:1.6px solid var(--line);background:var(--card-2);border-radius:14px;padding:14px 16px;font-size:15px;color:var(--ink);margin-bottom:10px}
+.field:focus{outline:none;border-color:var(--orange)}
+.amt-row{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
+.amt{flex:1;min-width:70px;border:1.6px solid var(--line);background:var(--card);border-radius:14px;padding:14px 6px;text-align:center;font-weight:800;cursor:pointer;font-variant-numeric:tabular-nums}
+.amt.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 12%, var(--card))}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+  <div class="notch"></div>
+  <div class="statusbar">
+    <span class="tnum" id="clock">9:41</span>
+    <span class="dots">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="1.5" width="3" height="10.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><path d="M8.5 2.5c2.3 0 4.4.9 6 2.4l1.2-1.3A10.4 10.4 0 0 0 8.5.5 10.4 10.4 0 0 0 1.3 3.6L2.5 4.9A8.4 8.4 0 0 1 8.5 2.5Zm0 3.6c1.3 0 2.5.5 3.4 1.4l1.3-1.3A6.3 6.3 0 0 0 8.5 4.1a6.3 6.3 0 0 0-4.7 2.1L5.1 7.5c.9-.9 2.1-1.4 3.4-1.4Zm0 3.5L10.3 11 8.5 12 6.7 11l1.8-1.4Z"/></svg>
+      <span class="bar"></span>
+    </span>
+  </div>
+  <div class="app" id="app"></div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================================
+   RING — prototype logic. Self-contained, no external resources.
+   Photos are deterministic mesh-gradient placeholders (CSP-safe).
+   ========================================================================= */
+
+/* ---- gradient "photo" generator (stable per seed) ---- */
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function grad(seed){
+  const h=hashStr(seed), a=h%360, b=(a+40+h%60)%360, c=(a+180+h%40)%360;
+  return `radial-gradient(120% 100% at 20% 12%, hsl(${a} 78% 66%), transparent 55%),`+
+         `radial-gradient(120% 120% at 88% 20%, hsl(${b} 72% 58%), transparent 55%),`+
+         `linear-gradient(155deg, hsl(${c} 55% 42%), hsl(${(c+30)%360} 60% 30%))`;
+}
+function photoStyle(seed){return `background-image:${grad(seed)};background-color:#333`}
+
+/* ---- data ---- */
+const CREATORS=[
+  {id:"mia",name:"Mia",age:24,city:"Berlin",dist:2,tags:["Fitness","Lifestyle"],rate:1.99,online:true,live:true,verified:true,followers:"48.2k",bio:"Personal trainer & content creator. Ich zeige dir meine Home-Workouts, koche live und quatsche gern per Call. 💪🔥",subs:12800},
+  {id:"leo",name:"Leo",age:27,city:"Hamburg",dist:5,tags:["Musik","Producer"],rate:1.49,online:true,live:false,verified:true,followers:"31.9k",bio:"Producer aus Hamburg. Exklusive Beats, Studio-Sessions und 1:1 Feedback zu deinen Tracks.",subs:8400},
+  {id:"nadia",name:"Nadia",age:23,city:"Köln",dist:8,tags:["Art","Cosplay"],rate:2.49,online:false,live:false,verified:true,followers:"64.1k",bio:"Illustratorin & Cosplayerin. Behind-the-scenes, Speedpaints und persönliche Voice-Calls. ✨",subs:19200},
+  {id:"jonas",name:"Jonas",age:29,city:"München",dist:12,tags:["Reisen","Foto"],rate:0.99,online:true,live:false,verified:false,followers:"12.7k",bio:"Reisefotograf. Ich nehme dich mit auf Trips und teile meine besten Foto-Presets.",subs:3900},
+  {id:"sofia",name:"Sofia",age:26,city:"Wien",dist:22,tags:["Yoga","Wellness"],rate:1.79,online:true,live:true,verified:true,followers:"55.4k",bio:"Yoga-Lehrerin. Morgen-Flows, geführte Meditationen und entspannte Late-Night-Calls. 🧘‍♀️",subs:16700},
+  {id:"amir",name:"Amir",age:25,city:"Frankfurt",dist:3,tags:["Gaming","Tech"],rate:1.29,online:false,live:false,verified:true,followers:"22.3k",bio:"Full-time Streamer. Coaching in Valorant & CS, plus exklusive Gaming-Nights nur für Subs.",subs:7100},
+];
+const byId=id=>CREATORS.find(c=>c.id===id);
+
+const POSTS=[
+  {id:"p1",cid:"mia",time:"vor 2 Std",cap:"Neues 20-Min Full-Body Workout ist online 🔥 Wer macht mit?",likes:1240,ppv:false},
+  {id:"p2",cid:"nadia",time:"vor 4 Std",cap:"Mein neuestes Cosplay-Set — exklusiv für dich 📸",likes:3980,ppv:true,price:4.99},
+  {id:"p3",cid:"sofia",time:"vor 6 Std",cap:"Sunrise Flow von heute Morgen. Speichert es für später ✨",likes:2210,ppv:false},
+  {id:"p4",cid:"leo",time:"gestern",cap:"Unreleased Beat 🎧 Nur für Supporter. Sag mir was du fühlst.",likes:870,ppv:true,price:2.99},
+];
+
+const CHATS=[
+  {cid:"mia",last:"Danke fürs Abo! 💛 Sollen wir später callen?",time:"9:32",unread:2,online:true},
+  {cid:"sofia",last:"Du: Klingt gut, bis 20 Uhr 🧘",time:"gestern",unread:0,online:true},
+  {cid:"amir",last:"🔒 Neue Nachricht freischalten — 1,99 €",time:"gestern",unread:1,online:false,paid:true},
+  {cid:"nadia",last:"Hab dir was geschickt 😊",time:"Mo",unread:0,online:false},
+];
+
+/* ---- state ---- */
+const state={
+  balance:24.50,
+  view:"discover",
+  subs:new Set(["mia"]),
+  unlocked:new Set(),
+  liked:new Set(),
+  deckIdx:0,
+  callTimer:null, callSecs:0, callCost:0, callRate:1.99, callId:null,
+};
+const EUR=n=>n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+
+/* ---- icons ---- */
+const I={
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.58 3.6a1 1 0 0 1-.25 1Z"/></svg>',
+  video:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="M15.5 10.5 21.5 7v10l-6-3.5"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.7 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9Z"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"/></svg>',
+  verif:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 1.6 2.7-.2 1 2.5 2.3 1.4-.6 2.6.9 2.6-2 1.8-.5 2.6-2.6.4L13.8 22 12 20.6 10.2 22 8.1 20.3l-2.6-.4-.5-2.6-2-1.8.9-2.6-.6-2.6L5.4 6l1-2.5 2.7.2Z"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>',
+  chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.2 7.7L3 21l1.8-5.4A8.5 8.5 0 1 1 21 11.5Z"/></svg>',
+  compass:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" fill="currentColor" stroke="none"/></svg>',
+  layers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 13l9 5 9-5M3 16.5l9 5 9-5"/></svg>',
+  grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>',
+  gift:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8S10.5 3 8 4.5 12 8 12 8Zm0 0s1.5-5 4-3.5S12 8 12 8Z"/></svg>',
+  comment:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.2 7.7L3 21l1.8-5.4A8.5 8.5 0 1 1 21 11.5Z"/></svg>',
+  send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4Z"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  camflip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3.5A2.5 2.5 0 0 1 21 6.5v11A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5v-11A2.5 2.5 0 0 1 5.5 4H9"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4l2-2M12 6 10 4"/></svg>',
+  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+};
+
+const app=document.getElementById("app");
+
+/* ---- helpers ---- */
+function toast(msg){
+  let t=document.querySelector(".toast");
+  if(!t){t=document.createElement("div");t.className="toast";document.getElementById("phone").appendChild(t)}
+  t.textContent=msg;requestAnimationFrame(()=>t.classList.add("show"));
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2200);
+}
+function updateBalance(delta){state.balance=Math.max(0,state.balance+delta);document.querySelectorAll("[data-bal]").forEach(e=>e.textContent=EUR(state.balance));}
+
+/* =========================================================================
+   MAIN VIEWS
+   ========================================================================= */
+function render(){
+  let html=`<div class="screen" id="screen"><div class="pad" id="pad"></div></div>${tabbar()}`;
+  app.innerHTML=html;
+  const pad=document.getElementById("pad");
+  ({discover:renderDiscover,explore:renderExplore,feed:renderFeed,chats:renderChats,me:renderMe}[state.view])(pad);
+}
+
+function tabbar(){
+  const t=(v,ic,label,dot)=>`<button class="tab ${state.view===v?'on':''}" onclick="go('${v}')">${ic}${dot?'<span class="dot"></span>':''}<span>${label}</span></button>`;
+  return `<nav class="tabbar">
+    ${t("discover",I.layers,"Discover")}
+    ${t("explore",I.compass,"Explore")}
+    <button class="tab center" onclick="go('feed')"><span class="fab">${I.plus}</span></button>
+    ${t("chats",I.chat,"Chats",true)}
+    ${t("me",I.user,"Me")}
+  </nav>`;
+}
+function go(v){state.view=v;render();document.getElementById("screen").scrollTop=0;}
+
+/* ---------- DISCOVER (swipe deck) ---------- */
+function renderDiscover(pad){
+  pad.innerHTML=`
+  <div class="appbar">
+    <div><div class="brandrow"><span class="ring-logo"></span><span class="wordmark">ring<b>.</b></span></div>
+    <div class="sub">Menschen & Creator in deiner Nähe</div></div>
+    <button class="wallet-chip" onclick="openWallet()"><span class="coin">${I.bolt}</span><span data-bal>${EUR(state.balance)}</span></button>
+  </div>
+  <div class="deck" id="deck"></div>
+  <div class="deck-actions">
+    <button class="round md pass" onclick="swipe('left')" aria-label="Pass">${I.x}</button>
+    <button class="round md call" onclick="afterSwipeCall()" aria-label="Anrufen">${I.phone}</button>
+    <button class="round lg like" onclick="swipe('right')" aria-label="Like">${I.heart}</button>
+    <button class="round md star" onclick="superLike()" aria-label="Super Ring">${I.star}</button>
+  </div>
+  <p class="center muted" style="font-size:11.5px;margin-top:14px">Anrufe über die Ring-Funktion kosten je nach Creator ab 0,99 €/Min.</p>`;
+  buildDeck();
+}
+function buildDeck(){
+  const deck=document.getElementById("deck");if(!deck)return;
+  deck.innerHTML="";
+  const list=CREATORS.slice(state.deckIdx,state.deckIdx+3).reverse();
+  if(list.length===0){deck.innerHTML=`<div style="position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);padding:30px"><div><div style="font-size:40px">🎉</div><p style="font-weight:700;color:var(--ink)">Das war's für heute!</p><p style="font-size:13px">Schau später wieder rein für neue Vorschläge.</p><button class="btn btn-outline btn-sm" style="width:auto" onclick="state.deckIdx=0;buildDeck()">Neu starten</button></div></div>`;return;}
+  list.forEach((c,i)=>{
+    const top=i===list.length-1;
+    const el=document.createElement("div");
+    el.className="swipe";el.dataset.cid=c.id;
+    el.style.transform=`scale(${1-(list.length-1-i)*0.04}) translateY(${(list.length-1-i)*-10}px)`;
+    el.innerHTML=`
+      <div class="photo" style="${photoStyle(c.id)}"></div>
+      <div class="grad"></div>
+      <div class="stamp like">RING</div><div class="stamp nope">NOPE</div>
+      <div class="meta">
+        <div class="name">${c.name} <span class="age">${c.age}</span> ${c.verified?`<span class="badge-verif">${I.verif}</span>`:""}</div>
+        <div class="row">
+          ${c.live?`<span class="chip live">● LIVE</span>`:c.online?`<span class="chip"><span style="width:7px;height:7px;background:var(--live);border-radius:50%"></span>Online</span>`:`<span class="chip">${c.dist} km entfernt</span>`}
+          <span class="chip price">${I.phone} ${EUR(c.rate)}/Min</span>
+        </div>
+        <div class="row">${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      </div>`;
+    if(top){el.onclick=(e)=>{if(!el._moved)openProfile(c.id)};attachDrag(el);}
+    deck.appendChild(el);
+  });
+}
+function attachDrag(el){
+  let sx=0,sy=0,dx=0,dy=0,drag=false;
+  const down=(x,y)=>{drag=true;sx=x;sy=y;el._moved=false;el.style.transition="none";el.style.cursor="grabbing";};
+  const move=(x,y)=>{if(!drag)return;dx=x-sx;dy=y-sy;if(Math.abs(dx)>6)el._moved=true;
+    el.style.transform=`translate(${dx}px,${dy}px) rotate(${dx*0.05}deg)`;
+    el.querySelector(".stamp.like").style.opacity=Math.max(0,dx/120);
+    el.querySelector(".stamp.nope").style.opacity=Math.max(0,-dx/120);};
+  const up=()=>{if(!drag)return;drag=false;el.style.cursor="grab";el.style.transition="transform .3s";
+    if(dx>110){fly(dx,dy,"right");}else if(dx<-110){fly(dx,dy,"left");}
+    else{el.style.transform="";el.querySelector(".stamp.like").style.opacity=0;el.querySelector(".stamp.nope").style.opacity=0;}
+    dx=dy=0;};
+  const fly=(x,y,dir)=>{el.style.transform=`translate(${dir==="right"?600:-600}px,${y}px) rotate(${dir==="right"?30:-30}deg)`;
+    setTimeout(()=>doSwipe(dir),260);};
+  el.addEventListener("pointerdown",e=>{el.setPointerCapture(e.pointerId);down(e.clientX,e.clientY)});
+  el.addEventListener("pointermove",e=>move(e.clientX,e.clientY));
+  el.addEventListener("pointerup",up);el.addEventListener("pointercancel",up);
+}
+function swipe(dir){const deck=document.getElementById("deck");const top=deck&&deck.lastElementChild;
+  if(top&&top.classList.contains("swipe")){top.style.transition="transform .3s";top.style.transform=`translate(${dir==="right"?600:-600}px,0) rotate(${dir==="right"?30:-30}deg)`;setTimeout(()=>doSwipe(dir),240);}}
+function doSwipe(dir){
+  const c=CREATORS[state.deckIdx];
+  if(dir==="right"&&c){state.liked.add(c.id);heartBurst();toast(`Du hast ${c.name} geliked 💛`);}
+  state.deckIdx++;buildDeck();
+}
+function superLike(){const c=CREATORS[state.deckIdx];if(!c)return;toast(`Super Ring an ${c.name}! ⭐ Sie wird's zuerst sehen.`);state.deckIdx++;buildDeck();}
+function afterSwipeCall(){const c=CREATORS[state.deckIdx];if(!c)return;startCall(c.id,"video");}
+function heartBurst(){
+  const wrap=document.createElement("div");wrap.className="hearts-fly";wrap.style.left="50%";wrap.style.top="55%";
+  document.getElementById("phone").appendChild(wrap);
+  for(let i=0;i<8;i++){const h=document.createElement("div");h.textContent="❤";h.style.cssText=`position:absolute;font-size:${14+Math.random()*16}px;color:var(--heart)`;
+    wrap.appendChild(h);const ang=Math.random()*Math.PI*2,d=40+Math.random()*80;
+    h.animate([{transform:"translate(0,0) scale(.4)",opacity:1},{transform:`translate(${Math.cos(ang)*d}px,${Math.sin(ang)*d-40}px) scale(1.2)`,opacity:0}],{duration:900,easing:"cubic-bezier(.2,.7,.3,1)"});}
+  setTimeout(()=>wrap.remove(),950);
+}
+
+/* ---------- EXPLORE ---------- */
+function renderExplore(pad){
+  const live=CREATORS.filter(c=>c.live);
+  pad.innerHTML=`
+  <div class="appbar"><div><h1>Explore</h1><div class="sub">Entdecke Creator & Livestreams</div></div>
+    <button class="wallet-chip" onclick="openWallet()"><span class="coin">${I.bolt}</span><span data-bal>${EUR(state.balance)}</span></button></div>
+  <div class="seg" style="margin:2px 0 4px"><button class="on">Für dich</button><button onclick="toast('Filter: Trending')">Trending</button><button onclick="toast('Filter: In der Nähe')">In der Nähe</button></div>
+  <div class="section-title">Jetzt Live <span class="muted" style="font-weight:600;font-size:12px">${live.length} aktiv</span></div>
+  <div class="hscroll">${CREATORS.map((c,i)=>`
+    <div class="story" onclick="${c.live?`startLiveView('${c.id}')`:`openProfile('${c.id}')`}">
+      <div class="av ${i>2?'seen':''}"><div style="${photoStyle(c.id)}">${c.live?'<span class="lv">LIVE</span>':''}</div></div>
+      <div class="nm">${c.name}</div>
+    </div>`).join("")}</div>
+  <div class="section-title">Empfohlene Creator <a onclick="toast('Alle Creator')">Alle</a></div>
+  <div class="creator-grid">${CREATORS.map(c=>`
+    <div class="ccard" onclick="openProfile('${c.id}')">
+      <div class="photo" style="position:absolute;inset:0;${photoStyle(c.id+'x')}"></div>
+      <div class="grad"></div>
+      <div class="top">${c.live?'<span class="chip live" style="font-size:10px;padding:4px 8px">● LIVE</span>':'<span></span>'}
+        <span class="chip price" style="font-size:10px;padding:4px 8px">${EUR(c.rate)}/Min</span></div>
+      <div class="bot"><div class="n">${c.name} ${c.verified?`<span class="badge-verif" style="width:15px;height:15px;font-size:9px">${I.verif}</span>`:''}</div>
+        <div class="s">${c.tags[0]} · ${c.followers} Follower</div></div>
+    </div>`).join("")}</div>`;
+}
+function startLiveView(id){startCall(id,"live");}
+
+/* ---------- FEED ---------- */
+function renderFeed(pad){
+  pad.innerHTML=`
+  <div class="appbar"><div><h1>Feed</h1><div class="sub">Von Creators, denen du folgst</div></div>
+    <button class="iconbtn" onclick="toast('Benachrichtigungen')">${I.bell}</button></div>
+  <div id="feedlist">${POSTS.map(postCard).join("")}</div>`;
+}
+function postCard(p){
+  const c=byId(p.cid);const unlocked=state.unlocked.has(p.id)||!p.ppv;const liked=state.liked.has("post_"+p.id);
+  return `<article class="post">
+    <div class="post-head">
+      <div class="avatar ring" onclick="openProfile('${c.id}')"><div style="${photoStyle(c.id)}"></div></div>
+      <div><div class="n" onclick="openProfile('${c.id}')">${c.name} ${c.verified?`<span class="badge-verif" style="width:15px;height:15px;font-size:9px">${I.verif}</span>`:''}</div><div class="t">${c.city} · ${p.time}</div></div>
+      <button class="btn btn-outline btn-sm" style="width:auto;margin-left:auto;padding:8px 14px" onclick="openProfile('${c.id}')">Profil</button>
+    </div>
+    <div class="post-media">
+      <div class="photo" style="position:absolute;inset:0;${photoStyle(p.id)};${unlocked?'':'filter:blur(2px)'}"></div>
+      ${unlocked?"":`<div class="locked">
+        <div class="lk">${I.lock}</div>
+        <h4>Exklusiver Inhalt</h4>
+        <p>${c.name} hat diesen Post gesperrt. Schalte ihn einmalig frei.</p>
+        <button class="btn btn-primary" style="width:auto" onclick="unlockPost('${p.id}')">Freischalten für ${EUR(p.price)}</button>
+      </div>`}
+    </div>
+    <div class="post-actions">
+      <span class="a ${liked?'on':''}" onclick="likePost('${p.id}',this)">${I.heart}<span class="tnum" data-likes="${p.id}">${(p.likes+(liked?1:0)).toLocaleString('de-DE')}</span></span>
+      <span class="a" onclick="openChat('${c.id}')">${I.comment}<span>Kommentar</span></span>
+      <span class="a" onclick="openTip('${c.id}')">${I.gift}Tip</span>
+      <span class="a spacer" onclick="openTip('${c.id}')" style="color:var(--orange)">${I.bolt}Senden</span>
+    </div>
+    <div class="post-cap"><b>${c.name}</b> ${p.cap}</div>
+  </article>`;
+}
+function likePost(id,el){const key="post_"+id;const p=POSTS.find(x=>x.id===id);const c=el.querySelector("[data-likes]");
+  if(state.liked.has(key)){state.liked.delete(key);el.classList.remove("on");c.textContent=(p.likes).toLocaleString('de-DE');}
+  else{state.liked.add(key);el.classList.add("on");c.textContent=(p.likes+1).toLocaleString('de-DE');heartBurst();}}
+function unlockPost(id){const p=POSTS.find(x=>x.id===id);
+  if(state.balance<p.price){toast("Guthaben zu niedrig — bitte aufladen.");openWallet();return;}
+  updateBalance(-p.price);state.unlocked.add(id);toast(`Freigeschaltet! ${EUR(p.price)} abgebucht.`);
+  document.getElementById("feedlist").innerHTML=POSTS.map(postCard).join("");}
+
+/* ---------- CHATS ---------- */
+function renderChats(pad){
+  pad.innerHTML=`
+  <div class="appbar"><div><h1>Chats</h1><div class="sub">Nachrichten & Matches</div></div>
+    <button class="iconbtn" onclick="toast('Neue Nachricht')">${I.send}</button></div>
+  <div class="section-title">Neue Matches</div>
+  <div class="hscroll">${[...state.liked].filter(id=>byId(id)).concat(["mia","sofia"]).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6).map(id=>{const c=byId(id);return `
+    <div class="story" onclick="openChat('${id}')"><div class="av"><div style="${photoStyle(id)}"></div></div><div class="nm">${c.name}</div></div>`;}).join("")}</div>
+  <div class="section-title">Unterhaltungen</div>
+  ${CHATS.map(ch=>{const c=byId(ch.cid);return `
+    <div class="chat-row" onclick="openChat('${ch.cid}')">
+      <div class="avatar" style="${photoStyle(c.id)}">${ch.online?'<span class="presence"></span>':''}</div>
+      <div style="min-width:0"><div class="n">${c.name} ${c.verified?`<span class="badge-verif" style="width:14px;height:14px;font-size:8px">${I.verif}</span>`:''}</div>
+        <div class="last" style="${ch.paid?'color:var(--orange);font-weight:700':''}">${ch.last}</div></div>
+      <div class="meta"><span class="time">${ch.time}</span>${ch.unread?`<span class="pill-unread">${ch.unread}</span>`:''}</div>
+    </div>`;}).join("")}`;
+}
+
+/* ---------- ME ---------- */
+function renderMe(pad){
+  pad.innerHTML=`
+  <div class="appbar"><div class="brandrow"><span class="ring-logo"></span><span class="wordmark">ring<b>.</b></span></div>
+    <button class="iconbtn" onclick="toggleTheme()">${I.moon}</button></div>
+  <div style="text-align:center;padding:10px 0 6px">
+    <div class="avatar ring" style="width:96px;height:96px;margin:0 auto"><div style="${photoStyle('you')}"></div></div>
+    <h1 style="margin:12px 0 2px;font-size:23px">Du · <span style="font-weight:600;color:var(--muted)">28</span></h1>
+    <div class="muted" style="font-size:13px">Berlin · Fan-Konto</div>
+    <button class="btn btn-outline btn-sm" style="width:auto;margin-top:12px" onclick="toast('Profil bearbeiten')">Profil bearbeiten</button>
+  </div>
+  <div class="stat-row" style="border-top:1px solid var(--line);justify-content:space-around">
+    <div class="s center"><b class="tnum">${state.subs.size}</b><span>Abos</span></div>
+    <div class="s center"><b class="tnum">${state.liked.size}</b><span>Likes</span></div>
+    <div class="s center"><b class="tnum">${EUR(state.balance)}</b><span>Guthaben</span></div>
+  </div>
+  <div class="section-title">Konto</div>
+  ${row(I.bolt,"Wallet & Guthaben","openWallet()",EUR(state.balance))}
+  ${row(I.star,"Ring Premium","toast('Premium: unbegrenzte Likes, kostenlose Calls & mehr')","Upgrade")}
+  ${row(I.video,"Creator werden","toast('Werde Creator: verdiene mit Abos, Calls & PPV')","")}
+  <div class="section-title">Meine Abos</div>
+  ${[...state.subs].map(id=>{const c=byId(id);return row(`<span class="avatar" style="width:28px;height:28px;${photoStyle(id)}"></span>`,c.name,`openProfile('${id}')`,"aktiv");}).join("")||`<p class="muted" style="font-size:13px">Noch keine Abos. Entdecke Creator im Explore-Tab.</p>`}
+  <div class="section-title">Einstellungen</div>
+  ${row(I.bell,"Benachrichtigungen","toast('Benachrichtigungen')","")}
+  ${row(I.lock,"Privatsphäre & Sicherheit","toast('Privatsphäre')","")}
+  ${row(I.user,"Datenschutz & Impressum","toast('Rechtliches')","")}
+  <p class="center muted" style="font-size:11px;margin-top:20px">Ring · Prototyp · v1.0 — Design nach Ring Mockup, Funktionen nach Fanso</p>`;
+}
+function row(ic,label,action,right){
+  return `<div class="chat-row" style="border-bottom:1px solid var(--line)" onclick="${action}">
+    <span class="iconbtn" style="width:38px;height:38px;pointer-events:none">${ic}</span>
+    <div class="n" style="font-size:14.5px">${label}</div>
+    <div class="meta"><span class="muted" style="font-size:13px">${right}</span></div></div>`;
+}
+
+/* =========================================================================
+   SHEETS / OVERLAYS
+   ========================================================================= */
+function overlay(html,cls){
+  closeOverlay();
+  const scrim=document.createElement("div");scrim.className="sheet-scrim";scrim.onclick=closeOverlay;
+  const node=document.createElement("div");node.className=cls;node.innerHTML=html;
+  document.getElementById("phone").appendChild(scrim);document.getElementById("phone").appendChild(node);
+  requestAnimationFrame(()=>{scrim.classList.add("show");node.classList.add("show");});
+  return node;
+}
+function closeOverlay(){document.querySelectorAll(".sheet,.sheet-scrim,.full").forEach(n=>{n.classList.remove("show");setTimeout(()=>n.remove(),340);});}
+
+/* ---- Creator profile (full screen) ---- */
+function openProfile(id){
+  const c=byId(id);const subbed=state.subs.has(id);
+  const html=`<div class="fscreen">
+    <div class="phero">
+      <div class="photo" style="position:absolute;inset:0;${photoStyle(id)}"></div>
+      <div class="grad"></div>
+      <button class="iconbtn back" style="position:absolute" onclick="closeOverlay()">${I.arrow}</button>
+      ${c.live?'<span class="chip live" style="position:absolute;top:calc(var(--safe-top) + 34px);right:16px">● LIVE</span>':''}
+      <div class="info">
+        <div class="nm">${c.name} <span style="font-weight:500">${c.age}</span> ${c.verified?`<span class="badge-verif">${I.verif}</span>`:''}</div>
+        <div style="opacity:.9;font-size:13.5px;margin-top:4px">${c.city} · ${c.dist} km · ${c.followers} Follower</div>
+        <div class="row" style="display:flex;gap:8px;margin-top:10px">${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      </div>
+    </div>
+    <div class="pad" style="padding:16px 18px 40px">
+      <div style="display:flex;gap:10px;margin-bottom:8px">
+        <button class="btn btn-primary" onclick="startCall('${id}','video')">${I.phone} Ring me · ${EUR(c.rate)}/Min</button>
+        <button class="round md" style="flex:none;border:1px solid var(--line)" onclick="openChat('${id}')">${I.chat}</button>
+        <button class="round md" style="flex:none;border:1px solid var(--line)" onclick="openTip('${id}')">${I.gift}</button>
+      </div>
+      <p style="font-size:14.5px;line-height:1.5;color:var(--ink-2)">${c.bio}</p>
+
+      <div class="section-title">Abo-Optionen</div>
+      <div class="tier">
+        <div class="tn">Free</div>
+        <div class="tp">0,00 €<span> /Monat</span></div>
+        <ul><li>${I.check}Öffentliche Posts</li><li>${I.check}Story-Updates</li></ul>
+        <button class="btn btn-ghost btn-sm" onclick="toast('Du folgst ${c.name}')">${subbed?'Aktiv':'Folgen'}</button>
+      </div>
+      <div class="tier best">
+        <div class="badge">Beliebt</div>
+        <div class="tn">VIP</div>
+        <div class="tp">9,99 €<span> /Monat</span></div>
+        <ul><li>${I.check}Alle exklusiven Inhalte</li><li>${I.check}Direktnachrichten inklusive</li><li>${I.check}10% Rabatt auf Calls</li><li>${I.check}Zugang zu Livestreams</li></ul>
+        <button class="btn btn-primary btn-sm" onclick="subscribe('${id}')">${subbed?'✓ Abonniert':'VIP abonnieren'}</button>
+      </div>
+
+      <div class="section-title">Inhalte <span class="muted" style="font-weight:600;font-size:12px">${subbed?'freigeschaltet':'gesperrt'}</span></div>
+      <div class="gallery">${Array.from({length:9}).map((_,i)=>`
+        <div class="gitem" onclick="${subbed?`toast('Inhalt öffnen')`:`subscribe('${id}')`}">
+          <div class="photo" style="position:absolute;inset:0;${photoStyle(id+'g'+i)};${subbed?'':'filter:blur(6px)'}"></div>
+          ${subbed?(i%3===0?`<span class="pv">▶ Video</span>`:''):`<div class="lock">${I.lock}</div>`}
+        </div>`).join("")}</div>
+    </div>
+  </div>`;
+  overlay(html,"full");
+}
+
+/* ---- Chat detail (full screen) ---- */
+function openChat(id){
+  const c=byId(id);
+  const html=`<div style="display:flex;flex-direction:column;height:100%">
+    <div class="appbar" style="padding-top:calc(var(--safe-top) + 30px);border-bottom:1px solid var(--line)">
+      <button class="iconbtn" onclick="closeOverlay()">${I.arrow}</button>
+      <div style="display:flex;align-items:center;gap:10px;flex:1;margin-left:4px" onclick="openProfile('${id}')">
+        <div class="avatar" style="width:38px;height:38px;${photoStyle(id)}"></div>
+        <div><div class="n" style="font-size:15px;font-weight:700">${c.name}</div><div style="font-size:11.5px;color:var(--live);font-weight:600">${c.online?'● Online':'zuletzt vor 1 Std'}</div></div>
+      </div>
+      <button class="iconbtn" style="color:var(--live)" onclick="startCall('${id}','audio')">${I.phone}</button>
+      <button class="iconbtn" style="color:var(--orange)" onclick="startCall('${id}','video')">${I.video}</button>
+    </div>
+    <div class="fscreen" style="padding:16px;display:flex;flex-direction:column;gap:10px" id="msgs">
+      ${bubble("in","Hey! Schön dass du da bist 😊 Wie war dein Tag?")}
+      ${bubble("out","Ziemlich gut! Hab dein neues Workout gemacht 💪")}
+      ${bubble("in","Oh stark! Dann hab ich was für dich 👀")}
+      <div class="post-media" style="max-width:220px;border-radius:16px;overflow:hidden;position:relative;aspect-ratio:3/4;align-self:flex-start">
+        <div class="photo" style="position:absolute;inset:0;${photoStyle(id+'dm')};filter:blur(3px)"></div>
+        <div class="locked"><div class="lk" style="width:44px;height:44px">${I.lock}</div><h4 style="font-size:14px">Foto</h4>
+          <button class="btn btn-primary btn-sm" style="width:auto" onclick="unlockDM(this,'${id}')">1,99 € freischalten</button></div>
+      </div>
+    </div>
+    <div style="padding:10px 12px calc(env(safe-area-inset-bottom,10px) + 12px);border-top:1px solid var(--line);display:flex;gap:8px;align-items:center">
+      <button class="iconbtn" style="flex:none" onclick="openTip('${id}')">${I.gift}</button>
+      <input class="field" style="margin:0;flex:1" placeholder="Nachricht schreiben…" onkeydown="if(event.key==='Enter')sendMsg(this)"/>
+      <button class="iconbtn" style="flex:none;background:var(--brand-grad);color:#fff;border:none" onclick="sendMsg(this.previousElementSibling)">${I.send}</button>
+    </div>
+  </div>`;
+  overlay(html,"full");
+}
+function bubble(dir,txt){return `<div style="align-self:${dir==='out'?'flex-end':'flex-start'};max-width:75%;padding:11px 15px;border-radius:18px;font-size:14px;line-height:1.4;${dir==='out'?'background:var(--brand-grad);color:#fff;border-bottom-right-radius:6px':'background:var(--card-2);border:1px solid var(--line);border-bottom-left-radius:6px'}">${txt}</div>`;}
+function sendMsg(inp){const v=inp.value.trim();if(!v)return;const m=document.getElementById("msgs");
+  m.insertAdjacentHTML("beforeend",bubble("out",v));inp.value="";m.scrollTop=m.scrollHeight;
+  setTimeout(()=>{m.insertAdjacentHTML("beforeend",bubble("in","😊👍"));m.scrollTop=m.scrollHeight;},900);}
+function unlockDM(btn,id){if(state.balance<1.99){toast("Guthaben zu niedrig.");openWallet();return;}
+  updateBalance(-1.99);toast("Foto freigeschaltet · 1,99 €");
+  const media=btn.closest(".post-media");media.querySelector(".photo").style.filter="none";media.querySelector(".locked").remove();}
+
+/* ---- Tip sheet ---- */
+function openTip(id){
+  const c=byId(id);
+  const amts=[2,5,10,20,50];
+  const html=`<div class="grip"></div><div class="sheet-body">
+    <div style="text-align:center;margin-bottom:6px">
+      <div class="avatar ring" style="width:72px;height:72px;margin:0 auto"><div style="${photoStyle(id)}"></div></div>
+      <h2 style="margin:12px 0 2px;font-size:22px;font-weight:800">Tip an ${c.name}</h2>
+      <p class="muted" style="font-size:13px;margin:0">Zeig deine Unterstützung ✨</p>
+    </div>
+    <div class="amt-row">${amts.map((a,i)=>`<button class="amt ${i===1?'on':''}" data-tip="${a}" onclick="pickTip(this)">${a} €</button>`).join("")}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:13px" class="muted">
+      <span>Dein Guthaben</span><span class="money" data-bal>${EUR(state.balance)}</span></div>
+    <button class="btn btn-primary" onclick="sendTip('${id}')">${I.gift} <span id="tipBtnTxt">5,00 € senden</span></button>
+    <p class="center muted" style="font-size:11px;margin-top:12px">Tips sind endgültig und gehen direkt an den Creator.</p>
+  </div>`;
+  overlay(html,"sheet");state._tip=5;
+}
+function pickTip(el){document.querySelectorAll("[data-tip]").forEach(b=>b.classList.remove("on"));el.classList.add("on");
+  state._tip=+el.dataset.tip;document.getElementById("tipBtnTxt").textContent=EUR(state._tip)+" senden";}
+function sendTip(id){const a=state._tip||5;if(state.balance<a){toast("Guthaben zu niedrig — bitte aufladen.");return;}
+  updateBalance(-a);closeOverlay();toast(`${EUR(a)} Tip an ${byId(id).name} gesendet 💛`);heartBurst();}
+
+/* ---- Subscribe ---- */
+function subscribe(id){
+  const c=byId(id);
+  if(state.subs.has(id)){toast(`Du bist bereits VIP bei ${c.name}`);return;}
+  if(state.balance<9.99){toast("Guthaben zu niedrig — bitte aufladen.");openWallet();return;}
+  updateBalance(-9.99);state.subs.add(id);closeOverlay();
+  toast(`VIP-Abo bei ${c.name} aktiv! 🎉`);
+  setTimeout(()=>openProfile(id),360);
+}
+
+/* ---- Wallet ---- */
+function openWallet(){
+  const packs=[10,25,50,100];
+  const html=`<div class="grip"></div><div class="sheet-body">
+    <h2 style="margin:8px 0 2px;font-size:22px;font-weight:800">Wallet</h2>
+    <div style="background:var(--brand-grad);border-radius:20px;padding:20px;color:#fff;margin:10px 0 18px;box-shadow:var(--shadow-sm)">
+      <div style="font-size:12.5px;opacity:.9;text-transform:uppercase;letter-spacing:.06em">Aktuelles Guthaben</div>
+      <div class="money" data-bal style="font-size:34px;margin-top:4px">${EUR(state.balance)}</div>
+      <div style="font-size:12px;opacity:.85;margin-top:6px">Für Calls, PPV, Tips & Abos</div>
+    </div>
+    <div class="section-title" style="margin-top:0">Guthaben aufladen</div>
+    <div class="amt-row">${packs.map((p,i)=>`<button class="amt ${i===1?'on':''}" data-pack="${p}" onclick="pickPack(this)">${p} €</button>`).join("")}</div>
+    <button class="btn btn-primary" onclick="topUp()">${I.bolt} <span id="packTxt">25,00 € aufladen</span></button>
+    <div class="section-title">Letzte Transaktionen</div>
+    ${tx("VIP-Abo · Mia","-9,99 €")}
+    ${tx("Guthaben aufgeladen","+25,00 €",true)}
+    ${tx("Ring-Call · Sofia (6 Min)","-10,74 €")}
+    ${tx("PPV freigeschaltet · Nadia","-4,99 €")}
+    <p class="center muted" style="font-size:11px;margin-top:16px">Zahlung via Stripe / PayPal · SSL-verschlüsselt</p>
+  </div>`;
+  overlay(html,"sheet");state._pack=25;
+}
+function tx(label,amt,pos){return `<div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px">
+  <span>${label}</span><span class="money tnum" style="color:${pos?'var(--live)':'var(--ink)'}">${amt}</span></div>`;}
+function pickPack(el){document.querySelectorAll("[data-pack]").forEach(b=>b.classList.remove("on"));el.classList.add("on");
+  state._pack=+el.dataset.pack;document.getElementById("packTxt").textContent=EUR(state._pack)+" aufladen";}
+function topUp(){const a=state._pack||25;updateBalance(a);toast(`${EUR(a)} aufgeladen ✓`);}
+
+/* =========================================================================
+   CALL SCREEN (paid, per-minute ticker)
+   ========================================================================= */
+function startCall(id,type){
+  closeOverlay();
+  const c=byId(id);state.callRate=c.rate;state.callSecs=0;state.callCost=0;state.callId=id;
+  const call=document.createElement("div");call.className="call";
+  call.innerHTML=`
+    <div class="bg" style="${photoStyle(id)}"></div>
+    <div class="veil"></div>
+    <div class="top">
+      <div class="who">${c.name}</div>
+      <div class="status" id="callStatus">${type==='live'?'Livestream läuft':'verbindet…'}</div>
+      <div class="ticker"><div class="cost tnum" id="callCost">0,00 €</div><div class="rate">${EUR(c.rate)} / Minute · <span id="callTime">00:00</span></div></div>
+    </div>
+    <div class="self" style="${photoStyle('you')}"></div>
+    <div class="controls">
+      <div class="ctrow">
+        <button class="cbtn" onclick="toast('Mikro stumm')">${I.mic}</button>
+        <button class="cbtn tip" onclick="openTip('${id}')">${I.gift}</button>
+        <button class="cbtn" onclick="toast('Kamera gewechselt')">${I.camflip}</button>
+      </div>
+      <button class="cbtn end" style="width:72px;height:72px" onclick="endCall()">${I.phone}</button>
+      <div style="font-size:12px;opacity:.8">${type==='live'?'Live-Anrufe werden pro Minute abgerechnet':'Abrechnung startet bei Verbindung'}</div>
+    </div>`;
+  document.getElementById("phone").appendChild(call);
+  requestAnimationFrame(()=>call.classList.add("show"));
+  setTimeout(()=>{const s=document.getElementById("callStatus");if(s)s.textContent="verbunden";
+    state.callTimer=setInterval(tickCall,1000);},1400);
+}
+function tickCall(){
+  state.callSecs++;
+  const perSec=state.callRate/60;
+  state.callCost+=perSec;
+  if(state.balance-perSec<=0){updateBalance(-state.balance);endCall(true);return;}
+  updateBalance(-perSec);
+  const cc=document.getElementById("callCost");const ct=document.getElementById("callTime");
+  if(cc)cc.textContent=EUR(state.callCost);
+  const m=String(Math.floor(state.callSecs/60)).padStart(2,"0"),s=String(state.callSecs%60).padStart(2,"0");
+  if(ct)ct.textContent=`${m}:${s}`;
+}
+function endCall(broke){
+  clearInterval(state.callTimer);state.callTimer=null;
+  const call=document.querySelector(".call");if(call){call.classList.remove("show");setTimeout(()=>call.remove(),340);}
+  const mins=(state.callSecs/60);
+  if(state.callSecs>0)toast(`Call beendet · ${Math.floor(mins)}:${String(state.callSecs%60).padStart(2,'0')} · ${EUR(state.callCost)}${broke?' · Guthaben leer':''}`);
+  if(broke)setTimeout(openWallet,400);
+}
+
+/* ---- theme + clock ---- */
+function toggleTheme(){const cur=document.documentElement.getAttribute("data-theme");
+  const next=cur==="dark"?"light":(cur==="light"?"dark":(matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark"));
+  document.documentElement.setAttribute("data-theme",next);toast(next==="dark"?"Dark Mode":"Light Mode");}
+function clock(){const d=new Date();document.getElementById("clock").textContent=d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");}
+clock();setInterval(clock,10000);
+
+/* =========================================================================
+   ONBOARDING
+   ========================================================================= */
+function onboarding(){
+  const onb=document.createElement("div");onb.className="onb";
+  const av=["mia","nadia","sofia","leo","jonas","amir"];
+  onb.innerHTML=`
+    <div class="statusbar" style="visibility:hidden"><span>9:41</span></div>
+    <div class="cluster" id="cluster"></div>
+    <div class="content">
+      <div class="brandrow" style="justify-content:center;margin-bottom:2px"><span class="ring-logo" style="width:40px;height:40px"></span><span class="wordmark" style="font-size:30px">ring<b>.</b></span></div>
+      <h2>Match. Ring.<br>Connect.</h2>
+      <p>Finde Menschen und Creator, die zu dir passen — like dich durch, ruf direkt an und unterstütze deine Favoriten mit Abos, Tips & exklusiven Inhalten.</p>
+      <button class="btn btn-primary" onclick="finishOnboarding()">Los geht's</button>
+      <div class="fine">Schon dabei? <span class="link" onclick="finishOnboarding()">Anmelden</span></div>
+      <div class="fine">Mit „Los geht's" akzeptierst du unsere <b>AGB</b> & <b>Datenschutz</b>.</div>
+    </div>`;
+  document.getElementById("phone").appendChild(onb);
+  const cl=onb.querySelector("#cluster");
+  const pos=[[50,42,120],[168,70,84],[250,150,96],[70,150,80],[150,235,110],[262,258,72]];
+  pos.forEach((p,i)=>{const d=document.createElement("div");d.className="pp";
+    d.style.cssText=`left:${p[0]}px;top:${p[1]}px;width:${p[2]}px;height:${p[2]}px;${photoStyle(av[i])}`;
+    d.style.animation=`float ${3+i*0.4}s ease-in-out ${i*0.2}s infinite alternate`;cl.appendChild(d);});
+  for(let i=0;i<5;i++){const h=document.createElement("div");h.className="heart-i";h.innerHTML=I.heart;
+    h.style.cssText=`left:${20+Math.random()*300}px;top:${20+Math.random()*300}px;width:${12+Math.random()*14}px;height:auto`;
+    h.firstChild.style.width=(12+Math.random()*14)+"px";cl.appendChild(h);}
+}
+const style=document.createElement("style");
+style.textContent=`@keyframes float{to{transform:translateY(-14px)}}@media (prefers-reduced-motion:reduce){.pp{animation:none!important}}`;
+document.head.appendChild(style);
+function finishOnboarding(){const onb=document.querySelector(".onb");onb.classList.add("hide");setTimeout(()=>onb.remove(),420);}
+
+/* ---- boot ---- */
+render();
+onboarding();
+window.go=go;window.swipe=swipe;window.superLike=superLike;window.afterSwipeCall=afterSwipeCall;
+window.openProfile=openProfile;window.openChat=openChat;window.openTip=openTip;window.pickTip=pickTip;window.sendTip=sendTip;
+window.subscribe=subscribe;window.openWallet=openWallet;window.pickPack=pickPack;window.topUp=topUp;
+window.likePost=likePost;window.unlockPost=unlockPost;window.unlockDM=unlockDM;window.sendMsg=sendMsg;
+window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverlay;window.toggleTheme=toggleTheme;
+window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;window.buildDeck=buildDeck;window.state=state;
+</script>
+</body>
+</html>

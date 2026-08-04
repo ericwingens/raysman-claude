@@ -57,7 +57,6 @@ button{font-family:inherit;color:inherit}
 
 .brandrow{display:flex;align-items:center;gap:10px}
 .ringmark{flex:none;display:block}
-.wordmark{font-size:23px;font-weight:800;letter-spacing:-.03em;color:var(--ink)}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:none;cursor:pointer;font-weight:700;font-size:16px;padding:15px 22px;border-radius:999px;transition:transform .14s, filter .2s;width:100%}
 .btn:active{transform:scale(.975)}

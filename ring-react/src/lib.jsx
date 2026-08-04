@@ -78,62 +78,17 @@ export function Ico({ name }) {
   return <span style={{ display: "contents" }} dangerouslySetInnerHTML={{ __html: SVG[name] || "" }} />;
 }
 
-/* Ring brand logo — glossy sphere emblem + vector-drawn "ring" wordmark.
-   Drawn rather than typeset so it renders identically on every device. */
-let _lgId = 0;
+/* Ring brand logo — the client's official artwork (sphere emblem + "ring"
+   wordmark), background removed and shipped at 3x for retina. */
 
-function Emblem({ u }) {
-  return (
-    <>
-      <defs>
-        <radialGradient id={`sph${u}`} cx="35%" cy="27%" r="80%">
-          <stop offset="0" stopColor="#fff" /><stop offset=".5" stopColor="#fcfcfc" />
-          <stop offset=".84" stopColor="#eaeaec" /><stop offset="1" stopColor="#d4d4d7" />
-        </radialGradient>
-        <linearGradient id={`or${u}`} x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stopColor="#E23A12" /><stop offset=".45" stopColor="#F26B1D" /><stop offset="1" stopColor="#FBA43A" />
-        </linearGradient>
-        <linearGradient id={`gl${u}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity=".9" /><stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-        <clipPath id={`cc${u}`}><circle cx="50" cy="50" r="47" /></clipPath>
-      </defs>
-      <circle cx="50" cy="50" r="47" fill={`url(#sph${u})`} />
-      <g clipPath={`url(#cc${u})`}>
-        <path d="M 67 23 A 32 32 0 1 0 78 52" stroke={`url(#or${u})`} strokeWidth="12.5" fill="none" strokeLinecap="round" />
-        <path d="M 62 38 A 19 19 0 1 0 67 54" stroke={`url(#or${u})`} strokeWidth="10.5" fill="none" strokeLinecap="round" />
-        <circle cx="50" cy="52" r="6" fill={`url(#or${u})`} />
-      </g>
-      <ellipse cx="41" cy="23" rx="29" ry="15" fill={`url(#gl${u})`} opacity=".5" />
-      <circle cx="50" cy="50" r="47" fill="none" stroke="#0000000d" strokeWidth="1" />
-    </>
-  );
-}
-
-const Wordmark = () => (
-  <>
-    <g fill="none" stroke="currentColor" strokeWidth="14.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 84 V 43" /><path d="M11 52 Q 11 36 31 36" /><path d="M57 84 V 36" />
-      <path d="M85 84 V 43" /><path d="M85 52 Q 85 36 103 36 Q 121 36 121 54 V 84" />
-      <circle cx="172" cy="58" r="22" /><path d="M194 40 V 90 Q 194 104 178 104 Q 167 104 161 97" />
-    </g>
-    <circle cx="57" cy="17" r="7.6" fill="currentColor" />
-  </>
-);
-
-// Emblem only (square).
-export function RingLogo({ size = 34 }) {
-  const u = React.useMemo(() => ++_lgId, []);
-  return <svg className="ringmark" width={size} height={size} viewBox="0 0 100 100" aria-hidden="true"><Emblem u={u} /></svg>;
-}
-
-// Full lockup: emblem + wordmark.
+// Full lockup: emblem + wordmark. `height` drives size; width follows artwork.
 export function RingLockup({ height = 34 }) {
-  const u = React.useMemo(() => ++_lgId, []);
-  return (
-    <svg className="ringmark" height={height} viewBox="0 0 340 115" role="img" aria-label="ring" style={{ color: "var(--ink)" }}>
-      <g transform="translate(0,7)"><Emblem u={u} /></g>
-      <g transform="translate(120,0)"><Wordmark /></g>
-    </svg>
-  );
+  return <img className="ringmark" src={`${IMG_BASE}ring-logo.png`} alt="ring"
+    style={{ height, width: "auto", display: "block" }} />;
+}
+
+// Emblem only (square) — tight spots and the app icon.
+export function RingLogo({ size = 34 }) {
+  return <img className="ringmark" src={`${IMG_BASE}ring-mark.png`} alt="ring"
+    style={{ height: size, width: size, display: "block" }} />;
 }

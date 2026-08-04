@@ -16,7 +16,7 @@ export default function Onboarding({ done }) {
         <div className="statusbar" style={{ visibility: "hidden" }}><span>9:41</span></div>
         <Cluster />
         <div className="content">
-          <div className="brandrow" style={{ justifyContent: "center" }}><RingLockup height={64} /></div>
+          <div className="brandrow" style={{ justifyContent: "center" }}><RingLockup height={80} /></div>
           <p>Finde Menschen und Creator, die zu dir passen — like dich durch, ruf direkt an und unterstütze deine Favoriten mit Abos, Tips & exklusiven Inhalten.</p>
           <button className="btn btn-primary" style={{ width: "auto", minWidth: 200, padding: "15px 34px" }} onClick={() => setStep(0)}>Los geht's</button>
           <div className="fine">Schon dabei? <span className="link" onClick={finish}>Anmelden</span></div>

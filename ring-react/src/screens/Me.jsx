@@ -14,7 +14,7 @@ export default function Me({ ctx }) {
   return (
     <>
       <div className="appbar" style={{ padding: "6px 0 10px" }}>
-        <div className="brandrow"><RingLockup height={34} /></div>
+        <div className="brandrow"><RingLockup height={42} /></div>
         <button className="iconbtn" onClick={() => ctx.toast("Benachrichtigungen")}><Ico name="bell" /></button>
       </div>
 

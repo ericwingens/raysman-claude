@@ -20,7 +20,7 @@ export default function Discover({ ctx }) {
     <>
       <div className="appbar" style={{ padding: "6px 0 10px" }}>
         <div>
-          <div className="brandrow"><RingLockup height={34} /></div>
+          <div className="brandrow"><RingLockup height={42} /></div>
           <div className="sub">Menschen & Creator in deiner Nähe</div>
         </div>
         <button className="wallet-chip" onClick={() => ctx.push("wallet")}>

@@ -78,17 +78,17 @@ export function Ico({ name }) {
   return <span style={{ display: "contents" }} dangerouslySetInnerHTML={{ __html: SVG[name] || "" }} />;
 }
 
-/* Ring brand logo — the client's official artwork (sphere emblem + "ring"
-   wordmark), background removed and shipped at 3x for retina. */
+/* Ring brand logo — the client's official artwork (sphere emblem + "ring
+   meApp" wordmark) as vector, so it stays sharp at any size. */
 
 // Full lockup: emblem + wordmark. `height` drives size; width follows artwork.
-export function RingLockup({ height = 34 }) {
-  return <img className="ringmark" src={`${IMG_BASE}ring-logo.png`} alt="ring"
+export function RingLockup({ height = 46 }) {
+  return <img className="ringmark" src={`${IMG_BASE}ring-logo.svg`} alt="ring meApp"
     style={{ height, width: "auto", display: "block" }} />;
 }
 
 // Emblem only (square) — tight spots and the app icon.
 export function RingLogo({ size = 34 }) {
-  return <img className="ringmark" src={`${IMG_BASE}ring-mark.png`} alt="ring"
+  return <img className="ringmark" src={`${IMG_BASE}ring-mark.svg`} alt="ring meApp"
     style={{ height: size, width: size, display: "block" }} />;
 }

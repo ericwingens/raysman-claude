@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { CREATORS, byId } from "./data.js";
 import { EUR, Ico } from "./lib.jsx";
 import Onboarding from "./screens/Onboarding.jsx";
+import EditProfile from "./overlays/EditProfile.jsx";
 import Discover from "./screens/Discover.jsx";
 import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
@@ -129,7 +130,7 @@ export default function App() {
       {/* overlay stack */}
       {overlays.length > 0 && <div className="sheet-scrim show" onClick={pop} />}
       {overlays.map((o) => {
-        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull }[o.kind];
+        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile }[o.kind];
         return P ? <P key={o.key} id={o.id} ctx={ctx} /> : null;
       })}
 

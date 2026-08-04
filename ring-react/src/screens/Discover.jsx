@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { CREATORS } from "../data.js";
-import { photoStyle, EUR, Ico, RingLogo } from "../lib.jsx";
+import { photoStyle, EUR, Ico, RingLockup } from "../lib.jsx";
 
 /* Swipe deck — like/pass/super-ring/call, with creator badges & €/min pricing. */
 export default function Discover({ ctx }) {
@@ -20,7 +20,7 @@ export default function Discover({ ctx }) {
     <>
       <div className="appbar" style={{ padding: "6px 0 10px" }}>
         <div>
-          <div className="brandrow"><RingLogo /><span className="wordmark">ring</span></div>
+          <div className="brandrow"><RingLockup height={34} /></div>
           <div className="sub">Menschen & Creator in deiner Nähe</div>
         </div>
         <button className="wallet-chip" onClick={() => ctx.push("wallet")}>

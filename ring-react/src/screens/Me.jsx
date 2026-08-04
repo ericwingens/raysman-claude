@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { byId } from "../data.js";
-import { photoStyle, EUR, Ico, RingLogo } from "../lib.jsx";
+import { photoStyle, EUR, Ico, RingLockup } from "../lib.jsx";
 
 /*
  * Me — Profile Settings 1:1 after the Figma board:
@@ -14,7 +14,7 @@ export default function Me({ ctx }) {
   return (
     <>
       <div className="appbar" style={{ padding: "6px 0 10px" }}>
-        <div className="brandrow"><RingLogo /><span className="wordmark">ring</span></div>
+        <div className="brandrow"><RingLockup height={34} /></div>
         <button className="iconbtn" onClick={() => ctx.toast("Benachrichtigungen")}><Ico name="bell" /></button>
       </div>
 
@@ -22,7 +22,10 @@ export default function Me({ ctx }) {
         <div className="avatar ring" style={{ width: 96, height: 96, margin: "0 auto" }}><div style={photoStyle("you")} /></div>
         <h1 style={{ margin: "12px 0 2px", fontSize: 23 }}>Jane Doe · <span style={{ fontWeight: 600, color: "var(--muted)" }}>28</span></h1>
         <div className="muted" style={{ fontSize: 13 }}>Berlin · Fan-Konto</div>
-        <button className="btn btn-outline btn-sm" style={{ width: "auto", marginTop: 12 }} onClick={() => setModal("image")}>Profilbild ändern</button>
+        <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 12 }}>
+          <button className="btn btn-primary btn-sm" style={{ width: "auto" }} onClick={() => ctx.push("edit")}>Profil bearbeiten</button>
+          <button className="btn btn-outline btn-sm" style={{ width: "auto" }} onClick={() => setModal("image")}>Bild ändern</button>
+        </div>
       </div>
 
       <div className="stat-row" style={{ borderTop: "1px solid var(--line)", justifyContent: "space-around" }}>

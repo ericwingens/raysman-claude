@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { photoStyle, Ico, RingLogo } from "../lib.jsx";
+import { photoStyle, Ico, RingLockup } from "../lib.jsx";
 
 /*
  * Welcome + Register flow, 1:1 after the Figma board:
@@ -16,15 +16,14 @@ export default function Onboarding({ done }) {
         <div className="statusbar" style={{ visibility: "hidden" }}><span>9:41</span></div>
         <Cluster />
         <div className="content">
-          <div className="brandrow" style={{ justifyContent: "center", marginBottom: 2 }}>
-            <RingLogo size={44} />
-            <span className="wordmark" style={{ fontSize: 30 }}>ring</span>
-          </div>
-          <h2>Match. Ring.<br />Connect.</h2>
+          <div className="brandrow" style={{ justifyContent: "center" }}><RingLockup height={64} /></div>
           <p>Finde Menschen und Creator, die zu dir passen — like dich durch, ruf direkt an und unterstütze deine Favoriten mit Abos, Tips & exklusiven Inhalten.</p>
-          <button className="btn btn-primary" onClick={() => setStep(0)}>Los geht's</button>
+          <button className="btn btn-primary" style={{ width: "auto", minWidth: 200, padding: "15px 34px" }} onClick={() => setStep(0)}>Los geht's</button>
           <div className="fine">Schon dabei? <span className="link" onClick={finish}>Anmelden</span></div>
-          <div className="fine">Mit „Los geht's" akzeptierst du unsere <b>AGB</b> & <b>Datenschutz</b>.</div>
+        </div>
+        <div className="footer">
+          <a onClick={finish}>Impressum</a> &nbsp;|&nbsp; <a onClick={finish}>Datenschutz</a>
+          <div className="homebar" />
         </div>
       </div>
     );
@@ -32,21 +31,30 @@ export default function Onboarding({ done }) {
   return <Register step={step} setStep={setStep} finish={finish} />;
 }
 
+/* Photo cluster on peach circles — coordinates from the Figma welcome screen (428px grid). */
 function Cluster() {
-  const av = ["mia", "nadia", "sofia", "lea", "jana", "amira"];
-  const pos = [[50, 42, 120], [168, 70, 84], [250, 150, 96], [70, 150, 80], [150, 235, 110], [262, 258, 72]];
+  const bubbles = [
+    [207, 50, 119, "mia"], [30, 104, 101, "lea"], [150, 193, 101, "nadia"],
+    [326, 178, 71, "amira"], [31, 302, 119, "jana"], [192, 302, 179, "sofia"],
+  ];
+  const hearts = [[364, 302, 14], [139, 79, 13], [24, 243, 12], [368, 490, 13], [336, 378, 11]];
+  const dots = [[156, 161], [143, 458], [378, 121], [59, 446], [382, 80]];
   return (
     <div className="cluster">
-      {pos.map((p, i) => (
-        <div key={i} className="pp" style={{
-          left: p[0], top: p[1], width: p[2], height: p[2],
-          ...photoStyle(av[i]),
-          animation: `float ${3 + i * 0.4}s ease-in-out ${i * 0.2}s infinite alternate`,
-        }} />
-      ))}
-      {[[30, 40, 18], [330, 90, 14], [40, 330, 16], [310, 300, 20], [190, 20, 12]].map((h, i) => (
-        <div key={"h" + i} className="heart-i" style={{ left: h[0], top: h[1], width: h[2] }}><Ico name="heart" /></div>
-      ))}
+      <div className="cin">
+        <div className="peach" style={{ left: 59, top: 121, width: 310, height: 310, background: "#FBE3D3", opacity: 0.55 }} />
+        <div className="peach" style={{ left: 108, top: 170, width: 212, height: 212, background: "#F9D5BC", opacity: 0.55 }} />
+        {bubbles.map((b, i) => (
+          <div key={i} className="pp" style={{
+            left: b[0], top: b[1], width: b[2], height: b[2], ...photoStyle(b[3]),
+            animation: `float ${3 + i * 0.4}s ease-in-out ${i * 0.2}s infinite alternate`,
+          }} />
+        ))}
+        {hearts.map((h, i) => (
+          <span key={"h" + i} className="heart-i" style={{ left: h[0], top: h[1], width: h[2], height: h[2] }}><Ico name="heart" /></span>
+        ))}
+        {dots.map((d, i) => <span key={"d" + i} className="odot" style={{ left: d[0], top: d[1] }} />)}
+      </div>
     </div>
   );
 }

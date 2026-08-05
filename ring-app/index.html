@@ -42,16 +42,7 @@
 
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;
-  color:var(--ink);
-  background:
-    radial-gradient(1200px 700px at 15% -10%, rgba(253,180,60,.16), transparent 60%),
-    radial-gradient(1000px 700px at 110% 10%, rgba(245,71,31,.13), transparent 55%),
-    #EDE6DE;
-  -webkit-font-smoothing:antialiased;
-  display:grid;place-items:center;padding:26px 12px;min-height:100%;
-}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif; color:var(--ink); background:radial-gradient(1200px 700px at 15% -10%, rgba(253,180,60,.16), transparent 60%), radial-gradient(1000px 700px at 110% 10%, rgba(245,71,31,.13), transparent 55%),#EDE6DE; -webkit-font-smoothing:antialiased;}
 button{font-family:inherit;color:inherit}
 .tnum{font-variant-numeric:tabular-nums}
 
@@ -118,7 +109,7 @@ button{font-family:inherit;color:inherit}
 .chip svg{width:13px;height:13px}
 .chip.live{background:var(--live)}
 .chip.price{background:rgba(0,0,0,.42)}
-.badge-verif{color:#fff;background:#3B9CFF;border-radius:50%;width:19px;height:19px;display:inline-grid;place-items:center;font-size:11px;flex:none}
+.badge-verif{color:#fff;background:#3B9CFF;border-radius:50%;width:19px;height:19px;display:inline-grid;place-items:center;flex:none}
 .badge-verif svg{width:12px;height:12px}
 .tag{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.35);color:#fff}
 .stamp{position:absolute;top:34px;font-size:34px;font-weight:900;letter-spacing:.04em;padding:6px 16px;border:4px solid;border-radius:14px;opacity:0;transform:rotate(-16deg);pointer-events:none}
@@ -291,11 +282,11 @@ button{font-family:inherit;color:inherit}
 .minph{flex:none;width:76px;height:100px;border-radius:14px;background-size:cover;background-position:center 20%;position:relative;cursor:pointer;box-shadow:var(--shadow-sm)}
 .minph.add{display:grid;place-items:center;border:1.6px dashed var(--line);background:var(--card-2);color:var(--muted);font-size:26px;box-shadow:none}
 .mainbadge{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.55);color:#fff;font-size:9.5px;font-weight:800;padding:3px 7px;border-radius:999px}
-.set-row{display:flex;align-items:center;justify-content:space-between;padding:13px 2px;border-bottom:1px solid var(--line);gap:10px}
-.set-row .lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:13px 2px;border-bottom:1px solid var(--line)}
+.set-row .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
 .set-row .lbl svg{width:13px;height:13px;vertical-align:-2px;margin-right:4px}
 .set-row .val{font-size:14.5px;font-weight:600;margin-top:3px}
-.set-row .pen{color:var(--orange);font-size:16px;flex:none}
+.set-row .pen{color:var(--orange);cursor:pointer}
 .chipwrap{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .ichip{border:1.6px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:10px 15px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s}
 .ichip.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 12%, var(--card));color:var(--orange-ink);font-weight:700}
@@ -304,15 +295,15 @@ button{font-family:inherit;color:inherit}
 .sw.on{background:var(--orange)}
 .sw.on i{transform:translateX(19px)}
 .warnbox{background:color-mix(in srgb,var(--gold) 12%, var(--card));border:1px solid color-mix(in srgb,var(--gold) 35%, var(--line));border-radius:14px;padding:13px 15px;font-size:13px;line-height:1.5;margin:14px 0}
-.wave{display:flex;align-items:center;gap:3px;height:76px;margin:22px 0 8px;justify-content:center}
-.wave i{width:3.5px;border-radius:999px;background:var(--orange)}
+.wave{display:flex;align-items:center;justify-content:center;gap:2.5px;height:70px}
+.wave i{display:block;width:3px;border-radius:2px;background:var(--orange);opacity:.9}
 .wave i.off{background:var(--line)}
-.rec-time{text-align:center;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;margin-bottom:16px}
-.rec-btn{width:74px;height:74px;border-radius:50%;border:none;background:var(--brand-grad);color:#fff;display:grid;place-items:center;margin:0 auto 16px;cursor:pointer;box-shadow:0 12px 26px -12px rgba(245,118,26,.8)}
-.rec-btn.on{background:var(--heart)}
-.rec-btn svg{width:30px;height:30px}
-.opt{display:flex;align-items:center;padding:16px;border:1.6px solid var(--line);border-radius:14px;margin-bottom:10px;cursor:pointer;font-weight:600;font-size:15px}
-.opt.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 8%, var(--card))}
+.rec-time{font-size:26px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;margin:8px 0 2px}
+.rec-btn{width:74px;height:74px;border-radius:50%;border:2px solid var(--orange);background:var(--card);display:grid;place-items:center;color:var(--orange);cursor:pointer;margin:12px auto;transition:.2s}
+.rec-btn.on{background:var(--brand-grad);color:#fff;border-color:transparent;box-shadow:0 0 0 8px color-mix(in srgb,var(--orange) 18%, transparent)}
+.rec-btn svg{width:28px;height:28px}
+.opt{display:flex;align-items:center;gap:12px;border:1.6px solid var(--line);background:var(--card);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;font-weight:600;transition:.15s}
+.opt.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 10%, var(--card))}
 .opt svg{width:20px;height:20px}
 
 /* toast */
@@ -330,6 +321,46 @@ button{font-family:inherit;color:inherit}
 .amt{flex:1;min-width:70px;border:1.6px solid var(--line);background:var(--card-2);border-radius:14px;padding:14px 6px;text-align:center;font-weight:800;font-size:15px;cursor:pointer;font-variant-numeric:tabular-nums;color:var(--ink);transition:.15s}
 .amt:hover{border-color:var(--muted)}
 .amt.on{border-color:var(--orange);border-width:2px;color:var(--orange-ink);background:color-mix(in srgb,var(--orange) 14%, var(--card));box-shadow:0 6px 16px -8px rgba(245,118,26,.55)}
+
+/* ---------- Ported from the React stylesheet so both versions stay in step:
+   register flow, explore rows, modals, legal pages, photo grid. ---------- */
+.onb h2{font-size:29px;font-weight:800;letter-spacing:-.02em;margin:0;text-wrap:balance;line-height:1.12}
+.onb .fine b{color:var(--orange)}
+.reg{position:absolute;inset:0;z-index:88;background:var(--paper);display:flex;flex-direction:column}
+.reg .rtop{display:flex;align-items:center;gap:12px;padding:calc(var(--safe-top) + 30px) 18px 6px}
+.reg .prog{flex:1;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+.reg .prog i{display:block;height:100%;background:var(--brand-grad);transition:width .3s}
+.reg .rbody{flex:1;overflow-y:auto;scrollbar-width:none;padding:18px 26px 20px}
+.reg .rbody::-webkit-scrollbar{display:none}
+.reg h2{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px;text-wrap:balance}
+.reg .rfoot{padding:10px 26px calc(env(safe-area-inset-bottom,10px) + 16px)}
+.opt .em{font-size:22px}
+.chipset{display:flex;flex-wrap:wrap;gap:8px}
+.chipset .c{border:1.6px solid var(--line);background:var(--card);border-radius:999px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer}
+.chipset .c.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 12%, var(--card));color:var(--orange-ink)}
+.lrow{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.lrow .nm{font-weight:700;font-size:15px}
+.lrow .loc{font-size:12px;color:var(--muted);margin-top:2px}
+.lrow .acts{margin-left:auto;display:flex;gap:9px}
+.rowbtn{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;color:#fff;background:var(--brand-grad);box-shadow:0 6px 14px -6px rgba(245,118,26,.7);transition:transform .14s}
+.rowbtn:active{transform:scale(.9)}
+.rowbtn svg{width:18px;height:18px}
+.rowbtn.ghost{background:var(--card);border:1.6px solid var(--orange);color:var(--orange);box-shadow:none}
+.rowbtn.playing{animation:pulse 1.1s ease-in-out infinite}
+.modal{position:absolute;inset:0;display:grid;place-items:center;z-index:75;padding:30px}
+.modal .mbox{background:var(--paper);border-radius:22px;padding:22px;box-shadow:var(--shadow);width:100%;max-width:320px;text-align:center;transform:scale(.94);opacity:0;transition:.25s}
+.modal.show .mbox{transform:scale(1);opacity:1}
+.modal .mbox h3{margin:0 0 8px;font-size:18px;font-weight:800}
+.modal .mbox p{margin:0 0 16px;font-size:13px;color:var(--muted);line-height:1.5}
+.modal .mrow{display:flex;gap:10px}
+.legal h3{font-size:15px;font-weight:800;margin:18px 0 6px}
+.legal p{font-size:13.5px;line-height:1.6;color:var(--ink-2);margin:0 0 10px}
+.photo-grid{display:flex;gap:8px;margin:10px 0}
+.photo-grid .ph{width:64px;height:64px;border-radius:12px;background-size:cover;position:relative}
+.photo-grid .ph .rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:10px;cursor:pointer}
+.mainbadge.sm{font-size:8.5px;padding:2px 6px}
+.ph.add{display:grid;place-items:center;border:1.6px dashed var(--line);background:var(--card-2);color:var(--muted);font-size:28px;cursor:pointer}
+.gitem .lock svg{width:22px;height:22px}
 </style>
 </head>
 <body>
@@ -560,15 +591,19 @@ function heartBurst(){
 function renderExplore(pad){
   const live=CREATORS.filter(c=>c.live);
   pad.innerHTML=`
-  <div class="appbar" style="padding:6px 0 10px"><div><h1>Explore</h1><div class="sub">Entdecke Creator & Livestreams</div></div>
+  <div class="appbar" style="padding:6px 0 10px"><div><h1>Explore</h1><div class="sub">Voice-Intros anhören, liken, anrufen</div></div>
     <button class="wallet-chip" onclick="openWallet()"><span class="coin">${I.bolt}</span><span data-bal>${EUR(state.balance)}</span></button></div>
-  <div class="seg" style="margin:2px 0 4px"><button class="on">Für dich</button><button onclick="toast('Filter: Trending')">Trending</button><button onclick="toast('Filter: In der Nähe')">In der Nähe</button></div>
+  <div class="seg" style="margin:2px 0 6px">
+    <button class="${exploreTab==='explore'?'on':''}" onclick="setExploreTab('explore')">Explore</button>
+    <button class="${exploreTab==='matches'?'on':''}" onclick="setExploreTab('matches')">Matches</button></div>
+  ${exploreTab==='matches'?matchesList():`
   <div class="section-title">Jetzt Live <span class="muted" style="font-weight:600;font-size:12px">${live.length} aktiv</span></div>
   <div class="hscroll">${CREATORS.map((c,i)=>`
     <div class="story" onclick="${c.live?`startLiveView('${c.id}')`:`openProfile('${c.id}')`}">
       <div class="av ${i>2?'seen':''}"><div style="${photoStyle(c.id)}">${c.live?'<span class="lv">LIVE</span>':''}</div></div>
       <div class="nm">${c.name}</div>
     </div>`).join("")}</div>
+  ${nearbyList()}
   <div class="section-title">Empfohlene Creator <a onclick="toast('Alle Creator')">Alle</a></div>
   <div class="creator-grid">${CREATORS.map(c=>`
     <div class="ccard" onclick="openProfile('${c.id}')">
@@ -578,8 +613,47 @@ function renderExplore(pad){
         <span class="chip price" style="font-size:10px;padding:4px 8px">${EUR(c.rate)}/Min</span></div>
       <div class="bot"><div class="n">${c.name} ${c.verified?`<span class="badge-verif" style="width:15px;height:15px;font-size:9px">${I.verif}</span>`:''}</div>
         <div class="s">${c.tags[0]} · ${c.followers} Follower</div></div>
-    </div>`).join("")}</div>`;
+    </div>`).join("")}</div>`}`;
 }
+
+/* "In deiner Nähe" — avatar, name/age, location, and the two round actions
+   (voice intro + like) that the React Explore screen has. */
+function nearbyList(){
+  return `<div class="section-title">In deiner Nähe</div>` + CREATORS.map(c=>`
+    <div class="lrow">
+      <div class="avatar" style="${photoStyle(c.id)}" onclick="openProfile('${c.id}')">
+        ${c.online?'<span class="presence"></span>':''}</div>
+      <div style="min-width:0" onclick="openProfile('${c.id}')">
+        <div class="nm">${c.name}, ${c.age} ${c.verified?`<span class="badge-verif" style="width:15px;height:15px;display:inline-grid;vertical-align:-2px">${I.verif}</span>`:''}</div>
+        <div class="loc">${c.city} · ${c.dist} km · ${EUR(c.rate)}/Min</div>
+      </div>
+      <div class="acts">
+        <button class="rowbtn ghost ${_playing===c.id?'playing':''}" aria-label="Voice-Intro abspielen"
+          onclick="playIntro('${c.id}','${c.name}')">${_playing===c.id?I.mic:PLAY_ICON}</button>
+        <button class="rowbtn" aria-label="Liken" onclick="likePerson('${c.id}','${c.name}')">${I.heart}</button>
+      </div>
+    </div>`).join("");
+}
+
+/* Matches tab — call or unmatch, mirroring the React screen. */
+function matchesList(){
+  const ms=CREATORS.filter(c=>(state.liked.has(c.id)||["mia","sofia"].includes(c.id))&&!_unmatched.has(c.id));
+  if(!ms.length)return `<p class="muted center" style="font-size:13px;margin-top:30px">Noch keine Matches — like Leute in Explore oder Discover.</p>`;
+  return `<div class="section-title">Deine Matches <span class="muted" style="font-weight:600;font-size:12px">${ms.length}</span></div>` + ms.map(c=>`
+    <div class="lrow">
+      <div class="avatar" style="${photoStyle(c.id)}" onclick="openProfile('${c.id}')">
+        ${c.online?'<span class="presence"></span>':''}</div>
+      <div style="min-width:0" onclick="openProfile('${c.id}')">
+        <div class="nm">${c.name}, ${c.age}</div>
+        <div class="loc">${c.city} · ${EUR(c.rate)}/Min</div>
+      </div>
+      <div class="acts">
+        <button class="rowbtn" aria-label="Anrufen" onclick="startCall('${c.id}')">${I.phone}</button>
+        <button class="rowbtn ghost" aria-label="Match entfernen" onclick="unmatch('${c.id}','${c.name}')">${I.x}</button>
+      </div>
+    </div>`).join("");
+}
+const PLAY_ICON='<svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px"><path d="M8 5.5v13l11-6.5z"/></svg>';
 function startLiveView(id){startCall(id,"live");}
 
 /* ---------- FEED ---------- */
@@ -648,15 +722,32 @@ function renderMe(pad){
     <button class="iconbtn" onclick="toast('Benachrichtigungen')">${I.bell}</button></div>
   <div style="text-align:center;padding:10px 0 6px">
     <div class="avatar ring" style="width:96px;height:96px;margin:0 auto"><div style="${photoStyle('you')}"></div></div>
-    <h1 style="margin:12px 0 2px;font-size:23px">Du · <span style="font-weight:600;color:var(--muted)">28</span></h1>
+    <h1 style="margin:12px 0 2px;font-size:23px">${ME.first} ${ME.last} · <span style="font-weight:600;color:var(--muted)">28</span></h1>
     <div class="muted" style="font-size:13px">Berlin · Fan-Konto</div>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px"><button class="btn btn-primary btn-sm" style="width:auto" onclick="openEditProfile()">Profil bearbeiten</button><button class="btn btn-outline btn-sm" style="width:auto" onclick="openPhotos()">Bild ändern</button></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px"><button class="btn btn-primary btn-sm" style="width:auto" onclick="openEditProfile()">Profil bearbeiten</button><button class="btn btn-outline btn-sm" style="width:auto" onclick="askImage()">Bild ändern</button></div>
   </div>
   <div class="stat-row" style="border-top:1px solid var(--line);justify-content:space-around">
     <div class="s center"><b class="tnum">${state.subs.size}</b><span>Abos</span></div>
     <div class="s center"><b class="tnum">${state.liked.size}</b><span>Likes</span></div>
     <div class="s center"><b class="tnum">${EUR(state.balance)}</b><span>Guthaben</span></div>
   </div>
+  <div class="section-title">Meine Fotos</div>
+  <div class="photo-grid">
+    ${ME.photos.map(s=>`<div class="ph" style="${photoStyle(s)}"><span class="rm" onclick="removeMyPhoto('${s}')">✕</span></div>`).join("")}
+    <div class="ph add" onclick="askImage()">+</div>
+  </div>
+
+  <div class="section-title">Sprachnachricht</div>
+  <button class="btn btn-ghost" style="justify-content:space-between" onclick="openEditProfile()">
+    <span style="display:flex;align-items:center;gap:9px">${I.mic} Aufnahme bearbeiten</span>
+    <span class="muted tnum" style="font-size:13px">00:0${ME.voice}</span></button>
+
+  <div class="section-title">Profil</div>
+  ${setRow("Bio",ME.bio)}
+  ${setRow("Geburtsdatum",ME.birth.split("-").reverse().join("."))}
+  ${setRow("Geschlecht",ME.gender)}
+  ${setRow("Ich suche",ME.looking)}
+
   <div class="section-title">Konto</div>
   ${row(I.bolt,"Wallet & Guthaben","openWallet()",EUR(state.balance))}
   ${row(I.star,"Ring Premium","toast('Premium: unbegrenzte Likes, kostenlose Calls & mehr')","Upgrade")}
@@ -666,13 +757,23 @@ function renderMe(pad){
   <div class="section-title">Einstellungen</div>
   ${row(I.bell,"Benachrichtigungen","toast('Benachrichtigungen')","")}
   ${row(I.lock,"Privatsphäre & Sicherheit","toast('Privatsphäre')","")}
-  ${row(I.user,"Datenschutz & Impressum","toast('Rechtliches')","")}
+
+  <div class="section-title">Rechtliches & Konto</div>
+  ${row(I.lock,"Datenschutz","openLegal('privacy')","")}
+  ${row(I.user,"Impressum","openLegal('imprint')","")}
+  ${row(I.x,"Konto löschen","askDelete()","",true)}
   <p class="center muted" style="font-size:11px;margin-top:20px">Ring · Prototyp · v1.0 — Design nach Ring Mockup, Funktionen nach Fanso</p>`;
 }
-function row(ic,label,action,right){
+function setRow(label,val){
+  return `<div class="set-row"><div style="min-width:0;padding-right:12px">
+      <div class="lbl">${label}</div><div class="val">${val}</div></div>
+    <span class="pen" onclick="openEditProfile()">✎</span></div>`;
+}
+function row(ic,label,action,right,danger){
+  const c=danger?";color:var(--heart)":"";
   return `<div class="chat-row" style="border-bottom:1px solid var(--line)" onclick="${action}">
-    <span class="iconbtn" style="width:38px;height:38px;pointer-events:none">${ic}</span>
-    <div class="n" style="font-size:14.5px">${label}</div>
+    <span class="iconbtn" style="width:38px;height:38px;pointer-events:none${c}">${ic}</span>
+    <div class="n" style="font-size:14.5px${c}">${label}</div>
     <div class="meta"><span class="muted" style="font-size:13px">${right}</span></div></div>`;
 }
 
@@ -1058,6 +1159,7 @@ function openPhotos(){
     <button class="btn btn-ghost btn-sm" style="margin-bottom:8px" onclick="toast('Galerie geöffnet (Demo)')">📁 Aus Galerie wählen</button>
     <button class="btn btn-ghost btn-sm" onclick="toast('Kamera geöffnet (Demo)')">📷 Foto aufnehmen</button>`,false,B),"full");
 }
+function removeMyPhoto(s){ME.photos=ME.photos.filter(x=>x!==s);toast("Foto entfernt");render();}
 function removePhoto(s){ME.photos=ME.photos.filter(x=>x!==s);markDirty();openPhotos();}
 function addPhoto(){ME.photos.push("you"+(ME.photos.length+2));markDirty();toast("Foto hinzugefügt (Demo)");openPhotos();}
 
@@ -1089,11 +1191,11 @@ function onboarding(){
     <div class="content">
       <div class="brandrow" style="justify-content:center">${ringLockup(80)}</div>
       <p>Finde Menschen und Creator, die zu dir passen — like dich durch, ruf direkt an und unterstütze deine Favoriten mit Abos, Tips & exklusiven Inhalten.</p>
-      <button class="btn btn-primary" style="width:auto;min-width:200px;padding:15px 34px" onclick="finishOnboarding()">Los geht's</button>
+      <button class="btn btn-primary" style="width:auto;min-width:200px;padding:15px 34px" onclick="startRegister()">Los geht's</button>
       <div class="fine">Schon dabei? <span class="link" onclick="finishOnboarding()">Anmelden</span></div>
     </div>
     <div class="footer">
-      <a onclick="toast('Impressum')">Impressum</a> &nbsp;|&nbsp; <a onclick="toast('Datenschutz')">Datenschutz</a>
+      <a onclick="finishOnboarding();openLegal('imprint')">Impressum</a> &nbsp;|&nbsp; <a onclick="finishOnboarding();openLegal('privacy')">Datenschutz</a>
       <div class="homebar"></div>
     </div>`;
   document.getElementById("phone").appendChild(onb);
@@ -1101,7 +1203,171 @@ function onboarding(){
 const style=document.createElement("style");
 style.textContent=`@keyframes float{to{transform:translateY(-14px)}}@media (prefers-reduced-motion:reduce){.pp{animation:none!important}}`;
 document.head.appendChild(style);
-function finishOnboarding(){const onb=document.querySelector(".onb");onb.classList.add("hide");setTimeout(()=>onb.remove(),420);}
+function finishOnboarding(){const onb=document.querySelector(".onb");if(!onb)return;
+  onb.classList.add("hide");setTimeout(()=>onb.remove(),420);}
+
+/* =========================================================================
+   REGISTER — 6-step flow, mirroring the React Onboarding component:
+   form → gender → looking for → age → profile picture → voice message.
+   ========================================================================= */
+const REG_STEPS=6;
+const reg={step:0,gender:null,looking:null,age:24,recOn:false,recT:0,recTimer:null,
+  bars:Array.from({length:46},()=>6+Math.random()*40)};
+
+function startRegister(){
+  reg.step=0;reg.gender=null;reg.looking=null;reg.age=24;stopRec();reg.recT=0;
+  const onb=document.querySelector(".onb");if(onb)onb.style.display="none";
+  const el=document.createElement("div");el.className="reg";el.id="reg";
+  document.getElementById("phone").appendChild(el);
+  drawRegister();
+}
+function regBack(){
+  if(reg.step===0){stopRec();document.getElementById("reg").remove();
+    const onb=document.querySelector(".onb");if(onb)onb.style.display="";return;}
+  reg.step--;drawRegister();
+}
+function regNext(){
+  if(reg.step>=REG_STEPS-1){stopRec();document.getElementById("reg").remove();
+    const onb=document.querySelector(".onb");if(onb)onb.remove();return;}
+  reg.step++;drawRegister();
+}
+function regPick(key,val){reg[key]=val;drawRegister();}
+function regAge(v){reg.age=+v;const n=document.getElementById("regAge");if(n)n.textContent=reg.age;}
+
+function drawRegister(){
+  const s=reg.step;
+  const blocked=(s===1&&!reg.gender)||(s===2&&!reg.looking);
+  const opts=(key,list)=>list.map(g=>`
+    <div class="opt ${reg[key]===g?'on':''}" onclick="regPick('${key}','${g}')">
+      <span style="flex:1">${g}</span>
+      ${reg[key]===g?`<span style="color:var(--orange);width:20px">${I.check}</span>`:''}
+    </div>`).join("");
+  let body="";
+  if(s===0)body=`
+    <h2>Registrieren und finde deine Liebe!</h2>
+    <p class="muted" style="font-size:13.5px;margin-top:0">Erstelle dein kostenloses Konto.</p>
+    <input class="field" placeholder="Vorname"><input class="field" placeholder="Nachname">
+    <input class="field" type="email" placeholder="E-Mail-Adresse"><input class="field" type="tel" placeholder="Telefonnummer">
+    <input class="field" type="password" placeholder="Passwort"><input class="field" type="password" placeholder="Passwort wiederholen">`;
+  else if(s===1)body=`<h2>Was ist dein Geschlecht?</h2>${opts('gender',["Frau","Mann","Divers"])}`;
+  else if(s===2)body=`<h2>Wonach suchst du?</h2>${opts('looking',["Frauen","Männer","Alle"])}`;
+  else if(s===3)body=`
+    <h2>Wie alt bist du?</h2>
+    <div style="text-align:center;margin:30px 0">
+      <div class="tnum" id="regAge" style="font-size:54px;font-weight:800">${reg.age}</div>
+      <input type="range" min="18" max="80" value="${reg.age}" oninput="regAge(this.value)"
+        style="width:100%;accent-color:var(--orange);margin-top:16px">
+      <p class="muted" style="font-size:12.5px">Du musst mindestens 18 Jahre alt sein.</p>
+    </div>`;
+  else if(s===4)body=`
+    <h2>Lade dein Profilbild hoch!</h2>
+    <div style="width:210px;height:210px;border-radius:24px;margin:22px auto;${photoStyle('you')};box-shadow:var(--shadow)"></div>
+    <button class="btn btn-ghost" style="margin-bottom:10px" onclick="toast('Galerie geöffnet (Demo)')">📁 Aus Galerie wählen</button>
+    <button class="btn btn-ghost" onclick="toast('Kamera geöffnet (Demo)')">📷 Foto aufnehmen</button>`;
+  else body=voiceStep();
+
+  const label=s===0?"Jetzt registrieren":s===REG_STEPS-1?"Speichern & loslegen":"Weiter";
+  document.getElementById("reg").innerHTML=`
+    <div class="rtop">
+      <button class="iconbtn" onclick="regBack()">${I.arrow}</button>
+      <div class="prog"><i style="width:${((s+1)/REG_STEPS)*100}%"></i></div>
+    </div>
+    <div class="rbody">${body}</div>
+    <div class="rfoot">
+      <button class="btn btn-primary" onclick="regNext()" ${blocked?'disabled':''}
+        style="opacity:${blocked?.5:1}">${label}</button>
+    </div>`;
+}
+
+/* Voice intro recorder — Ring's signature step. Simulated, like the React one. */
+function voiceStep(){
+  const active=Math.min(46,Math.floor(reg.recT*5));
+  const mm=String(Math.floor(reg.recT/60)).padStart(2,"0"),ss=String(Math.floor(reg.recT%60)).padStart(2,"0");
+  return `
+    <h2>Nimm deine Sprachnachricht auf</h2>
+    <p class="muted" style="font-size:13.5px">Dein Voice-Intro hören andere in Explore, bevor sie dich anrufen.</p>
+    <div class="wave" aria-hidden="true">${reg.bars.map((h,i)=>
+      `<i class="${i<active?'':'off'}" style="height:${h}px"></i>`).join("")}</div>
+    <div class="rec-time">${mm}:${ss}.${Math.floor((reg.recT%1)*10)}</div>
+    <button class="rec-btn ${reg.recOn?'on':''}" onclick="toggleRegRec()"
+      aria-label="${reg.recOn?'Pause':'Aufnehmen'}">${I.mic}</button>
+    ${reg.recT>0&&!reg.recOn?`<button class="btn btn-outline btn-sm" style="width:auto;margin:0 auto;display:flex"
+      onclick="reg.recT=0;drawRegister()">Löschen & neu aufnehmen</button>`:''}`;
+}
+function toggleRegRec(){
+  reg.recOn=!reg.recOn;
+  if(reg.recOn)reg.recTimer=setInterval(()=>{reg.recT=+(reg.recT+0.1).toFixed(1);drawRegister();},100);
+  else stopRec();
+  drawRegister();
+}
+function stopRec(){clearInterval(reg.recTimer);reg.recTimer=null;reg.recOn=false;}
+
+/* =========================================================================
+   LEGAL — full Datenschutz / Impressum pages (were toasts before).
+   ========================================================================= */
+function openLegal(id){
+  const privacy=id==="privacy";
+  overlay(`
+    <div class="appbar" style="padding-top:calc(var(--safe-top) + 30px);border-bottom:1px solid var(--line)">
+      <button class="iconbtn" onclick="closeOverlay()">${I.arrow}</button>
+      <h3 style="font-size:19px;flex:1;text-align:center;margin-right:42px">${privacy?"Datenschutz":"Impressum"}</h3>
+    </div>
+    <div class="fscreen legal" style="padding:16px 22px 40px">${privacy?`
+      <h3>Datenschutzerklärung</h3>
+      <p>Wir nehmen den Schutz deiner persönlichen Daten ernst. Diese Erklärung informiert dich darüber, welche Daten wir erheben, wie wir sie verwenden und welche Rechte du hast (Platzhaltertext für den Prototyp).</p>
+      <h3>Erhobene Daten</h3>
+      <p>Profilangaben (Name, Alter, Fotos, Sprachnachricht), Nutzungsdaten (Likes, Matches, Calls) sowie Zahlungsdaten für Wallet, Abos und Pay-per-View werden ausschließlich zur Bereitstellung der App verarbeitet.</p>
+      <h3>Deine Rechte</h3>
+      <p>Du hast jederzeit das Recht auf Auskunft, Berichtigung, Löschung und Datenübertragbarkeit gemäß DSGVO. Kontaktiere uns dazu über die im Impressum angegebene Adresse.</p>`:`
+      <h3>Angaben gemäß § 5 TMG</h3>
+      <p>Ring App GmbH<br>Musterstraße 1<br>10115 Berlin</p>
+      <h3>Kontakt</h3>
+      <p>E-Mail: contact@ring.example<br>Telefon: +49 30 000000</p>
+      <h3>Vertretungsberechtigt</h3>
+      <p>Geschäftsführung: Max Mustermann<br>Registergericht: AG Berlin-Charlottenburg<br>USt-ID: DE000000000</p>`}
+    </div>`,"full");
+}
+
+/* ---- centred confirm/choice dialog (delete account, change picture) ---- */
+function modal(html){
+  const m=document.createElement("div");m.className="modal";m.id="modal";
+  m.innerHTML=`<div style="position:absolute;inset:0;background:rgba(8,4,1,.5)"></div>
+    <div class="mbox" style="position:relative">${html}</div>`;
+  m.onclick=e=>{if(e.target===m||e.target===m.firstElementChild)closeModal();};
+  document.getElementById("phone").appendChild(m);
+  requestAnimationFrame(()=>m.classList.add("show"));
+}
+function closeModal(){const m=document.getElementById("modal");if(m)m.remove();}
+function askDelete(){
+  modal(`<h3>Konto löschen</h3>
+    <p>Dein Profil, deine Matches und dein Guthaben werden dauerhaft gelöscht. Das kann nicht rückgängig gemacht werden.</p>
+    <div class="mrow">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Abbrechen</button>
+      <button class="btn btn-primary btn-sm" style="background:var(--heart);box-shadow:none"
+        onclick="closeModal();toast('Demo: Konto nicht wirklich gelöscht 😉')">Löschen</button>
+    </div>`);
+}
+function askImage(){
+  modal(`<h3>Bild ändern</h3>
+    <div style="width:160px;height:160px;border-radius:20px;margin:0 auto 16px;${photoStyle('you')}"></div>
+    <button class="btn btn-primary btn-sm" style="margin-bottom:8px"
+      onclick="closeModal();toast('Galerie geöffnet (Demo)')">📁 Aus Galerie wählen</button>
+    <button class="btn btn-ghost btn-sm"
+      onclick="closeModal();toast('Kamera geöffnet (Demo)')">📷 Foto aufnehmen</button>`);
+}
+
+/* ---- Explore: voice-intro playback state for the "In deiner Nähe" rows ---- */
+let _playing=null,_playTimer=null,_unmatched=new Set();
+function playIntro(id,name){
+  clearTimeout(_playTimer);
+  if(_playing===id){_playing=null;render();return;}
+  _playing=id;toast(`▶ Voice-Intro von ${name}`);render();
+  _playTimer=setTimeout(()=>{_playing=null;render();},4000);
+}
+function likePerson(id,name){state.liked.add(id);toast(`Du hast ${name} geliked 💛`);render();}
+function unmatch(id,name){_unmatched.add(id);toast(`Match mit ${name} entfernt`);render();}
+let exploreTab="explore";
+function setExploreTab(t){exploreTab=t;render();}
 
 /* ---- boot ---- */
 render();
@@ -1111,7 +1377,10 @@ window.openProfile=openProfile;window.openChat=openChat;window.openTip=openTip;w
 window.subscribe=subscribe;window.openWallet=openWallet;window.pickPack=pickPack;window.topUp=topUp;
 window.likePost=likePost;window.unlockPost=unlockPost;window.unlockDM=unlockDM;window.sendMsg=sendMsg;
 window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverlay;window.openEditProfile=openEditProfile;window.openEditField=openEditField;window.openPhotos=openPhotos;window.saveProfile=saveProfile;window.toggleVis=toggleVis;window.markDirty=markDirty;window.pickOpt=pickOpt;window.toggleInt=toggleInt;window.toggleRec=toggleRec;window.removePhoto=removePhoto;window.addPhoto=addPhoto;window.ME=ME;
-window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;window.buildDeck=buildDeck;window.state=state;
+window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;
+window.startRegister=startRegister;window.regBack=regBack;window.regNext=regNext;window.regPick=regPick;window.regAge=regAge;window.toggleRegRec=toggleRegRec;window.reg=reg;window.drawRegister=drawRegister;
+window.openLegal=openLegal;window.modal=modal;window.closeModal=closeModal;window.askDelete=askDelete;window.askImage=askImage;
+window.playIntro=playIntro;window.likePerson=likePerson;window.unmatch=unmatch;window.setExploreTab=setExploreTab;window.setRow=setRow;window.removeMyPhoto=removeMyPhoto;window.nearbyList=nearbyList;window.matchesList=matchesList;window.buildDeck=buildDeck;window.state=state;
 </script>
 </body>
 </html>

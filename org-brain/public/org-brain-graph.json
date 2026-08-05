@@ -1,0 +1,2221 @@
+{
+  "nodes": [
+    {
+      "id": "t_apollo",
+      "type": "tool",
+      "name": "Apollo.io",
+      "department": null,
+      "business_function": null,
+      "content": "Apollo.io — Sales intelligence and prospecting database used for lead enrichment and contact discovery.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_seo",
+          "a_outbound"
+        ]
+      }
+    },
+    {
+      "id": "t_asana",
+      "type": "tool",
+      "name": "Asana",
+      "department": null,
+      "business_function": null,
+      "content": "Asana — Work management tool used to track tasks, projects, and cross-team handoffs.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_specwriter",
+          "a_vendor",
+          "a_onboard"
+        ]
+      }
+    },
+    {
+      "id": "t_hubspot",
+      "type": "tool",
+      "name": "HubSpot",
+      "department": null,
+      "business_function": null,
+      "content": "HubSpot — CRM and marketing automation platform of record for contacts and deals.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_outbound",
+          "a_dealdesk"
+        ]
+      }
+    },
+    {
+      "id": "t_slack",
+      "type": "tool",
+      "name": "Slack",
+      "department": null,
+      "business_function": null,
+      "content": "Slack — Primary internal communication and notification surface for agents and humans.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_briefing",
+          "a_feedback",
+          "a_triage",
+          "a_vendor",
+          "a_orchestrator",
+          "a_metrics",
+          "a_onboard",
+          "a_dpa"
+        ]
+      }
+    },
+    {
+      "id": "t_gsc",
+      "type": "tool",
+      "name": "Google Search Console",
+      "department": null,
+      "business_function": null,
+      "content": "Google Search Console — Search performance data source used by SEO agents to prioritize content.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_seo"
+        ]
+      }
+    },
+    {
+      "id": "t_stripe",
+      "type": "tool",
+      "name": "Stripe",
+      "department": null,
+      "business_function": null,
+      "content": "Stripe — Payments and billing platform; source of revenue and subscription data.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_revrec"
+        ]
+      }
+    },
+    {
+      "id": "t_snowflake",
+      "type": "tool",
+      "name": "Snowflake",
+      "department": null,
+      "business_function": null,
+      "content": "Snowflake — Central data warehouse where product, finance, and marketing data are modeled.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_briefing",
+          "a_revrec",
+          "a_metrics"
+        ]
+      }
+    },
+    {
+      "id": "t_zendesk",
+      "type": "tool",
+      "name": "Zendesk",
+      "department": null,
+      "business_function": null,
+      "content": "Zendesk — Customer support ticketing system and knowledge base.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_feedback",
+          "a_triage"
+        ]
+      }
+    },
+    {
+      "id": "t_github",
+      "type": "tool",
+      "name": "GitHub",
+      "department": null,
+      "business_function": null,
+      "content": "GitHub — Source control and CI used by the engineering and automation teams.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_orchestrator"
+        ]
+      }
+    },
+    {
+      "id": "t_docusign",
+      "type": "tool",
+      "name": "DocuSign",
+      "department": null,
+      "business_function": null,
+      "content": "DocuSign — E-signature platform used for contracts and compliance workflows.",
+      "props": {
+        "kind": "integration",
+        "used_by": [
+          "a_dealdesk",
+          "a_dpa"
+        ]
+      }
+    },
+    {
+      "id": "dept_strategy",
+      "type": "department",
+      "name": "Strategy & Leadership",
+      "department": "dept_strategy",
+      "business_function": "core",
+      "content": "Strategy & Leadership department. Business function: core. Contains 1 team(s).",
+      "props": {
+        "business_function": "core"
+      }
+    },
+    {
+      "id": "team_exec",
+      "type": "team",
+      "name": "Executive",
+      "department": "dept_strategy",
+      "business_function": "core",
+      "content": "Executive team within Strategy & Leadership. Led by the Chief Executive Officer.",
+      "props": {
+        "lead_role": "Chief Executive Officer"
+      }
+    },
+    {
+      "id": "p_team_exec_lead",
+      "type": "person",
+      "name": "Chief Executive Officer",
+      "department": "dept_strategy",
+      "business_function": "core",
+      "content": "Chief Executive Officer, leading the Executive team in Strategy & Leadership. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Chief Executive Officer",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_exec_0",
+      "type": "person",
+      "name": "Chief of Staff",
+      "department": "dept_strategy",
+      "business_function": "core",
+      "content": "Chief of Staff on the Executive team (Strategy & Leadership). Pseudonymous role node.",
+      "props": {
+        "role": "Chief of Staff",
+        "reports_to": "p_team_exec_lead"
+      }
+    },
+    {
+      "id": "sop_okr",
+      "type": "sop",
+      "name": "Quarterly OKR Planning SOP",
+      "department": "dept_strategy",
+      "business_function": "core",
+      "content": "Quarterly OKR Planning SOP. How leadership sets, cascades, and reviews quarterly objectives and key results. Owned by the Executive team.",
+      "props": {
+        "owner_team": "team_exec"
+      }
+    },
+    {
+      "id": "a_briefing",
+      "type": "subagent",
+      "name": "Exec Briefing Agent",
+      "department": "dept_strategy",
+      "business_function": "core",
+      "content": "Exec Briefing Agent is an AI sub-agent on the Executive team. Purpose: Compile a daily cross-department briefing from team updates and KPIs. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Compile a daily cross-department briefing from team updates and KPIs.",
+        "tools": [
+          "t_slack",
+          "t_snowflake"
+        ],
+        "team": "team_exec"
+      }
+    },
+    {
+      "id": "wf_weekly_review",
+      "type": "workflow",
+      "name": "Weekly Business Review Workflow",
+      "department": "dept_strategy",
+      "business_function": "core",
+      "content": "Weekly Business Review Workflow is an automated workflow on the Executive team. Trigger: schedule_monday_08:00. It orchestrates: a_briefing, t_snowflake, t_slack.",
+      "props": {
+        "trigger": "schedule_monday_08:00",
+        "nodes": [
+          "a_briefing",
+          "t_snowflake",
+          "t_slack"
+        ]
+      }
+    },
+    {
+      "id": "dept_product",
+      "type": "department",
+      "name": "Product Management",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Product Management department. Business function: core. Contains 1 team(s).",
+      "props": {
+        "business_function": "core"
+      }
+    },
+    {
+      "id": "team_core_product",
+      "type": "team",
+      "name": "Core Product",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Core Product team within Product Management. Led by the Head of Product.",
+      "props": {
+        "lead_role": "Head of Product"
+      }
+    },
+    {
+      "id": "p_team_core_product_lead",
+      "type": "person",
+      "name": "Head of Product",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Head of Product, leading the Core Product team in Product Management. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Product",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_core_product_0",
+      "type": "person",
+      "name": "Senior Product Manager",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Senior Product Manager on the Core Product team (Product Management). Pseudonymous role node.",
+      "props": {
+        "role": "Senior Product Manager",
+        "reports_to": "p_team_core_product_lead"
+      }
+    },
+    {
+      "id": "p_team_core_product_1",
+      "type": "person",
+      "name": "Product Manager",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Product Manager on the Core Product team (Product Management). Pseudonymous role node.",
+      "props": {
+        "role": "Product Manager",
+        "reports_to": "p_team_core_product_lead"
+      }
+    },
+    {
+      "id": "sop_discovery",
+      "type": "sop",
+      "name": "Product Discovery SOP",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Product Discovery SOP. Continuous discovery process: interviews, opportunity solution trees, and validation gates before build. Owned by the Core Product team.",
+      "props": {
+        "owner_team": "team_core_product"
+      }
+    },
+    {
+      "id": "a_feedback",
+      "type": "subagent",
+      "name": "Feedback Triage Agent",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Feedback Triage Agent is an AI sub-agent on the Core Product team. Purpose: Cluster inbound product feedback into themes and tag against the roadmap. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Cluster inbound product feedback into themes and tag against the roadmap.",
+        "tools": [
+          "t_zendesk",
+          "t_slack"
+        ],
+        "team": "team_core_product"
+      }
+    },
+    {
+      "id": "a_specwriter",
+      "type": "subagent",
+      "name": "Spec Drafting Agent",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Spec Drafting Agent is an AI sub-agent on the Core Product team. Purpose: Draft PRDs from a one-line problem statement and linked research. It is built on the Claude model and uses 1 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Draft PRDs from a one-line problem statement and linked research.",
+        "tools": [
+          "t_asana"
+        ],
+        "team": "team_core_product"
+      }
+    },
+    {
+      "id": "wf_feedback",
+      "type": "workflow",
+      "name": "Feedback-to-Roadmap Workflow",
+      "department": "dept_product",
+      "business_function": "core",
+      "content": "Feedback-to-Roadmap Workflow is an automated workflow on the Core Product team. Trigger: new_zendesk_tag. It orchestrates: a_feedback, t_zendesk, t_asana.",
+      "props": {
+        "trigger": "new_zendesk_tag",
+        "nodes": [
+          "a_feedback",
+          "t_zendesk",
+          "t_asana"
+        ]
+      }
+    },
+    {
+      "id": "dept_growth",
+      "type": "department",
+      "name": "Marketing & Growth",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Marketing & Growth department. Business function: core. Contains 1 team(s).",
+      "props": {
+        "business_function": "core"
+      }
+    },
+    {
+      "id": "team_demandgen",
+      "type": "team",
+      "name": "Demand Gen",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Demand Gen team within Marketing & Growth. Led by the Head of Growth.",
+      "props": {
+        "lead_role": "Head of Growth"
+      }
+    },
+    {
+      "id": "p_team_demandgen_lead",
+      "type": "person",
+      "name": "Head of Growth",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Head of Growth, leading the Demand Gen team in Marketing & Growth. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Growth",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_demandgen_0",
+      "type": "person",
+      "name": "Growth Marketer",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Growth Marketer on the Demand Gen team (Marketing & Growth). Pseudonymous role node.",
+      "props": {
+        "role": "Growth Marketer",
+        "reports_to": "p_team_demandgen_lead"
+      }
+    },
+    {
+      "id": "p_team_demandgen_1",
+      "type": "person",
+      "name": "Lifecycle Marketer",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Lifecycle Marketer on the Demand Gen team (Marketing & Growth). Pseudonymous role node.",
+      "props": {
+        "role": "Lifecycle Marketer",
+        "reports_to": "p_team_demandgen_lead"
+      }
+    },
+    {
+      "id": "sop_outbound",
+      "type": "sop",
+      "name": "Outbound Sequence SOP",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Outbound Sequence SOP. Standard 5-touch outbound cadence with personalization rules and compliance guardrails. Owned by the Demand Gen team.",
+      "props": {
+        "owner_team": "team_demandgen"
+      }
+    },
+    {
+      "id": "sop_content",
+      "type": "sop",
+      "name": "Content Production SOP",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Content Production SOP. Brief → draft → SEO review → publish pipeline with quality and brand checks. Owned by the Demand Gen team.",
+      "props": {
+        "owner_team": "team_demandgen"
+      }
+    },
+    {
+      "id": "a_seo",
+      "type": "subagent",
+      "name": "SEO Sub-Agent",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "SEO Sub-Agent is an AI sub-agent on the Demand Gen team. Purpose: Plan and draft SEO content briefs from keyword gaps and search performance. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Plan and draft SEO content briefs from keyword gaps and search performance.",
+        "tools": [
+          "t_gsc",
+          "t_apollo"
+        ],
+        "team": "team_demandgen"
+      }
+    },
+    {
+      "id": "a_outbound",
+      "type": "subagent",
+      "name": "Outbound Sequencer Agent",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Outbound Sequencer Agent is an AI sub-agent on the Demand Gen team. Purpose: Build and personalize multi-step outbound sequences for target accounts. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Build and personalize multi-step outbound sequences for target accounts.",
+        "tools": [
+          "t_apollo",
+          "t_hubspot"
+        ],
+        "team": "team_demandgen"
+      }
+    },
+    {
+      "id": "wf_lead",
+      "type": "workflow",
+      "name": "Lead Enrichment Workflow",
+      "department": "dept_growth",
+      "business_function": "core",
+      "content": "Lead Enrichment Workflow is an automated workflow on the Demand Gen team. Trigger: new_lead. It orchestrates: a_outbound, t_apollo, t_hubspot.",
+      "props": {
+        "trigger": "new_lead",
+        "nodes": [
+          "a_outbound",
+          "t_apollo",
+          "t_hubspot"
+        ]
+      }
+    },
+    {
+      "id": "dept_sales",
+      "type": "department",
+      "name": "Sales",
+      "department": "dept_sales",
+      "business_function": "core",
+      "content": "Sales department. Business function: core. Contains 1 team(s).",
+      "props": {
+        "business_function": "core"
+      }
+    },
+    {
+      "id": "team_ae",
+      "type": "team",
+      "name": "Account Executives",
+      "department": "dept_sales",
+      "business_function": "core",
+      "content": "Account Executives team within Sales. Led by the Head of Sales.",
+      "props": {
+        "lead_role": "Head of Sales"
+      }
+    },
+    {
+      "id": "p_team_ae_lead",
+      "type": "person",
+      "name": "Head of Sales",
+      "department": "dept_sales",
+      "business_function": "core",
+      "content": "Head of Sales, leading the Account Executives team in Sales. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Sales",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_ae_0",
+      "type": "person",
+      "name": "Account Executive",
+      "department": "dept_sales",
+      "business_function": "core",
+      "content": "Account Executive on the Account Executives team (Sales). Pseudonymous role node.",
+      "props": {
+        "role": "Account Executive",
+        "reports_to": "p_team_ae_lead"
+      }
+    },
+    {
+      "id": "p_team_ae_1",
+      "type": "person",
+      "name": "Sales Development Rep",
+      "department": "dept_sales",
+      "business_function": "core",
+      "content": "Sales Development Rep on the Account Executives team (Sales). Pseudonymous role node.",
+      "props": {
+        "role": "Sales Development Rep",
+        "reports_to": "p_team_ae_lead"
+      }
+    },
+    {
+      "id": "sop_dealdesk",
+      "type": "sop",
+      "name": "Deal Desk Approval SOP",
+      "department": "dept_sales",
+      "business_function": "core",
+      "content": "Deal Desk Approval SOP. Discount and contract approval matrix by deal size and term. Owned by the Account Executives team.",
+      "props": {
+        "owner_team": "team_ae"
+      }
+    },
+    {
+      "id": "a_dealdesk",
+      "type": "subagent",
+      "name": "Deal Desk Agent",
+      "department": "dept_sales",
+      "business_function": "core",
+      "content": "Deal Desk Agent is an AI sub-agent on the Account Executives team. Purpose: Assemble quotes, check approval thresholds, and prep contract drafts. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Assemble quotes, check approval thresholds, and prep contract drafts.",
+        "tools": [
+          "t_hubspot",
+          "t_docusign"
+        ],
+        "team": "team_ae"
+      }
+    },
+    {
+      "id": "wf_quote",
+      "type": "workflow",
+      "name": "Quote-to-Contract Workflow",
+      "department": "dept_sales",
+      "business_function": "core",
+      "content": "Quote-to-Contract Workflow is an automated workflow on the Account Executives team. Trigger: stage_negotiation. It orchestrates: a_dealdesk, t_hubspot, t_docusign.",
+      "props": {
+        "trigger": "stage_negotiation",
+        "nodes": [
+          "a_dealdesk",
+          "t_hubspot",
+          "t_docusign"
+        ]
+      }
+    },
+    {
+      "id": "dept_cs",
+      "type": "department",
+      "name": "Customer & Admin",
+      "department": "dept_cs",
+      "business_function": "core",
+      "content": "Customer & Admin department. Business function: core. Contains 1 team(s).",
+      "props": {
+        "business_function": "core"
+      }
+    },
+    {
+      "id": "team_support",
+      "type": "team",
+      "name": "Customer Support",
+      "department": "dept_cs",
+      "business_function": "core",
+      "content": "Customer Support team within Customer & Admin. Led by the Head of Customer Success.",
+      "props": {
+        "lead_role": "Head of Customer Success"
+      }
+    },
+    {
+      "id": "p_team_support_lead",
+      "type": "person",
+      "name": "Head of Customer Success",
+      "department": "dept_cs",
+      "business_function": "core",
+      "content": "Head of Customer Success, leading the Customer Support team in Customer & Admin. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Customer Success",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_support_0",
+      "type": "person",
+      "name": "Customer Success Manager",
+      "department": "dept_cs",
+      "business_function": "core",
+      "content": "Customer Success Manager on the Customer Support team (Customer & Admin). Pseudonymous role node.",
+      "props": {
+        "role": "Customer Success Manager",
+        "reports_to": "p_team_support_lead"
+      }
+    },
+    {
+      "id": "p_team_support_1",
+      "type": "person",
+      "name": "Support Specialist",
+      "department": "dept_cs",
+      "business_function": "core",
+      "content": "Support Specialist on the Customer Support team (Customer & Admin). Pseudonymous role node.",
+      "props": {
+        "role": "Support Specialist",
+        "reports_to": "p_team_support_lead"
+      }
+    },
+    {
+      "id": "sop_escalation",
+      "type": "sop",
+      "name": "Support Escalation SOP",
+      "department": "dept_cs",
+      "business_function": "core",
+      "content": "Support Escalation SOP. Severity definitions and escalation paths from tier-1 support to engineering on-call. Owned by the Customer Support team.",
+      "props": {
+        "owner_team": "team_support"
+      }
+    },
+    {
+      "id": "a_triage",
+      "type": "subagent",
+      "name": "Ticket Triage Agent",
+      "department": "dept_cs",
+      "business_function": "core",
+      "content": "Ticket Triage Agent is an AI sub-agent on the Customer Support team. Purpose: Classify, prioritize, and route inbound support tickets; draft first replies. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Classify, prioritize, and route inbound support tickets; draft first replies.",
+        "tools": [
+          "t_zendesk",
+          "t_slack"
+        ],
+        "team": "team_support"
+      }
+    },
+    {
+      "id": "wf_triage",
+      "type": "workflow",
+      "name": "Ticket Triage Workflow",
+      "department": "dept_cs",
+      "business_function": "core",
+      "content": "Ticket Triage Workflow is an automated workflow on the Customer Support team. Trigger: new_ticket. It orchestrates: a_triage, t_zendesk.",
+      "props": {
+        "trigger": "new_ticket",
+        "nodes": [
+          "a_triage",
+          "t_zendesk"
+        ]
+      }
+    },
+    {
+      "id": "dept_ops",
+      "type": "department",
+      "name": "Operations & Supply Chain",
+      "department": "dept_ops",
+      "business_function": "enabling",
+      "content": "Operations & Supply Chain department. Business function: enabling. Contains 1 team(s).",
+      "props": {
+        "business_function": "enabling"
+      }
+    },
+    {
+      "id": "team_ops",
+      "type": "team",
+      "name": "Business Operations",
+      "department": "dept_ops",
+      "business_function": "enabling",
+      "content": "Business Operations team within Operations & Supply Chain. Led by the Head of Operations.",
+      "props": {
+        "lead_role": "Head of Operations"
+      }
+    },
+    {
+      "id": "p_team_ops_lead",
+      "type": "person",
+      "name": "Head of Operations",
+      "department": "dept_ops",
+      "business_function": "enabling",
+      "content": "Head of Operations, leading the Business Operations team in Operations & Supply Chain. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Operations",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_ops_0",
+      "type": "person",
+      "name": "Operations Analyst",
+      "department": "dept_ops",
+      "business_function": "enabling",
+      "content": "Operations Analyst on the Business Operations team (Operations & Supply Chain). Pseudonymous role node.",
+      "props": {
+        "role": "Operations Analyst",
+        "reports_to": "p_team_ops_lead"
+      }
+    },
+    {
+      "id": "sop_vendor",
+      "type": "sop",
+      "name": "Vendor Onboarding SOP",
+      "department": "dept_ops",
+      "business_function": "enabling",
+      "content": "Vendor Onboarding SOP. Due-diligence, security review, and DPA checklist for onboarding a new vendor. Owned by the Business Operations team.",
+      "props": {
+        "owner_team": "team_ops"
+      }
+    },
+    {
+      "id": "a_vendor",
+      "type": "subagent",
+      "name": "Vendor Review Agent",
+      "department": "dept_ops",
+      "business_function": "enabling",
+      "content": "Vendor Review Agent is an AI sub-agent on the Business Operations team. Purpose: Monitor vendor SLAs and flag renewals or breaches. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Monitor vendor SLAs and flag renewals or breaches.",
+        "tools": [
+          "t_asana",
+          "t_slack"
+        ],
+        "team": "team_ops"
+      }
+    },
+    {
+      "id": "wf_renewal",
+      "type": "workflow",
+      "name": "Vendor Renewal Workflow",
+      "department": "dept_ops",
+      "business_function": "enabling",
+      "content": "Vendor Renewal Workflow is an automated workflow on the Business Operations team. Trigger: renewal_t_minus_60. It orchestrates: a_vendor, t_asana.",
+      "props": {
+        "trigger": "renewal_t_minus_60",
+        "nodes": [
+          "a_vendor",
+          "t_asana"
+        ]
+      }
+    },
+    {
+      "id": "dept_tech",
+      "type": "department",
+      "name": "Tech, AI & Automations",
+      "department": "dept_tech",
+      "business_function": "enabling",
+      "content": "Tech, AI & Automations department. Business function: enabling. Contains 1 team(s).",
+      "props": {
+        "business_function": "enabling"
+      }
+    },
+    {
+      "id": "team_automation",
+      "type": "team",
+      "name": "AI & Automation",
+      "department": "dept_tech",
+      "business_function": "enabling",
+      "content": "AI & Automation team within Tech, AI & Automations. Led by the Head of Engineering.",
+      "props": {
+        "lead_role": "Head of Engineering"
+      }
+    },
+    {
+      "id": "p_team_automation_lead",
+      "type": "person",
+      "name": "Head of Engineering",
+      "department": "dept_tech",
+      "business_function": "enabling",
+      "content": "Head of Engineering, leading the AI & Automation team in Tech, AI & Automations. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Engineering",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_automation_0",
+      "type": "person",
+      "name": "Automation Engineer",
+      "department": "dept_tech",
+      "business_function": "enabling",
+      "content": "Automation Engineer on the AI & Automation team (Tech, AI & Automations). Pseudonymous role node.",
+      "props": {
+        "role": "Automation Engineer",
+        "reports_to": "p_team_automation_lead"
+      }
+    },
+    {
+      "id": "p_team_automation_1",
+      "type": "person",
+      "name": "ML Engineer",
+      "department": "dept_tech",
+      "business_function": "enabling",
+      "content": "ML Engineer on the AI & Automation team (Tech, AI & Automations). Pseudonymous role node.",
+      "props": {
+        "role": "ML Engineer",
+        "reports_to": "p_team_automation_lead"
+      }
+    },
+    {
+      "id": "sop_agent_review",
+      "type": "sop",
+      "name": "Agent Change Review SOP",
+      "department": "dept_tech",
+      "business_function": "enabling",
+      "content": "Agent Change Review SOP. Review, evaluation, and rollout checklist before changing a production agent's prompt or tools. Owned by the AI & Automation team.",
+      "props": {
+        "owner_team": "team_automation"
+      }
+    },
+    {
+      "id": "a_orchestrator",
+      "type": "subagent",
+      "name": "Workflow Orchestrator Agent",
+      "department": "dept_tech",
+      "business_function": "enabling",
+      "content": "Workflow Orchestrator Agent is an AI sub-agent on the AI & Automation team. Purpose: Supervise and retry cross-team automations; surface failures to owners. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Supervise and retry cross-team automations; surface failures to owners.",
+        "tools": [
+          "t_github",
+          "t_slack"
+        ],
+        "team": "team_automation"
+      }
+    },
+    {
+      "id": "wf_deploy",
+      "type": "workflow",
+      "name": "Agent Deploy Workflow",
+      "department": "dept_tech",
+      "business_function": "enabling",
+      "content": "Agent Deploy Workflow is an automated workflow on the AI & Automation team. Trigger: merge_to_main. It orchestrates: a_orchestrator, t_github.",
+      "props": {
+        "trigger": "merge_to_main",
+        "nodes": [
+          "a_orchestrator",
+          "t_github"
+        ]
+      }
+    },
+    {
+      "id": "dept_finance",
+      "type": "department",
+      "name": "Finance",
+      "department": "dept_finance",
+      "business_function": "enabling",
+      "content": "Finance department. Business function: enabling. Contains 1 team(s).",
+      "props": {
+        "business_function": "enabling"
+      }
+    },
+    {
+      "id": "team_finance",
+      "type": "team",
+      "name": "Finance & Accounting",
+      "department": "dept_finance",
+      "business_function": "enabling",
+      "content": "Finance & Accounting team within Finance. Led by the Head of Finance.",
+      "props": {
+        "lead_role": "Head of Finance"
+      }
+    },
+    {
+      "id": "p_team_finance_lead",
+      "type": "person",
+      "name": "Head of Finance",
+      "department": "dept_finance",
+      "business_function": "enabling",
+      "content": "Head of Finance, leading the Finance & Accounting team in Finance. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Finance",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_finance_0",
+      "type": "person",
+      "name": "Financial Analyst",
+      "department": "dept_finance",
+      "business_function": "enabling",
+      "content": "Financial Analyst on the Finance & Accounting team (Finance). Pseudonymous role node.",
+      "props": {
+        "role": "Financial Analyst",
+        "reports_to": "p_team_finance_lead"
+      }
+    },
+    {
+      "id": "sop_close",
+      "type": "sop",
+      "name": "Monthly Close SOP",
+      "department": "dept_finance",
+      "business_function": "enabling",
+      "content": "Monthly Close SOP. Steps and controls for the monthly financial close and reporting cycle. Owned by the Finance & Accounting team.",
+      "props": {
+        "owner_team": "team_finance"
+      }
+    },
+    {
+      "id": "a_revrec",
+      "type": "subagent",
+      "name": "Revenue Recognition Agent",
+      "department": "dept_finance",
+      "business_function": "enabling",
+      "content": "Revenue Recognition Agent is an AI sub-agent on the Finance & Accounting team. Purpose: Reconcile billing events and draft monthly revenue summaries. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Reconcile billing events and draft monthly revenue summaries.",
+        "tools": [
+          "t_stripe",
+          "t_snowflake"
+        ],
+        "team": "team_finance"
+      }
+    },
+    {
+      "id": "wf_close",
+      "type": "workflow",
+      "name": "Monthly Close Workflow",
+      "department": "dept_finance",
+      "business_function": "enabling",
+      "content": "Monthly Close Workflow is an automated workflow on the Finance & Accounting team. Trigger: schedule_month_end. It orchestrates: a_revrec, t_stripe, t_snowflake.",
+      "props": {
+        "trigger": "schedule_month_end",
+        "nodes": [
+          "a_revrec",
+          "t_stripe",
+          "t_snowflake"
+        ]
+      }
+    },
+    {
+      "id": "dept_data",
+      "type": "department",
+      "name": "Data & Analytics",
+      "department": "dept_data",
+      "business_function": "enabling",
+      "content": "Data & Analytics department. Business function: enabling. Contains 1 team(s).",
+      "props": {
+        "business_function": "enabling"
+      }
+    },
+    {
+      "id": "team_analytics",
+      "type": "team",
+      "name": "Analytics",
+      "department": "dept_data",
+      "business_function": "enabling",
+      "content": "Analytics team within Data & Analytics. Led by the Head of Data.",
+      "props": {
+        "lead_role": "Head of Data"
+      }
+    },
+    {
+      "id": "p_team_analytics_lead",
+      "type": "person",
+      "name": "Head of Data",
+      "department": "dept_data",
+      "business_function": "enabling",
+      "content": "Head of Data, leading the Analytics team in Data & Analytics. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Data",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_analytics_0",
+      "type": "person",
+      "name": "Analytics Engineer",
+      "department": "dept_data",
+      "business_function": "enabling",
+      "content": "Analytics Engineer on the Analytics team (Data & Analytics). Pseudonymous role node.",
+      "props": {
+        "role": "Analytics Engineer",
+        "reports_to": "p_team_analytics_lead"
+      }
+    },
+    {
+      "id": "p_team_analytics_1",
+      "type": "person",
+      "name": "Data Analyst",
+      "department": "dept_data",
+      "business_function": "enabling",
+      "content": "Data Analyst on the Analytics team (Data & Analytics). Pseudonymous role node.",
+      "props": {
+        "role": "Data Analyst",
+        "reports_to": "p_team_analytics_lead"
+      }
+    },
+    {
+      "id": "sop_metric",
+      "type": "sop",
+      "name": "Metric Definition SOP",
+      "department": "dept_data",
+      "business_function": "enabling",
+      "content": "Metric Definition SOP. How new metrics are proposed, defined, certified, and published in the semantic layer. Owned by the Analytics team.",
+      "props": {
+        "owner_team": "team_analytics"
+      }
+    },
+    {
+      "id": "a_metrics",
+      "type": "subagent",
+      "name": "Metrics QA Agent",
+      "department": "dept_data",
+      "business_function": "enabling",
+      "content": "Metrics QA Agent is an AI sub-agent on the Analytics team. Purpose: Detect anomalies in core metrics and annotate dashboards with likely causes. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Detect anomalies in core metrics and annotate dashboards with likely causes.",
+        "tools": [
+          "t_snowflake",
+          "t_slack"
+        ],
+        "team": "team_analytics"
+      }
+    },
+    {
+      "id": "wf_anomaly",
+      "type": "workflow",
+      "name": "Metric Anomaly Workflow",
+      "department": "dept_data",
+      "business_function": "enabling",
+      "content": "Metric Anomaly Workflow is an automated workflow on the Analytics team. Trigger: daily_metric_load. It orchestrates: a_metrics, t_snowflake.",
+      "props": {
+        "trigger": "daily_metric_load",
+        "nodes": [
+          "a_metrics",
+          "t_snowflake"
+        ]
+      }
+    },
+    {
+      "id": "dept_hr",
+      "type": "department",
+      "name": "Human Resources",
+      "department": "dept_hr",
+      "business_function": "enabling",
+      "content": "Human Resources department. Business function: enabling. Contains 1 team(s).",
+      "props": {
+        "business_function": "enabling"
+      }
+    },
+    {
+      "id": "team_people",
+      "type": "team",
+      "name": "People Ops",
+      "department": "dept_hr",
+      "business_function": "enabling",
+      "content": "People Ops team within Human Resources. Led by the Head of People.",
+      "props": {
+        "lead_role": "Head of People"
+      }
+    },
+    {
+      "id": "p_team_people_lead",
+      "type": "person",
+      "name": "Head of People",
+      "department": "dept_hr",
+      "business_function": "enabling",
+      "content": "Head of People, leading the People Ops team in Human Resources. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of People",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_people_0",
+      "type": "person",
+      "name": "People Operations Specialist",
+      "department": "dept_hr",
+      "business_function": "enabling",
+      "content": "People Operations Specialist on the People Ops team (Human Resources). Pseudonymous role node.",
+      "props": {
+        "role": "People Operations Specialist",
+        "reports_to": "p_team_people_lead"
+      }
+    },
+    {
+      "id": "sop_onboard",
+      "type": "sop",
+      "name": "Employee Onboarding SOP",
+      "department": "dept_hr",
+      "business_function": "enabling",
+      "content": "Employee Onboarding SOP. 30-60-90 onboarding plan, access provisioning, and data-handling training requirements. Owned by the People Ops team.",
+      "props": {
+        "owner_team": "team_people"
+      }
+    },
+    {
+      "id": "a_onboard",
+      "type": "subagent",
+      "name": "Onboarding Agent",
+      "department": "dept_hr",
+      "business_function": "enabling",
+      "content": "Onboarding Agent is an AI sub-agent on the People Ops team. Purpose: Generate role-specific onboarding plans and provision access requests. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Generate role-specific onboarding plans and provision access requests.",
+        "tools": [
+          "t_asana",
+          "t_slack"
+        ],
+        "team": "team_people"
+      }
+    },
+    {
+      "id": "wf_onboard",
+      "type": "workflow",
+      "name": "New Hire Onboarding Workflow",
+      "department": "dept_hr",
+      "business_function": "enabling",
+      "content": "New Hire Onboarding Workflow is an automated workflow on the People Ops team. Trigger: offer_accepted. It orchestrates: a_onboard, t_asana.",
+      "props": {
+        "trigger": "offer_accepted",
+        "nodes": [
+          "a_onboard",
+          "t_asana"
+        ]
+      }
+    },
+    {
+      "id": "dept_legal",
+      "type": "department",
+      "name": "Legal, Risk & Compliance",
+      "department": "dept_legal",
+      "business_function": "enabling",
+      "content": "Legal, Risk & Compliance department. Business function: enabling. Contains 1 team(s).",
+      "props": {
+        "business_function": "enabling"
+      }
+    },
+    {
+      "id": "team_legal",
+      "type": "team",
+      "name": "Legal & Compliance",
+      "department": "dept_legal",
+      "business_function": "enabling",
+      "content": "Legal & Compliance team within Legal, Risk & Compliance. Led by the Head of Legal.",
+      "props": {
+        "lead_role": "Head of Legal"
+      }
+    },
+    {
+      "id": "p_team_legal_lead",
+      "type": "person",
+      "name": "Head of Legal",
+      "department": "dept_legal",
+      "business_function": "enabling",
+      "content": "Head of Legal, leading the Legal & Compliance team in Legal, Risk & Compliance. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Head of Legal",
+        "reports_to": "p_ceo"
+      }
+    },
+    {
+      "id": "p_team_legal_0",
+      "type": "person",
+      "name": "Compliance Manager",
+      "department": "dept_legal",
+      "business_function": "enabling",
+      "content": "Compliance Manager on the Legal & Compliance team (Legal, Risk & Compliance). Pseudonymous role node.",
+      "props": {
+        "role": "Compliance Manager",
+        "reports_to": "p_team_legal_lead"
+      }
+    },
+    {
+      "id": "sop_gdpr",
+      "type": "sop",
+      "name": "GDPR Data Handling SOP",
+      "department": "dept_legal",
+      "business_function": "enabling",
+      "content": "GDPR Data Handling SOP. Lawful-basis, data-minimization, sub-processor DPA, and third-country transfer requirements for personal data (incl. BDSG specifics for German employee data). Owned by the Legal & Compliance team.",
+      "props": {
+        "owner_team": "team_legal"
+      }
+    },
+    {
+      "id": "a_dpa",
+      "type": "subagent",
+      "name": "DPA Review Agent",
+      "department": "dept_legal",
+      "business_function": "enabling",
+      "content": "DPA Review Agent is an AI sub-agent on the Legal & Compliance team. Purpose: Triage incoming contracts for data-processing terms and flag GDPR risk. It is built on the Claude model and uses 2 tool(s).",
+      "props": {
+        "model": "claude-sonnet-4-6",
+        "purpose": "Triage incoming contracts for data-processing terms and flag GDPR risk.",
+        "tools": [
+          "t_docusign",
+          "t_slack"
+        ],
+        "team": "team_legal"
+      }
+    },
+    {
+      "id": "wf_dpa",
+      "type": "workflow",
+      "name": "Contract DPA Review Workflow",
+      "department": "dept_legal",
+      "business_function": "enabling",
+      "content": "Contract DPA Review Workflow is an automated workflow on the Legal & Compliance team. Trigger: new_contract. It orchestrates: a_dpa, t_docusign.",
+      "props": {
+        "trigger": "new_contract",
+        "nodes": [
+          "a_dpa",
+          "t_docusign"
+        ]
+      }
+    },
+    {
+      "id": "p_ceo",
+      "type": "person",
+      "name": "Chief Executive Officer",
+      "department": "dept_strategy",
+      "business_function": "core",
+      "content": "Chief Executive Officer. Root of the org reporting tree. Pseudonymous role node — no personal data stored.",
+      "props": {
+        "role": "Chief Executive Officer",
+        "reports_to": null
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_0",
+      "source": "team_exec",
+      "target": "dept_strategy",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_1",
+      "source": "p_team_exec_lead",
+      "target": "team_exec",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_2",
+      "source": "p_team_exec_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_3",
+      "source": "p_team_exec_0",
+      "target": "team_exec",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_4",
+      "source": "p_team_exec_0",
+      "target": "p_team_exec_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_5",
+      "source": "team_exec",
+      "target": "sop_okr",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_6",
+      "source": "a_briefing",
+      "target": "team_exec",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_7",
+      "source": "a_briefing",
+      "target": "t_slack",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_8",
+      "source": "a_briefing",
+      "target": "t_snowflake",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_9",
+      "source": "a_briefing",
+      "target": "sop_okr",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_10",
+      "source": "wf_weekly_review",
+      "target": "a_briefing",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_11",
+      "source": "wf_weekly_review",
+      "target": "t_snowflake",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_12",
+      "source": "wf_weekly_review",
+      "target": "t_slack",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_13",
+      "source": "team_core_product",
+      "target": "dept_product",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_14",
+      "source": "p_team_core_product_lead",
+      "target": "team_core_product",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_15",
+      "source": "p_team_core_product_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_16",
+      "source": "p_team_core_product_0",
+      "target": "team_core_product",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_17",
+      "source": "p_team_core_product_0",
+      "target": "p_team_core_product_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_18",
+      "source": "p_team_core_product_1",
+      "target": "team_core_product",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_19",
+      "source": "p_team_core_product_1",
+      "target": "p_team_core_product_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_20",
+      "source": "team_core_product",
+      "target": "sop_discovery",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_21",
+      "source": "a_feedback",
+      "target": "team_core_product",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_22",
+      "source": "a_feedback",
+      "target": "t_zendesk",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_23",
+      "source": "a_feedback",
+      "target": "t_slack",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_24",
+      "source": "a_feedback",
+      "target": "sop_discovery",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_25",
+      "source": "a_specwriter",
+      "target": "team_core_product",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_26",
+      "source": "a_specwriter",
+      "target": "t_asana",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_27",
+      "source": "a_specwriter",
+      "target": "sop_discovery",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_28",
+      "source": "wf_feedback",
+      "target": "a_feedback",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_29",
+      "source": "wf_feedback",
+      "target": "t_zendesk",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_30",
+      "source": "wf_feedback",
+      "target": "t_asana",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_31",
+      "source": "team_demandgen",
+      "target": "dept_growth",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_32",
+      "source": "p_team_demandgen_lead",
+      "target": "team_demandgen",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_33",
+      "source": "p_team_demandgen_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_34",
+      "source": "p_team_demandgen_0",
+      "target": "team_demandgen",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_35",
+      "source": "p_team_demandgen_0",
+      "target": "p_team_demandgen_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_36",
+      "source": "p_team_demandgen_1",
+      "target": "team_demandgen",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_37",
+      "source": "p_team_demandgen_1",
+      "target": "p_team_demandgen_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_38",
+      "source": "team_demandgen",
+      "target": "sop_outbound",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_39",
+      "source": "team_demandgen",
+      "target": "sop_content",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_40",
+      "source": "a_seo",
+      "target": "team_demandgen",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_41",
+      "source": "a_seo",
+      "target": "t_gsc",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_42",
+      "source": "a_seo",
+      "target": "t_apollo",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_43",
+      "source": "a_seo",
+      "target": "sop_outbound",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_44",
+      "source": "a_outbound",
+      "target": "team_demandgen",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_45",
+      "source": "a_outbound",
+      "target": "t_apollo",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_46",
+      "source": "a_outbound",
+      "target": "t_hubspot",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_47",
+      "source": "a_outbound",
+      "target": "sop_outbound",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_48",
+      "source": "wf_lead",
+      "target": "a_outbound",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_49",
+      "source": "wf_lead",
+      "target": "t_apollo",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_50",
+      "source": "wf_lead",
+      "target": "t_hubspot",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_51",
+      "source": "team_ae",
+      "target": "dept_sales",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_52",
+      "source": "p_team_ae_lead",
+      "target": "team_ae",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_53",
+      "source": "p_team_ae_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_54",
+      "source": "p_team_ae_0",
+      "target": "team_ae",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_55",
+      "source": "p_team_ae_0",
+      "target": "p_team_ae_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_56",
+      "source": "p_team_ae_1",
+      "target": "team_ae",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_57",
+      "source": "p_team_ae_1",
+      "target": "p_team_ae_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_58",
+      "source": "team_ae",
+      "target": "sop_dealdesk",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_59",
+      "source": "a_dealdesk",
+      "target": "team_ae",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_60",
+      "source": "a_dealdesk",
+      "target": "t_hubspot",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_61",
+      "source": "a_dealdesk",
+      "target": "t_docusign",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_62",
+      "source": "a_dealdesk",
+      "target": "sop_dealdesk",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_63",
+      "source": "wf_quote",
+      "target": "a_dealdesk",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_64",
+      "source": "wf_quote",
+      "target": "t_hubspot",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_65",
+      "source": "wf_quote",
+      "target": "t_docusign",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_66",
+      "source": "team_support",
+      "target": "dept_cs",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_67",
+      "source": "p_team_support_lead",
+      "target": "team_support",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_68",
+      "source": "p_team_support_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_69",
+      "source": "p_team_support_0",
+      "target": "team_support",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_70",
+      "source": "p_team_support_0",
+      "target": "p_team_support_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_71",
+      "source": "p_team_support_1",
+      "target": "team_support",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_72",
+      "source": "p_team_support_1",
+      "target": "p_team_support_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_73",
+      "source": "team_support",
+      "target": "sop_escalation",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_74",
+      "source": "a_triage",
+      "target": "team_support",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_75",
+      "source": "a_triage",
+      "target": "t_zendesk",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_76",
+      "source": "a_triage",
+      "target": "t_slack",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_77",
+      "source": "a_triage",
+      "target": "sop_escalation",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_78",
+      "source": "wf_triage",
+      "target": "a_triage",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_79",
+      "source": "wf_triage",
+      "target": "t_zendesk",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_80",
+      "source": "team_ops",
+      "target": "dept_ops",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_81",
+      "source": "p_team_ops_lead",
+      "target": "team_ops",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_82",
+      "source": "p_team_ops_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_83",
+      "source": "p_team_ops_0",
+      "target": "team_ops",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_84",
+      "source": "p_team_ops_0",
+      "target": "p_team_ops_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_85",
+      "source": "team_ops",
+      "target": "sop_vendor",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_86",
+      "source": "a_vendor",
+      "target": "team_ops",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_87",
+      "source": "a_vendor",
+      "target": "t_asana",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_88",
+      "source": "a_vendor",
+      "target": "t_slack",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_89",
+      "source": "a_vendor",
+      "target": "sop_vendor",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_90",
+      "source": "wf_renewal",
+      "target": "a_vendor",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_91",
+      "source": "wf_renewal",
+      "target": "t_asana",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_92",
+      "source": "team_automation",
+      "target": "dept_tech",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_93",
+      "source": "p_team_automation_lead",
+      "target": "team_automation",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_94",
+      "source": "p_team_automation_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_95",
+      "source": "p_team_automation_0",
+      "target": "team_automation",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_96",
+      "source": "p_team_automation_0",
+      "target": "p_team_automation_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_97",
+      "source": "p_team_automation_1",
+      "target": "team_automation",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_98",
+      "source": "p_team_automation_1",
+      "target": "p_team_automation_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_99",
+      "source": "team_automation",
+      "target": "sop_agent_review",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_100",
+      "source": "a_orchestrator",
+      "target": "team_automation",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_101",
+      "source": "a_orchestrator",
+      "target": "t_github",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_102",
+      "source": "a_orchestrator",
+      "target": "t_slack",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_103",
+      "source": "a_orchestrator",
+      "target": "sop_agent_review",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_104",
+      "source": "wf_deploy",
+      "target": "a_orchestrator",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_105",
+      "source": "wf_deploy",
+      "target": "t_github",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_106",
+      "source": "team_finance",
+      "target": "dept_finance",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_107",
+      "source": "p_team_finance_lead",
+      "target": "team_finance",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_108",
+      "source": "p_team_finance_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_109",
+      "source": "p_team_finance_0",
+      "target": "team_finance",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_110",
+      "source": "p_team_finance_0",
+      "target": "p_team_finance_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_111",
+      "source": "team_finance",
+      "target": "sop_close",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_112",
+      "source": "a_revrec",
+      "target": "team_finance",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_113",
+      "source": "a_revrec",
+      "target": "t_stripe",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_114",
+      "source": "a_revrec",
+      "target": "t_snowflake",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_115",
+      "source": "a_revrec",
+      "target": "sop_close",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_116",
+      "source": "wf_close",
+      "target": "a_revrec",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_117",
+      "source": "wf_close",
+      "target": "t_stripe",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_118",
+      "source": "wf_close",
+      "target": "t_snowflake",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_119",
+      "source": "team_analytics",
+      "target": "dept_data",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_120",
+      "source": "p_team_analytics_lead",
+      "target": "team_analytics",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_121",
+      "source": "p_team_analytics_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_122",
+      "source": "p_team_analytics_0",
+      "target": "team_analytics",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_123",
+      "source": "p_team_analytics_0",
+      "target": "p_team_analytics_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_124",
+      "source": "p_team_analytics_1",
+      "target": "team_analytics",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_125",
+      "source": "p_team_analytics_1",
+      "target": "p_team_analytics_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_126",
+      "source": "team_analytics",
+      "target": "sop_metric",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_127",
+      "source": "a_metrics",
+      "target": "team_analytics",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_128",
+      "source": "a_metrics",
+      "target": "t_snowflake",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_129",
+      "source": "a_metrics",
+      "target": "t_slack",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_130",
+      "source": "a_metrics",
+      "target": "sop_metric",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_131",
+      "source": "wf_anomaly",
+      "target": "a_metrics",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_132",
+      "source": "wf_anomaly",
+      "target": "t_snowflake",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_133",
+      "source": "team_people",
+      "target": "dept_hr",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_134",
+      "source": "p_team_people_lead",
+      "target": "team_people",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_135",
+      "source": "p_team_people_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_136",
+      "source": "p_team_people_0",
+      "target": "team_people",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_137",
+      "source": "p_team_people_0",
+      "target": "p_team_people_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_138",
+      "source": "team_people",
+      "target": "sop_onboard",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_139",
+      "source": "a_onboard",
+      "target": "team_people",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_140",
+      "source": "a_onboard",
+      "target": "t_asana",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_141",
+      "source": "a_onboard",
+      "target": "t_slack",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_142",
+      "source": "a_onboard",
+      "target": "sop_onboard",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_143",
+      "source": "wf_onboard",
+      "target": "a_onboard",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_144",
+      "source": "wf_onboard",
+      "target": "t_asana",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_145",
+      "source": "team_legal",
+      "target": "dept_legal",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_146",
+      "source": "p_team_legal_lead",
+      "target": "team_legal",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_147",
+      "source": "p_team_legal_lead",
+      "target": "p_ceo",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_148",
+      "source": "p_team_legal_0",
+      "target": "team_legal",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_149",
+      "source": "p_team_legal_0",
+      "target": "p_team_legal_lead",
+      "rel_type": "reports_to"
+    },
+    {
+      "id": "e_150",
+      "source": "team_legal",
+      "target": "sop_gdpr",
+      "rel_type": "owns"
+    },
+    {
+      "id": "e_151",
+      "source": "a_dpa",
+      "target": "team_legal",
+      "rel_type": "member_of"
+    },
+    {
+      "id": "e_152",
+      "source": "a_dpa",
+      "target": "t_docusign",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_153",
+      "source": "a_dpa",
+      "target": "t_slack",
+      "rel_type": "uses"
+    },
+    {
+      "id": "e_154",
+      "source": "a_dpa",
+      "target": "sop_gdpr",
+      "rel_type": "follows"
+    },
+    {
+      "id": "e_155",
+      "source": "wf_dpa",
+      "target": "a_dpa",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_156",
+      "source": "wf_dpa",
+      "target": "t_docusign",
+      "rel_type": "part_of"
+    },
+    {
+      "id": "e_157",
+      "source": "p_ceo",
+      "target": "team_exec",
+      "rel_type": "member_of"
+    }
+  ]
+}

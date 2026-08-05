@@ -1,0 +1,159 @@
+source,target,rel_type,source_name,target_name
+team_exec,dept_strategy,part_of,Executive,Strategy & Leadership
+p_team_exec_lead,team_exec,member_of,Chief Executive Officer,Executive
+p_team_exec_lead,p_ceo,reports_to,Chief Executive Officer,Chief Executive Officer
+p_team_exec_0,team_exec,member_of,Chief of Staff,Executive
+p_team_exec_0,p_team_exec_lead,reports_to,Chief of Staff,Chief Executive Officer
+team_exec,sop_okr,owns,Executive,Quarterly OKR Planning SOP
+a_briefing,team_exec,member_of,Exec Briefing Agent,Executive
+a_briefing,t_slack,uses,Exec Briefing Agent,Slack
+a_briefing,t_snowflake,uses,Exec Briefing Agent,Snowflake
+a_briefing,sop_okr,follows,Exec Briefing Agent,Quarterly OKR Planning SOP
+wf_weekly_review,a_briefing,part_of,Weekly Business Review Workflow,Exec Briefing Agent
+wf_weekly_review,t_snowflake,part_of,Weekly Business Review Workflow,Snowflake
+wf_weekly_review,t_slack,part_of,Weekly Business Review Workflow,Slack
+team_core_product,dept_product,part_of,Core Product,Product Management
+p_team_core_product_lead,team_core_product,member_of,Head of Product,Core Product
+p_team_core_product_lead,p_ceo,reports_to,Head of Product,Chief Executive Officer
+p_team_core_product_0,team_core_product,member_of,Senior Product Manager,Core Product
+p_team_core_product_0,p_team_core_product_lead,reports_to,Senior Product Manager,Head of Product
+p_team_core_product_1,team_core_product,member_of,Product Manager,Core Product
+p_team_core_product_1,p_team_core_product_lead,reports_to,Product Manager,Head of Product
+team_core_product,sop_discovery,owns,Core Product,Product Discovery SOP
+a_feedback,team_core_product,member_of,Feedback Triage Agent,Core Product
+a_feedback,t_zendesk,uses,Feedback Triage Agent,Zendesk
+a_feedback,t_slack,uses,Feedback Triage Agent,Slack
+a_feedback,sop_discovery,follows,Feedback Triage Agent,Product Discovery SOP
+a_specwriter,team_core_product,member_of,Spec Drafting Agent,Core Product
+a_specwriter,t_asana,uses,Spec Drafting Agent,Asana
+a_specwriter,sop_discovery,follows,Spec Drafting Agent,Product Discovery SOP
+wf_feedback,a_feedback,part_of,Feedback-to-Roadmap Workflow,Feedback Triage Agent
+wf_feedback,t_zendesk,part_of,Feedback-to-Roadmap Workflow,Zendesk
+wf_feedback,t_asana,part_of,Feedback-to-Roadmap Workflow,Asana
+team_demandgen,dept_growth,part_of,Demand Gen,Marketing & Growth
+p_team_demandgen_lead,team_demandgen,member_of,Head of Growth,Demand Gen
+p_team_demandgen_lead,p_ceo,reports_to,Head of Growth,Chief Executive Officer
+p_team_demandgen_0,team_demandgen,member_of,Growth Marketer,Demand Gen
+p_team_demandgen_0,p_team_demandgen_lead,reports_to,Growth Marketer,Head of Growth
+p_team_demandgen_1,team_demandgen,member_of,Lifecycle Marketer,Demand Gen
+p_team_demandgen_1,p_team_demandgen_lead,reports_to,Lifecycle Marketer,Head of Growth
+team_demandgen,sop_outbound,owns,Demand Gen,Outbound Sequence SOP
+team_demandgen,sop_content,owns,Demand Gen,Content Production SOP
+a_seo,team_demandgen,member_of,SEO Sub-Agent,Demand Gen
+a_seo,t_gsc,uses,SEO Sub-Agent,Google Search Console
+a_seo,t_apollo,uses,SEO Sub-Agent,Apollo.io
+a_seo,sop_outbound,follows,SEO Sub-Agent,Outbound Sequence SOP
+a_outbound,team_demandgen,member_of,Outbound Sequencer Agent,Demand Gen
+a_outbound,t_apollo,uses,Outbound Sequencer Agent,Apollo.io
+a_outbound,t_hubspot,uses,Outbound Sequencer Agent,HubSpot
+a_outbound,sop_outbound,follows,Outbound Sequencer Agent,Outbound Sequence SOP
+wf_lead,a_outbound,part_of,Lead Enrichment Workflow,Outbound Sequencer Agent
+wf_lead,t_apollo,part_of,Lead Enrichment Workflow,Apollo.io
+wf_lead,t_hubspot,part_of,Lead Enrichment Workflow,HubSpot
+team_ae,dept_sales,part_of,Account Executives,Sales
+p_team_ae_lead,team_ae,member_of,Head of Sales,Account Executives
+p_team_ae_lead,p_ceo,reports_to,Head of Sales,Chief Executive Officer
+p_team_ae_0,team_ae,member_of,Account Executive,Account Executives
+p_team_ae_0,p_team_ae_lead,reports_to,Account Executive,Head of Sales
+p_team_ae_1,team_ae,member_of,Sales Development Rep,Account Executives
+p_team_ae_1,p_team_ae_lead,reports_to,Sales Development Rep,Head of Sales
+team_ae,sop_dealdesk,owns,Account Executives,Deal Desk Approval SOP
+a_dealdesk,team_ae,member_of,Deal Desk Agent,Account Executives
+a_dealdesk,t_hubspot,uses,Deal Desk Agent,HubSpot
+a_dealdesk,t_docusign,uses,Deal Desk Agent,DocuSign
+a_dealdesk,sop_dealdesk,follows,Deal Desk Agent,Deal Desk Approval SOP
+wf_quote,a_dealdesk,part_of,Quote-to-Contract Workflow,Deal Desk Agent
+wf_quote,t_hubspot,part_of,Quote-to-Contract Workflow,HubSpot
+wf_quote,t_docusign,part_of,Quote-to-Contract Workflow,DocuSign
+team_support,dept_cs,part_of,Customer Support,Customer & Admin
+p_team_support_lead,team_support,member_of,Head of Customer Success,Customer Support
+p_team_support_lead,p_ceo,reports_to,Head of Customer Success,Chief Executive Officer
+p_team_support_0,team_support,member_of,Customer Success Manager,Customer Support
+p_team_support_0,p_team_support_lead,reports_to,Customer Success Manager,Head of Customer Success
+p_team_support_1,team_support,member_of,Support Specialist,Customer Support
+p_team_support_1,p_team_support_lead,reports_to,Support Specialist,Head of Customer Success
+team_support,sop_escalation,owns,Customer Support,Support Escalation SOP
+a_triage,team_support,member_of,Ticket Triage Agent,Customer Support
+a_triage,t_zendesk,uses,Ticket Triage Agent,Zendesk
+a_triage,t_slack,uses,Ticket Triage Agent,Slack
+a_triage,sop_escalation,follows,Ticket Triage Agent,Support Escalation SOP
+wf_triage,a_triage,part_of,Ticket Triage Workflow,Ticket Triage Agent
+wf_triage,t_zendesk,part_of,Ticket Triage Workflow,Zendesk
+team_ops,dept_ops,part_of,Business Operations,Operations & Supply Chain
+p_team_ops_lead,team_ops,member_of,Head of Operations,Business Operations
+p_team_ops_lead,p_ceo,reports_to,Head of Operations,Chief Executive Officer
+p_team_ops_0,team_ops,member_of,Operations Analyst,Business Operations
+p_team_ops_0,p_team_ops_lead,reports_to,Operations Analyst,Head of Operations
+team_ops,sop_vendor,owns,Business Operations,Vendor Onboarding SOP
+a_vendor,team_ops,member_of,Vendor Review Agent,Business Operations
+a_vendor,t_asana,uses,Vendor Review Agent,Asana
+a_vendor,t_slack,uses,Vendor Review Agent,Slack
+a_vendor,sop_vendor,follows,Vendor Review Agent,Vendor Onboarding SOP
+wf_renewal,a_vendor,part_of,Vendor Renewal Workflow,Vendor Review Agent
+wf_renewal,t_asana,part_of,Vendor Renewal Workflow,Asana
+team_automation,dept_tech,part_of,AI & Automation,"Tech, AI & Automations"
+p_team_automation_lead,team_automation,member_of,Head of Engineering,AI & Automation
+p_team_automation_lead,p_ceo,reports_to,Head of Engineering,Chief Executive Officer
+p_team_automation_0,team_automation,member_of,Automation Engineer,AI & Automation
+p_team_automation_0,p_team_automation_lead,reports_to,Automation Engineer,Head of Engineering
+p_team_automation_1,team_automation,member_of,ML Engineer,AI & Automation
+p_team_automation_1,p_team_automation_lead,reports_to,ML Engineer,Head of Engineering
+team_automation,sop_agent_review,owns,AI & Automation,Agent Change Review SOP
+a_orchestrator,team_automation,member_of,Workflow Orchestrator Agent,AI & Automation
+a_orchestrator,t_github,uses,Workflow Orchestrator Agent,GitHub
+a_orchestrator,t_slack,uses,Workflow Orchestrator Agent,Slack
+a_orchestrator,sop_agent_review,follows,Workflow Orchestrator Agent,Agent Change Review SOP
+wf_deploy,a_orchestrator,part_of,Agent Deploy Workflow,Workflow Orchestrator Agent
+wf_deploy,t_github,part_of,Agent Deploy Workflow,GitHub
+team_finance,dept_finance,part_of,Finance & Accounting,Finance
+p_team_finance_lead,team_finance,member_of,Head of Finance,Finance & Accounting
+p_team_finance_lead,p_ceo,reports_to,Head of Finance,Chief Executive Officer
+p_team_finance_0,team_finance,member_of,Financial Analyst,Finance & Accounting
+p_team_finance_0,p_team_finance_lead,reports_to,Financial Analyst,Head of Finance
+team_finance,sop_close,owns,Finance & Accounting,Monthly Close SOP
+a_revrec,team_finance,member_of,Revenue Recognition Agent,Finance & Accounting
+a_revrec,t_stripe,uses,Revenue Recognition Agent,Stripe
+a_revrec,t_snowflake,uses,Revenue Recognition Agent,Snowflake
+a_revrec,sop_close,follows,Revenue Recognition Agent,Monthly Close SOP
+wf_close,a_revrec,part_of,Monthly Close Workflow,Revenue Recognition Agent
+wf_close,t_stripe,part_of,Monthly Close Workflow,Stripe
+wf_close,t_snowflake,part_of,Monthly Close Workflow,Snowflake
+team_analytics,dept_data,part_of,Analytics,Data & Analytics
+p_team_analytics_lead,team_analytics,member_of,Head of Data,Analytics
+p_team_analytics_lead,p_ceo,reports_to,Head of Data,Chief Executive Officer
+p_team_analytics_0,team_analytics,member_of,Analytics Engineer,Analytics
+p_team_analytics_0,p_team_analytics_lead,reports_to,Analytics Engineer,Head of Data
+p_team_analytics_1,team_analytics,member_of,Data Analyst,Analytics
+p_team_analytics_1,p_team_analytics_lead,reports_to,Data Analyst,Head of Data
+team_analytics,sop_metric,owns,Analytics,Metric Definition SOP
+a_metrics,team_analytics,member_of,Metrics QA Agent,Analytics
+a_metrics,t_snowflake,uses,Metrics QA Agent,Snowflake
+a_metrics,t_slack,uses,Metrics QA Agent,Slack
+a_metrics,sop_metric,follows,Metrics QA Agent,Metric Definition SOP
+wf_anomaly,a_metrics,part_of,Metric Anomaly Workflow,Metrics QA Agent
+wf_anomaly,t_snowflake,part_of,Metric Anomaly Workflow,Snowflake
+team_people,dept_hr,part_of,People Ops,Human Resources
+p_team_people_lead,team_people,member_of,Head of People,People Ops
+p_team_people_lead,p_ceo,reports_to,Head of People,Chief Executive Officer
+p_team_people_0,team_people,member_of,People Operations Specialist,People Ops
+p_team_people_0,p_team_people_lead,reports_to,People Operations Specialist,Head of People
+team_people,sop_onboard,owns,People Ops,Employee Onboarding SOP
+a_onboard,team_people,member_of,Onboarding Agent,People Ops
+a_onboard,t_asana,uses,Onboarding Agent,Asana
+a_onboard,t_slack,uses,Onboarding Agent,Slack
+a_onboard,sop_onboard,follows,Onboarding Agent,Employee Onboarding SOP
+wf_onboard,a_onboard,part_of,New Hire Onboarding Workflow,Onboarding Agent
+wf_onboard,t_asana,part_of,New Hire Onboarding Workflow,Asana
+team_legal,dept_legal,part_of,Legal & Compliance,"Legal, Risk & Compliance"
+p_team_legal_lead,team_legal,member_of,Head of Legal,Legal & Compliance
+p_team_legal_lead,p_ceo,reports_to,Head of Legal,Chief Executive Officer
+p_team_legal_0,team_legal,member_of,Compliance Manager,Legal & Compliance
+p_team_legal_0,p_team_legal_lead,reports_to,Compliance Manager,Head of Legal
+team_legal,sop_gdpr,owns,Legal & Compliance,GDPR Data Handling SOP
+a_dpa,team_legal,member_of,DPA Review Agent,Legal & Compliance
+a_dpa,t_docusign,uses,DPA Review Agent,DocuSign
+a_dpa,t_slack,uses,DPA Review Agent,Slack
+a_dpa,sop_gdpr,follows,DPA Review Agent,GDPR Data Handling SOP
+wf_dpa,a_dpa,part_of,Contract DPA Review Workflow,DPA Review Agent
+wf_dpa,t_docusign,part_of,Contract DPA Review Workflow,DocuSign
+p_ceo,team_exec,member_of,Chief Executive Officer,Executive

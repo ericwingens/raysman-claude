@@ -77,7 +77,7 @@ export function GiftSheet({ id, ctx, close }) {
         <div className="mrow" style={{ marginTop: 12 }}>
           <button className="btn btn-ghost btn-sm" onClick={close}>Abbrechen</button>
           <button className="btn btn-primary btn-sm" disabled={!g} style={{ opacity: g ? 1 : 0.5 }} onClick={send}>
-            {g ? `Senden · ${EUR(g.price)}` : "Senden"}
+            Senden{g && <span className="btn-amt">· {EUR(g.price)}</span>}
           </button>
         </div>
       </div>
@@ -185,7 +185,7 @@ export function BookSheet({ id, ctx }) {
 
         <button className="btn btn-primary" style={{ marginTop: 18, opacity: ready ? 1 : 0.5 }}
           disabled={!ready} onClick={confirm}>
-          {ready ? `Termin reservieren · ${EUR(chosen.price)}` : "Termin reservieren"}
+          Termin reservieren{ready && <span className="btn-amt">· {EUR(chosen.price)}</span>}
         </button>
         <p className="muted" style={{ fontSize: 11.5, textAlign: "center", marginTop: 10 }}>
           Bezahlt wird erst beim Call — dein Guthaben wird jetzt nicht belastet.
@@ -226,7 +226,7 @@ export function ProfileFull({ id, ctx }) {
           <TrustRow id={id} all={ctx.reviews} />
           {/* Figma call-profile card: gender + bio above the call action */}
           <div style={{ display: "flex", gap: 10, margin: "12px 0 8px" }}>
-            <button className="btn btn-primary" onClick={() => ctx.startCall(id)}><Ico name="phone" /> Ring me · {EUR(c.rate)}/Min</button>
+            <button className="btn btn-primary" onClick={() => ctx.startCall(id)}><Ico name="phone" />Ring me<span className="btn-amt">· {EUR(c.rate)}/Min</span></button>
             <button className="round md" style={{ flex: "none", border: "1px solid var(--line)" }} onClick={() => ctx.push("chat", id)}><Ico name="chat" /></button>
             <button className="round md" style={{ flex: "none", border: "1px solid var(--line)" }} onClick={() => ctx.push("tip", id)}><Ico name="gift" /></button>
           </div>

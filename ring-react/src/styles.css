@@ -58,13 +58,13 @@ button{font-family:inherit;color:inherit}
 .brandrow{display:flex;align-items:center;gap:10px}
 .ringmark{flex:none;display:block}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:none;cursor:pointer;font-weight:700;font-size:16px;padding:15px 22px;border-radius:999px;transition:transform .14s, filter .2s;width:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 9px;border:none;cursor:pointer;font-weight:700;font-size:16px;padding:15px 16px;border-radius:999px;transition:transform .14s, filter .2s;width:100%;min-width:0}
 .btn:active{transform:scale(.975)}
 .btn-primary{background:var(--brand-grad);color:#fff;box-shadow:0 12px 26px -12px rgba(245,118,26,.75)}
 .btn-ghost{background:var(--card-2);color:var(--ink);border:1px solid var(--line)}
 .btn-outline{background:transparent;color:var(--orange);border:1.6px solid var(--orange)}
 .btn svg{width:19px;height:19px}
-.btn-sm{padding:10px 16px;font-size:13.5px}
+.btn-sm{padding:10px 12px;font-size:13.5px}
 
 .seg{display:flex;gap:4px;background:var(--card-2);border:1px solid var(--line);padding:4px;border-radius:999px}
 .seg button{flex:1;border:none;background:transparent;color:var(--muted);font-weight:700;font-size:13.5px;padding:9px 0;border-radius:999px;cursor:pointer;transition:.2s}
@@ -289,6 +289,7 @@ button{font-family:inherit;color:inherit}
 .modal .mbox h3{margin:0 0 8px;font-size:18px;font-weight:800}
 .modal .mbox p{margin:0 0 16px;font-size:13px;color:var(--muted);line-height:1.5}
 .modal .mrow{display:flex;gap:10px}
+.modal .mrow .btn{width:auto;flex:1 1 auto;min-width:0}
 
 /* legal text pages */
 .legal h3{font-size:15px;font-weight:800;margin:18px 0 6px}
@@ -392,3 +393,8 @@ button{font-family:inherit;color:inherit}
 .lbrow .lb-s{font-size:12px;color:var(--muted);margin-top:2px}
 .lbrow .lb-sc{margin-left:auto;flex:none;text-align:right;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
 .lbrow .lb-sc span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+
+/* Amounts inside a button label must never break mid-price. Where a button is
+   still too narrow (the phone frame is min(430px,96vw)), it now breaks before
+   the amount instead of splitting "4,99" from "€". */
+.btn .btn-amt{white-space:nowrap;font-size:.85em;opacity:.92;font-weight:700}

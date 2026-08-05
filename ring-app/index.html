@@ -85,6 +85,7 @@ button{font-family:inherit;color:inherit}
 .wallet-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;background:var(--brand-grad);color:#fff;font-weight:700;font-size:13.5px;border:none;cursor:pointer;box-shadow:var(--shadow-sm)}
 .wallet-chip:active{transform:scale(.96)}
 .wallet-chip .coin{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#fff6,transparent 60%),#fff3;display:grid;place-items:center;font-size:10px}
+.wallet-chip .coin svg{width:11px;height:11px}
 
 /* ---------- Brand / original ring swirl logo ---------- */
 .brandrow{display:flex;align-items:center;gap:10px}
@@ -114,9 +115,11 @@ button{font-family:inherit;color:inherit}
 .swipe .name .age{font-weight:500;opacity:.92}
 .swipe .row{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);color:#fff}
+.chip svg{width:13px;height:13px}
 .chip.live{background:var(--live)}
 .chip.price{background:rgba(0,0,0,.42)}
 .badge-verif{color:#fff;background:#3B9CFF;border-radius:50%;width:19px;height:19px;display:inline-grid;place-items:center;font-size:11px;flex:none}
+.badge-verif svg{width:12px;height:12px}
 .tag{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.35);color:#fff}
 .stamp{position:absolute;top:34px;font-size:34px;font-weight:900;letter-spacing:.04em;padding:6px 16px;border:4px solid;border-radius:14px;opacity:0;transform:rotate(-16deg);pointer-events:none}
 .stamp.like{left:22px;color:var(--live);border-color:var(--live)}
@@ -165,6 +168,7 @@ button{font-family:inherit;color:inherit}
 .post-media{position:relative;aspect-ratio:4/5;background:#222}
 .post-media .locked{position:absolute;inset:0;display:grid;place-items:center;gap:12px;color:#fff;text-align:center;padding:24px;background:rgba(10,6,2,.30);backdrop-filter:blur(18px)}
 .post-media .locked .lk{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.post-media .locked .lk svg{width:26px;height:26px}
 .post-media .locked h4{margin:0;font-size:17px;font-weight:800}
 .post-media .locked p{margin:0;font-size:13px;opacity:.85;max-width:230px}
 .post-actions{display:flex;align-items:center;gap:18px;padding:12px 15px 6px;color:var(--ink)}
@@ -476,7 +480,7 @@ function go(v){state.view=v;render();document.getElementById("screen").scrollTop
 /* ---------- DISCOVER (swipe deck) ---------- */
 function renderDiscover(pad){
   pad.innerHTML=`
-  <div class="appbar">
+  <div class="appbar" style="padding:6px 0 10px">
     <div><div class="brandrow">${ringLockup(42)}</div>
     <div class="sub">Menschen & Creator in deiner Nähe</div></div>
     <button class="wallet-chip" onclick="openWallet()"><span class="coin">${I.bolt}</span><span data-bal>${EUR(state.balance)}</span></button>
@@ -556,7 +560,7 @@ function heartBurst(){
 function renderExplore(pad){
   const live=CREATORS.filter(c=>c.live);
   pad.innerHTML=`
-  <div class="appbar"><div><h1>Explore</h1><div class="sub">Entdecke Creator & Livestreams</div></div>
+  <div class="appbar" style="padding:6px 0 10px"><div><h1>Explore</h1><div class="sub">Entdecke Creator & Livestreams</div></div>
     <button class="wallet-chip" onclick="openWallet()"><span class="coin">${I.bolt}</span><span data-bal>${EUR(state.balance)}</span></button></div>
   <div class="seg" style="margin:2px 0 4px"><button class="on">Für dich</button><button onclick="toast('Filter: Trending')">Trending</button><button onclick="toast('Filter: In der Nähe')">In der Nähe</button></div>
   <div class="section-title">Jetzt Live <span class="muted" style="font-weight:600;font-size:12px">${live.length} aktiv</span></div>
@@ -581,7 +585,7 @@ function startLiveView(id){startCall(id,"live");}
 /* ---------- FEED ---------- */
 function renderFeed(pad){
   pad.innerHTML=`
-  <div class="appbar"><div><h1>Feed</h1><div class="sub">Von Creators, denen du folgst</div></div>
+  <div class="appbar" style="padding:6px 0 10px"><div><h1>Feed</h1><div class="sub">Von Creators, denen du folgst</div></div>
     <button class="iconbtn" onclick="toast('Benachrichtigungen')">${I.bell}</button></div>
   <div id="feedlist">${POSTS.map(postCard).join("")}</div>`;
 }
@@ -622,7 +626,7 @@ function unlockPost(id){const p=POSTS.find(x=>x.id===id);
 /* ---------- CHATS ---------- */
 function renderChats(pad){
   pad.innerHTML=`
-  <div class="appbar"><div><h1>Chats</h1><div class="sub">Nachrichten & Matches</div></div>
+  <div class="appbar" style="padding:6px 0 10px"><div><h1>Chats</h1><div class="sub">Nachrichten & Matches</div></div>
     <button class="iconbtn" onclick="toast('Neue Nachricht')">${I.send}</button></div>
   <div class="section-title">Neue Matches</div>
   <div class="hscroll">${[...state.liked].filter(id=>byId(id)).concat(["mia","sofia"]).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6).map(id=>{const c=byId(id);return `
@@ -640,7 +644,7 @@ function renderChats(pad){
 /* ---------- ME ---------- */
 function renderMe(pad){
   pad.innerHTML=`
-  <div class="appbar"><div class="brandrow">${ringLockup(42)}</div>
+  <div class="appbar" style="padding:6px 0 10px"><div class="brandrow">${ringLockup(42)}</div>
     <button class="iconbtn" onclick="toast('Benachrichtigungen')">${I.bell}</button></div>
   <div style="text-align:center;padding:10px 0 6px">
     <div class="avatar ring" style="width:96px;height:96px;margin:0 auto"><div style="${photoStyle('you')}"></div></div>

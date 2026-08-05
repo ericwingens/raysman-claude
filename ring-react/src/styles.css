@@ -327,3 +327,12 @@ button{font-family:inherit;color:inherit}
 .sw.on{background:var(--orange)}
 .sw.on i{transform:translateX(19px)}
 .warnbox{background:color-mix(in srgb,var(--gold) 12%, var(--card));border:1px solid color-mix(in srgb,var(--gold) 35%, var(--line));border-radius:14px;padding:13px 15px;font-size:13px;line-height:1.5;margin:14px 0}
+
+/* ---------- Marketplace layer: trust metrics, level, badges ---------- */
+.trust{display:flex;gap:8px;margin:12px 0 2px}
+.trust .t{flex:1;background:var(--card-2);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
+.trust .t b{display:block;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.trust .t span{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.01em}
+.lvl{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 0 2px}
+.lvl .pip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-grad);color:#fff;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800;box-shadow:var(--shadow-sm)}
+.badge-pill{display:inline-flex;align-items:center;gap:5px;border:1.6px solid var(--line);background:var(--card);border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:700;color:var(--ink-2)}

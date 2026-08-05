@@ -1,6 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
-import { byId } from "../data.js";
-import { photoStyle, EUR, Ico } from "../lib.jsx";
+import { byId, STATS, BADGES, levelLabel, rating } from "../data.js";
+import { photoStyle, EUR, Ico, num } from "../lib.jsx";
+
+/* Delivery quality at a glance, plus the creator's level and earned badges.
+   Reads as "can I trust this person with my money" before the call button. */
+export function TrustRow({ id }) {
+  const st = STATS[id];
+  if (!st) return null;
+  const r = rating(id);
+  return (
+    <>
+      <div className="trust">
+        <div className="t"><b>{r.avg ? r.avg.toFixed(1) : "—"}</b><span>{r.count} Bewertungen</span></div>
+        <div className="t"><b>{st.response}%</b><span>Antwortquote</span></div>
+        <div className="t"><b>{st.repeat}%</b><span>Stammgäste</span></div>
+      </div>
+      <div className="lvl">
+        <span className="pip">Level {st.level} · {levelLabel(st.level)}</span>
+        {st.badges.map((b) => (
+          <span key={b} className="badge-pill">{BADGES[b].em} {BADGES[b].label}</span>
+        ))}
+        <span className="badge-pill">{num(st.calls)} Calls</span>
+      </div>
+    </>
+  );
+}
 
 /* Slide-in helper: adds .show a frame after mount so transitions run. */
 function useShow() {
@@ -37,8 +61,9 @@ export function ProfileFull({ id, ctx }) {
         </div>
 
         <div style={{ padding: "16px 18px 40px" }}>
+          <TrustRow id={id} />
           {/* Figma call-profile card: gender + bio above the call action */}
-          <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
+          <div style={{ display: "flex", gap: 10, margin: "12px 0 8px" }}>
             <button className="btn btn-primary" onClick={() => ctx.startCall(id)}><Ico name="phone" /> Ring me · {EUR(c.rate)}/Min</button>
             <button className="round md" style={{ flex: "none", border: "1px solid var(--line)" }} onClick={() => ctx.push("chat", id)}><Ico name="chat" /></button>
             <button className="round md" style={{ flex: "none", border: "1px solid var(--line)" }} onClick={() => ctx.push("tip", id)}><Ico name="gift" /></button>

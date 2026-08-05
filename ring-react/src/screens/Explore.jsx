@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { CREATORS } from "../data.js";
-import { photoStyle, EUR, Ico } from "../lib.jsx";
+import { CREATORS, leaderboard, STATS } from "../data.js";
+import { photoStyle, EUR, Ico, num } from "../lib.jsx";
 
 /*
  * Explore — 1:1 after the Figma pattern: top tabs "Explore | Matches",
@@ -70,6 +70,21 @@ export default function Explore({ ctx }) {
                   <Ico name="heart" />
                 </button>
               </div>
+            </div>
+          ))}
+
+          <div className="section-title">Rangliste der Woche
+            <span className="muted" style={{ fontWeight: 600, fontSize: 12 }}>nach Calls &amp; Bewertung</span>
+          </div>
+          {leaderboard(ctx.reviews).slice(0, 5).map((c, i) => (
+            <div key={c.id} className="lbrow" onClick={() => ctx.push("profile", c.id)}>
+              <div className={`rank ${i < 3 ? "top" : ""}`}>{i + 1}</div>
+              <div className="avatar" style={{ width: 38, height: 38, ...photoStyle(c.id) }} />
+              <div style={{ minWidth: 0 }}>
+                <div className="lb-n">{c.name}</div>
+                <div className="lb-s">Level {STATS[c.id].level} · {c.tags[0]}</div>
+              </div>
+              <div className="lb-sc">{num(c.score)}<span>Punkte</span></div>
             </div>
           ))}
 

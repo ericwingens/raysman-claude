@@ -283,7 +283,7 @@ button{font-family:inherit;color:inherit}
 .rec-btn svg{width:28px;height:28px}
 
 /* centered modal (Figma: Delete Account / Change image) */
-.modal{position:absolute;inset:0;display:grid;place-items:center;z-index:75;padding:30px}
+.modal{position:absolute;inset:0;display:grid;place-items:center;z-index:94;padding:30px}
 .modal .mbox{background:var(--paper);border-radius:22px;padding:22px;box-shadow:var(--shadow);width:100%;max-width:320px;text-align:center;transform:scale(.94);opacity:0;transition:.25s}
 .modal.show .mbox{transform:scale(1);opacity:1}
 .modal .mbox h3{margin:0 0 8px;font-size:18px;font-weight:800}
@@ -375,3 +375,20 @@ button{font-family:inherit;color:inherit}
 .rate-pick button{border:none;background:none;padding:2px;cursor:pointer;color:var(--line);line-height:0}
 .rate-pick button.on{color:var(--gold)}
 .rate-pick svg{width:34px;height:34px}
+
+/* ---------- Virtual gifts and the creator leaderboard ---------- */
+.giftgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:8px 0 4px}
+.giftcard{border:1.6px solid var(--line);background:var(--card);border-radius:16px;padding:12px 6px;text-align:center;cursor:pointer}
+.giftcard.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 10%, var(--card))}
+.giftcard .g-em{font-size:28px;line-height:1.1}
+.giftcard .g-n{font-size:12px;font-weight:700;margin-top:4px}
+.giftcard .g-p{font-size:11.5px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+.giftfly{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);font-size:54px;pointer-events:none;z-index:120;animation:giftup 1.6s ease-out forwards}
+@keyframes giftup{0%{opacity:0;transform:translate(-50%,20px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-190px) scale(1)}}
+.lbrow{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.lbrow .rank{width:26px;flex:none;text-align:center;font-weight:800;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lbrow .rank.top{color:var(--gold)}
+.lbrow .lb-n{font-weight:700;font-size:14.5px}
+.lbrow .lb-s{font-size:12px;color:var(--muted);margin-top:2px}
+.lbrow .lb-sc{margin-left:auto;flex:none;text-align:right;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+.lbrow .lb-sc span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}

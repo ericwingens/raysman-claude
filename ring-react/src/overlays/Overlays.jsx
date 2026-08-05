@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS } from "../data.js";
+import { byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS, GIFTS } from "../data.js";
 import { photoStyle, EUR, Ico, num } from "../lib.jsx";
 
 /* Delivery quality at a glance, plus the creator's level and earned badges.
@@ -43,6 +43,46 @@ function useShow() {
   const [show, setShow] = useState(false);
   useEffect(() => { const r = requestAnimationFrame(() => setShow(true)); return () => cancelAnimationFrame(r); }, []);
   return show;
+}
+
+
+/* ---------------- Gift picker, opened from a call or a live view ----------------
+   Spends from the wallet and floats the emoji up the screen. */
+export function GiftSheet({ id, ctx, close }) {
+  const c = byId(id);
+  const [sel, setSel] = useState(null);
+  const g = GIFTS.find((x) => x.id === sel);
+
+  const send = () => {
+    if (!ctx.spend(g.price, `${g.em} ${g.name} an ${c.name} gesendet`)) { close(); ctx.push("wallet"); return; }
+    ctx.flyGift(g.em);
+    close();
+  };
+
+  return (
+    <div className="modal show" onClick={close}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(8,4,1,.5)" }} />
+      <div className="mbox" style={{ position: "relative", maxWidth: 340 }} onClick={(e) => e.stopPropagation()}>
+        <h3>Geschenk an {c.name}</h3>
+        <p>Wird sofort von deinem Guthaben abgebucht.</p>
+        <div className="giftgrid">
+          {GIFTS.map((x) => (
+            <div key={x.id} className={`giftcard ${sel === x.id ? "on" : ""}`} onClick={() => setSel(x.id)}>
+              <div className="g-em">{x.em}</div>
+              <div className="g-n">{x.name}</div>
+              <div className="g-p">{EUR(x.price)}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mrow" style={{ marginTop: 12 }}>
+          <button className="btn btn-ghost btn-sm" onClick={close}>Abbrechen</button>
+          <button className="btn btn-primary btn-sm" disabled={!g} style={{ opacity: g ? 1 : 0.5 }} onClick={send}>
+            {g ? `Senden · ${EUR(g.price)}` : "Senden"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* ---------------- Rating prompt, shown once a call has ended ---------------- */
@@ -431,6 +471,7 @@ export function CallScreen({ call, ctx }) {
         <div className="ctrow">
           <button className="cbtn" onClick={() => ctx.toast("Mikro stumm")}><Ico name="mic" /></button>
           <button className="cbtn tip" onClick={() => ctx.push("tip", call.id)}><Ico name="gift" /></button>
+          <button className="cbtn" aria-label="Geschenk senden" onClick={() => ctx.openGift(call.id)}><Ico name="star" /></button>
           <button className="cbtn" onClick={() => ctx.toast("Kamera gewechselt")}><Ico name="camflip" /></button>
         </div>
         <button className="cbtn end" style={{ width: 72, height: 72 }} onClick={() => ctx.endCall(false)}><Ico name="phone" /></button>

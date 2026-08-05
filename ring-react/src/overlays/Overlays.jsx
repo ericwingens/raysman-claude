@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { byId, STATS, BADGES, levelLabel, rating } from "../data.js";
+import { byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel } from "../data.js";
 import { photoStyle, EUR, Ico, num } from "../lib.jsx";
 
 /* Delivery quality at a glance, plus the creator's level and earned badges.
@@ -31,6 +31,79 @@ function useShow() {
   const [show, setShow] = useState(false);
   useEffect(() => { const r = requestAnimationFrame(() => setShow(true)); return () => cancelAnimationFrame(r); }, []);
   return show;
+}
+
+/* ---------------- Booking: pick a package, a day, a time ----------------
+   No escrow and no order states — the slot is reserved and the paid call runs
+   as usual when it starts. Deliberate: those were declined for this round. */
+export function BookSheet({ id, ctx }) {
+  const show = useShow();
+  const c = byId(id);
+  const svcs = SERVICES[id] || [];
+  const [svc, setSvc] = useState(svcs[0]?.id || null);
+  const [day, setDay] = useState(null);
+  const [time, setTime] = useState(null);
+
+  const days = Array.from({ length: 7 }, (_, i) => ({ ...dayLabel(i), slots: availability(id, i) }));
+  const chosen = svcs.find((s) => s.id === svc);
+  const slots = day === null ? [] : days[day].slots;
+  const ready = chosen && day !== null && time;
+
+  const confirm = () => {
+    ctx.setBookings((b) => [...b, { key: Date.now(), cid: id, svc: chosen, dayOffset: day, time }]);
+    ctx.toast(`Termin bei ${c.name} reserviert · ${days[day].dow}. ${time} Uhr`);
+    ctx.pop();
+  };
+
+  return (
+    <div className={`full ${show ? "show" : ""}`}>
+      <div className="ftop">
+        <button className="iconbtn" onClick={ctx.pop}><Ico name="arrow" /></button>
+        <h3>Termin bei {c.name}</h3>
+        <span style={{ width: 42 }} />
+      </div>
+      <div className="fscreen" style={{ padding: "4px 18px 30px" }}>
+        <div className="section-title">Leistung wählen</div>
+        {svcs.map((s) => (
+          <div key={s.id} className={`svc ${svc === s.id ? "on" : ""}`} onClick={() => setSvc(s.id)}>
+            <div style={{ minWidth: 0 }}>
+              <div className="sv-n">{s.name}</div>
+              <div className="sv-d">{s.desc}</div>
+            </div>
+            <div className="sv-p"><b>{EUR(s.price)}</b><span>{s.mins} Min</span></div>
+          </div>
+        ))}
+
+        <div className="section-title">Tag wählen</div>
+        <div className="daystrip">
+          {days.map((d, i) => (
+            <div key={i} className={`day ${day === i ? "on" : ""} ${d.slots.length ? "" : "off"}`}
+              onClick={() => { if (!d.slots.length) return; setDay(i); setTime(null); }}>
+              <div className="dw">{d.today ? "Heute" : d.dow}</div>
+              <div className="dn">{d.num}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="section-title">Uhrzeit</div>
+        {day === null
+          ? <p className="muted" style={{ fontSize: 13 }}>Wähle zuerst einen Tag.</p>
+          : <div className="slots">
+              {slots.map((t) => (
+                <span key={t} className={`slot ${time === t ? "on" : ""}`} onClick={() => setTime(t)}>{t}</span>
+              ))}
+            </div>}
+
+        <button className="btn btn-primary" style={{ marginTop: 18, opacity: ready ? 1 : 0.5 }}
+          disabled={!ready} onClick={confirm}>
+          {ready ? `Termin reservieren · ${EUR(chosen.price)}` : "Termin reservieren"}
+        </button>
+        <p className="muted" style={{ fontSize: 11.5, textAlign: "center", marginTop: 10 }}>
+          Bezahlt wird erst beim Call — dein Guthaben wird jetzt nicht belastet.
+        </p>
+      </div>
+    </div>
+  );
 }
 
 /* ---------------- Creator profile (full screen) ---------------- */
@@ -74,6 +147,18 @@ export function ProfileFull({ id, ctx }) {
           <div className="set-row" style={{ borderBottom: "1px solid var(--line)", paddingTop: 6 }}>
             <div><div className="lbl">Bio</div><p style={{ fontSize: 14.5, lineHeight: 1.5, color: "var(--ink-2)", margin: "4px 0 8px" }}>{c.bio}</p></div>
           </div>
+
+          <div className="section-title">Buchbare Leistungen</div>
+          {(SERVICES[id] || []).map((sv) => (
+            <div key={sv.id} className="svc" onClick={() => ctx.push("book", id)}>
+              <div style={{ minWidth: 0 }}>
+                <div className="sv-n">{sv.name}</div>
+                <div className="sv-d">{sv.desc}</div>
+              </div>
+              <div className="sv-p"><b>{EUR(sv.price)}</b><span>{sv.mins} Min</span></div>
+            </div>
+          ))}
+          <button className="btn btn-ghost btn-sm" onClick={() => ctx.push("book", id)}>Termin buchen</button>
 
           <div className="section-title">Abo-Optionen</div>
           <div className="tier">

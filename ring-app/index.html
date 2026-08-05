@@ -370,6 +370,29 @@ button{font-family:inherit;color:inherit}
 .lvl{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 0 2px}
 .lvl .pip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-grad);color:#fff;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800;box-shadow:var(--shadow-sm)}
 .badge-pill{display:inline-flex;align-items:center;gap:5px;border:1.6px solid var(--line);background:var(--card);border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:700;color:var(--ink-2)}
+
+/* ---------- Service packages, availability calendar, bookings ---------- */
+.svc{display:flex;gap:12px;align-items:center;border:1.6px solid var(--line);background:var(--card);border-radius:16px;padding:13px 14px;margin-bottom:9px;cursor:pointer;transition:border-color .15s}
+.svc:active{transform:scale(.99)}
+.svc.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 8%, var(--card))}
+.svc .sv-n{font-weight:800;font-size:14.5px}
+.svc .sv-d{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.4}
+.svc .sv-p{margin-left:auto;text-align:right;flex:none}
+.svc .sv-p b{display:block;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.svc .sv-p span{font-size:11px;color:var(--muted);font-weight:600}
+.daystrip{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px}
+.daystrip::-webkit-scrollbar{display:none}
+.day{flex:none;width:52px;border:1.6px solid var(--line);background:var(--card);border-radius:14px;padding:8px 0;text-align:center;cursor:pointer}
+.day.on{border-color:var(--orange);background:var(--brand-grad);color:#fff}
+.day .dw{font-size:11px;font-weight:700;opacity:.8}
+.day .dn{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.day.off{opacity:.4;cursor:default}
+.slots{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.slot{border:1.6px solid var(--line);background:var(--card);border-radius:999px;padding:9px 15px;font-weight:700;font-size:13.5px;cursor:pointer;font-variant-numeric:tabular-nums}
+.slot.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 12%, var(--card));color:var(--orange-ink)}
+.bk-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.bk-row .bk-when{margin-left:auto;text-align:right;font-size:12.5px;color:var(--muted);font-weight:600;flex:none}
+.bk-row .bk-when b{display:block;color:var(--ink);font-size:13.5px;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -550,6 +573,7 @@ const state={
   subs:new Set(["mia"]),
   unlocked:new Set(),
   liked:new Set(),
+  bookings:[],
   deckIdx:0,
   callTimer:null, callSecs:0, callCost:0, callRate:1.99, callId:null,
 };
@@ -860,6 +884,18 @@ function renderMe(pad){
   ${row(I.bolt,"Wallet & Guthaben","openWallet()",EUR(state.balance))}
   ${row(I.star,"Ring Premium","toast('Premium: unbegrenzte Likes, kostenlose Calls & mehr')","Upgrade")}
   ${row(I.video,"Creator werden","toast('Werde Creator: verdiene mit Abos, Calls & PPV')","")}
+  <div class="section-title">Meine Termine</div>
+  ${state.bookings.length===0
+    ? '<p class="muted" style="font-size:13px">Noch keine Termine — buche eine Leistung im Creator-Profil.</p>'
+    : state.bookings.map(b=>{const c=byId(b.cid),d=dayLabel(b.dayOffset);
+        return `<div class="bk-row" onclick="openProfile('${b.cid}')">
+          <span class="avatar" style="width:38px;height:38px;${photoStyle(b.cid)}"></span>
+          <div style="min-width:0">
+            <div style="font-weight:700;font-size:14.5px">${c.name}</div>
+            <div class="muted" style="font-size:12.5px">${b.svc.name} · ${b.svc.mins} Min</div></div>
+          <div class="bk-when"><b>${d.today?'Heute':d.dow+'. '+d.num+'.'}</b>${b.time} Uhr</div></div>`;
+      }).join("")}
+
   <div class="section-title">Meine Abos</div>
   ${[...state.subs].map(id=>{const c=byId(id);return row(`<span class="avatar" style="width:28px;height:28px;${photoStyle(id)}"></span>`,c.name,`openProfile('${id}')`,"aktiv");}).join("")||`<p class="muted" style="font-size:13px">Noch keine Abos. Entdecke Creator im Explore-Tab.</p>`}
   <div class="section-title">Einstellungen</div>
@@ -938,6 +974,12 @@ function openProfile(id){
         <button class="round md" style="flex:none;border:1px solid var(--line)" onclick="openTip('${id}')">${I.gift}</button>
       </div>
       <p style="font-size:14.5px;line-height:1.5;color:var(--ink-2)">${c.bio}</p>
+
+      <div class="section-title">Buchbare Leistungen</div>
+      ${(SERVICES[id]||[]).map(sv=>`<div class="svc" onclick="openBook('${id}')">
+        <div style="min-width:0"><div class="sv-n">${sv.name}</div><div class="sv-d">${sv.desc}</div></div>
+        <div class="sv-p"><b>${EUR(sv.price)}</b><span>${sv.mins} Min</span></div></div>`).join("")}
+      <button class="btn btn-ghost btn-sm" onclick="openBook('${id}')">Termin buchen</button>
 
       <div class="section-title">Abo-Optionen</div>
       <div class="tier">
@@ -1495,6 +1537,67 @@ function unmatch(id,name){_unmatched.add(id);toast(`Match mit ${name} entfernt`)
 let exploreTab="explore";
 function setExploreTab(t){exploreTab=t;render();}
 
+/* =========================================================================
+   BOOKING — pick a package, a day, a time. Mirrors the React BookSheet.
+   No escrow and no order states: the slot is reserved, and the paid call runs
+   as usual when it starts. Those were declined for this round.
+   ========================================================================= */
+const book={cid:null,svc:null,day:null,time:null};
+let bookNode=null;
+
+function openBook(id){
+  const svcs=SERVICES[id]||[];
+  book.cid=id;book.svc=svcs[0]?svcs[0].id:null;book.day=null;book.time=null;
+  bookNode=overlay(drawBook(),"full");
+}
+function bookPick(kind,val){
+  if(kind==="svc")book.svc=val;
+  else if(kind==="day"){book.day=+val;book.time=null;}
+  else book.time=val;
+  if(bookNode)bookNode.innerHTML=drawBook();
+}
+function drawBook(){
+  const id=book.cid,c=byId(id),svcs=SERVICES[id]||[];
+  const days=Array.from({length:7},(_,i)=>Object.assign({},dayLabel(i),{slots:availability(id,i)}));
+  const chosen=svcs.find(s=>s.id===book.svc);
+  const slots=book.day===null?[]:days[book.day].slots;
+  const ready=chosen&&book.day!==null&&book.time;
+  return `<div class="ftop">
+      <button class="iconbtn" onclick="openProfile('${id}')">${I.arrow}</button>
+      <h3>Termin bei ${c.name}</h3><span style="width:42px"></span>
+    </div>
+    <div class="fscreen" style="padding:4px 18px 30px">
+      <div class="section-title">Leistung wählen</div>
+      ${svcs.map(s=>`<div class="svc ${book.svc===s.id?'on':''}" onclick="bookPick('svc','${s.id}')">
+        <div style="min-width:0"><div class="sv-n">${s.name}</div><div class="sv-d">${s.desc}</div></div>
+        <div class="sv-p"><b>${EUR(s.price)}</b><span>${s.mins} Min</span></div></div>`).join("")}
+
+      <div class="section-title">Tag wählen</div>
+      <div class="daystrip">${days.map((d,i)=>`
+        <div class="day ${book.day===i?'on':''} ${d.slots.length?'':'off'}"
+          ${d.slots.length?`onclick="bookPick('day',${i})"`:''}>
+          <div class="dw">${d.today?'Heute':d.dow}</div><div class="dn">${d.num}</div></div>`).join("")}</div>
+
+      <div class="section-title">Uhrzeit</div>
+      ${book.day===null?'<p class="muted" style="font-size:13px">Wähle zuerst einen Tag.</p>'
+        :`<div class="slots">${slots.map(t=>`<span class="slot ${book.time===t?'on':''}" onclick="bookPick('time','${t}')">${t}</span>`).join("")}</div>`}
+
+      <button class="btn btn-primary" style="margin-top:18px;opacity:${ready?1:.5}" ${ready?'':'disabled'}
+        onclick="confirmBook()">${ready?`Termin reservieren · ${EUR(chosen.price)}`:'Termin reservieren'}</button>
+      <p class="muted" style="font-size:11.5px;text-align:center;margin-top:10px">
+        Bezahlt wird erst beim Call — dein Guthaben wird jetzt nicht belastet.</p>
+    </div>`;
+}
+function confirmBook(){
+  const c=byId(book.cid),svcs=SERVICES[book.cid]||[];
+  const chosen=svcs.find(s=>s.id===book.svc);
+  const d=dayLabel(book.day);
+  state.bookings.push({key:Date.now(),cid:book.cid,svc:chosen,dayOffset:book.day,time:book.time});
+  closeOverlay();
+  toast(`Termin bei ${c.name} reserviert · ${d.dow}. ${book.time} Uhr`);
+  render();
+}
+
 /* ---- boot ---- */
 render();
 onboarding();
@@ -1506,7 +1609,7 @@ window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverl
 window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;
 window.startRegister=startRegister;window.regBack=regBack;window.regNext=regNext;window.regPick=regPick;window.regAge=regAge;window.toggleRegRec=toggleRegRec;window.reg=reg;window.drawRegister=drawRegister;
 window.openLegal=openLegal;window.modal=modal;window.closeModal=closeModal;window.askDelete=askDelete;window.askImage=askImage;
-window.playIntro=playIntro;window.likePerson=likePerson;window.unmatch=unmatch;window.setExploreTab=setExploreTab;window.setRow=setRow;window.trustRow=trustRow;window.removeMyPhoto=removeMyPhoto;window.nearbyList=nearbyList;window.matchesList=matchesList;window.buildDeck=buildDeck;window.state=state;
+window.playIntro=playIntro;window.likePerson=likePerson;window.unmatch=unmatch;window.setExploreTab=setExploreTab;window.setRow=setRow;window.trustRow=trustRow;window.openBook=openBook;window.bookPick=bookPick;window.confirmBook=confirmBook;window.drawBook=drawBook;window.removeMyPhoto=removeMyPhoto;window.nearbyList=nearbyList;window.matchesList=matchesList;window.buildDeck=buildDeck;window.state=state;
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { byId } from "../data.js";
+import { byId, dayLabel } from "../data.js";
 import { photoStyle, EUR, Ico, RingLockup } from "../lib.jsx";
 
 /*
@@ -63,6 +63,23 @@ export default function Me({ ctx }) {
       <Row icon="bolt" label="Wallet & Guthaben" right={EUR(ctx.balance)} onClick={() => ctx.push("wallet")} />
       <Row icon="star" label="Ring Premium" right="Upgrade" onClick={() => ctx.toast("Premium: unbegrenzte Likes, günstigere Calls & mehr")} />
       <Row icon="video" label="Creator werden" right="" onClick={() => ctx.toast("Werde Creator: verdiene mit Abos, Calls & PPV")} />
+
+      <div className="section-title">Meine Termine</div>
+      {ctx.bookings.length === 0
+        ? <p className="muted" style={{ fontSize: 13 }}>Noch keine Termine — buche eine Leistung im Creator-Profil.</p>
+        : ctx.bookings.map((b) => {
+            const c = byId(b.cid), d = dayLabel(b.dayOffset);
+            return (
+              <div key={b.key} className="bk-row" onClick={() => ctx.push("profile", b.cid)}>
+                <span className="avatar" style={{ width: 38, height: 38, ...photoStyle(b.cid) }} />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14.5 }}>{c.name}</div>
+                  <div className="muted" style={{ fontSize: 12.5 }}>{b.svc.name} · {b.svc.mins} Min</div>
+                </div>
+                <div className="bk-when"><b>{d.today ? "Heute" : `${d.dow}. ${d.num}.`}</b>{b.time} Uhr</div>
+              </div>
+            );
+          })}
 
       <div className="section-title">Meine Abos</div>
       {[...ctx.subs].map((id) => {

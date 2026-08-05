@@ -8,7 +8,7 @@ import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
 import Chats from "./screens/Chats.jsx";
 import Me from "./screens/Me.jsx";
-import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull } from "./overlays/Overlays.jsx";
+import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet } from "./overlays/Overlays.jsx";
 
 export default function App() {
   // ---- global state ----
@@ -19,6 +19,7 @@ export default function App() {
   const [unlocked, setUnlocked] = useState(() => new Set());
   const [likedPosts, setLikedPosts] = useState(() => new Set());
   const [likedPeople, setLikedPeople] = useState(() => new Set());
+  const [bookings, setBookings] = useState([]); // {id, cid, svc, dayOffset, time}
   const [overlays, setOverlays] = useState([]); // stack: {kind, id}
   const [call, setCall] = useState(null); // {id, secs, cost, status}
   const [toastMsg, setToastMsg] = useState(null);
@@ -92,6 +93,7 @@ export default function App() {
   const ctx = {
     balance, setBalance, subs, setSubs, unlocked, setUnlocked,
     likedPosts, setLikedPosts, likedPeople, setLikedPeople,
+    bookings, setBookings,
     toast, spend, push, pop, popAll, startCall, endCall, setPhase,
   };
 
@@ -130,7 +132,7 @@ export default function App() {
       {/* overlay stack */}
       {overlays.length > 0 && <div className="sheet-scrim show" onClick={pop} />}
       {overlays.map((o) => {
-        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile }[o.kind];
+        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet }[o.kind];
         return P ? <P key={o.key} id={o.id} ctx={ctx} /> : null;
       })}
 

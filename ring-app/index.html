@@ -393,6 +393,22 @@ button{font-family:inherit;color:inherit}
 .bk-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)}
 .bk-row .bk-when{margin-left:auto;text-align:right;font-size:12.5px;color:var(--muted);font-weight:600;flex:none}
 .bk-row .bk-when b{display:block;color:var(--ink);font-size:13.5px;font-variant-numeric:tabular-nums}
+
+/* ---------- Reviews and the post-call rating prompt ---------- */
+.rv{display:flex;gap:11px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.rv .rv-av{width:34px;height:34px;border-radius:50%;flex:none;background:var(--card-2);display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--muted)}
+.rv .rv-n{font-weight:700;font-size:13.5px}
+.rv .rv-w{font-size:11.5px;color:var(--muted);margin-left:6px;font-weight:600}
+.rv p{margin:4px 0 0;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+.stars{display:inline-flex;gap:2px;color:var(--gold);vertical-align:-1px}
+.stars svg{width:13px;height:13px}
+.stars.big{gap:8px}
+.stars.big svg{width:34px;height:34px}
+.stars .off{color:var(--line)}
+.rate-pick{display:flex;justify-content:center;gap:8px;margin:14px 0 4px}
+.rate-pick button{border:none;background:none;padding:2px;cursor:pointer;color:var(--line);line-height:0}
+.rate-pick button.on{color:var(--gold)}
+.rate-pick svg{width:34px;height:34px}
 </style>
 </head>
 <body>
@@ -503,8 +519,8 @@ const REVIEWS = {
           { id: "r2", by: "Flo", stars: 4, when: "vor 1 Woche", text: "Gutes Coaching, Termin war etwas kurzfristig verschoben." }],
 };
 
-const rating = (id) => {
-  const rs = REVIEWS[id] || [];
+const rating = (id, all = REVIEWS) => {
+  const rs = all[id] || [];
   if (!rs.length) return { avg: 0, count: 0 };
   return { avg: rs.reduce((s, r) => s + r.stars, 0) / rs.length, count: rs.length };
 };
@@ -520,9 +536,9 @@ const GIFTS = [
 ];
 
 // Leaderboard score: delivered calls weighted by rating, so quality beats volume.
-const leaderboard = () =>
+const leaderboard = (all = REVIEWS) =>
   CREATORS.map((c) => {
-    const st = STATS[c.id], r = rating(c.id);
+    const st = STATS[c.id], r = rating(c.id, all);
     return { ...c, score: Math.round(st.calls * (r.avg || 4) * (st.completion / 100)) };
   }).sort((a, b) => b.score - a.score);
 
@@ -939,7 +955,7 @@ function closeOverlay(){document.querySelectorAll(".sheet,.sheet-scrim,.full").f
    the React TrustRow renders. */
 function trustRow(id){
   const st=STATS[id];if(!st)return"";
-  const r=rating(id);
+  const r=rating(id,USER_REVIEWS);
   return `<div class="trust">
       <div class="t"><b>${r.avg?r.avg.toFixed(1):"—"}</b><span>${r.count} Bewertungen</span></div>
       <div class="t"><b>${st.response}%</b><span>Antwortquote</span></div>
@@ -980,6 +996,11 @@ function openProfile(id){
         <div style="min-width:0"><div class="sv-n">${sv.name}</div><div class="sv-d">${sv.desc}</div></div>
         <div class="sv-p"><b>${EUR(sv.price)}</b><span>${sv.mins} Min</span></div></div>`).join("")}
       <button class="btn btn-ghost btn-sm" onclick="openBook('${id}')">Termin buchen</button>
+
+      <div class="section-title">Bewertungen
+        <span class="muted" style="font-weight:600;font-size:12px">
+          ${rating(id,USER_REVIEWS).avg.toFixed(1)} ${stars(Math.round(rating(id,USER_REVIEWS).avg))} · ${rating(id,USER_REVIEWS).count}</span></div>
+      ${reviewList(id)}
 
       <div class="section-title">Abo-Optionen</div>
       <div class="tier">
@@ -1153,7 +1174,9 @@ function endCall(broke){
   const call=document.querySelector(".call");if(call){call.classList.remove("show");setTimeout(()=>call.remove(),340);}
   const mins=(state.callSecs/60);
   if(state.callSecs>0)toast(`Call beendet · ${Math.floor(mins)}:${String(state.callSecs%60).padStart(2,'0')} · ${EUR(state.callCost)}${broke?' · Guthaben leer':''}`);
+  const rated=state.callSecs>0?state.callId:null;
   if(broke)setTimeout(openWallet,400);
+  else if(rated)setTimeout(()=>openRate(rated),500);
 }
 
 
@@ -1598,6 +1621,60 @@ function confirmBook(){
   render();
 }
 
+/* =========================================================================
+   REVIEWS — star runs, the profile list, and the prompt after a call ends.
+   USER_REVIEWS starts as the seed data and grows as the user rates.
+   ========================================================================= */
+let USER_REVIEWS=Object.assign({},REVIEWS);
+const rate={cid:null,stars:0};
+
+/* Filled/empty star run. `n` of 5. */
+function stars(n,big){
+  return `<span class="stars ${big?'big':''}">`+
+    [1,2,3,4,5].map(i=>`<span class="${i<=n?'':'off'}">${I.star}</span>`).join("")+`</span>`;
+}
+function reviewList(id){
+  return (USER_REVIEWS[id]||[]).map(r=>`<div class="rv">
+    <div class="rv-av">${r.by.slice(0,1)}</div>
+    <div style="min-width:0">
+      <div><span class="rv-n">${r.by}</span><span class="rv-w">${r.when}</span></div>
+      ${stars(r.stars)}
+      <p>${r.text}</p>
+    </div></div>`).join("");
+}
+function openRate(id){
+  rate.cid=id;rate.stars=0;
+  modal(drawRate());
+}
+function drawRate(){
+  const c=byId(rate.cid);
+  return `<h3>Wie war dein Call mit ${c.name}?</h3>
+    <p>Deine Bewertung hilft anderen bei der Auswahl.</p>
+    <div class="rate-pick">${[1,2,3,4,5].map(i=>
+      `<button class="${i<=rate.stars?'on':''}" aria-label="${i} Sterne" onclick="pickStars(${i})">${I.star}</button>`).join("")}</div>
+    <input class="field" id="rateText" placeholder="Kurz sagen, wie es war (optional)">
+    <div class="mrow" style="margin-top:12px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Später</button>
+      <button class="btn btn-primary btn-sm" ${rate.stars?'':'disabled'} style="opacity:${rate.stars?1:.5}"
+        onclick="submitRate()">Absenden</button>
+    </div>`;
+}
+function pickStars(n){
+  rate.stars=n;
+  const keep=document.getElementById("rateText");const txt=keep?keep.value:"";
+  const box=document.querySelector("#modal .mbox");
+  if(box){box.innerHTML=drawRate();const f=document.getElementById("rateText");if(f)f.value=txt;}
+}
+function submitRate(){
+  const f=document.getElementById("rateText");
+  const text=(f&&f.value.trim())||"Keine weitere Rückmeldung.";
+  const id=rate.cid,c=byId(id);
+  USER_REVIEWS[id]=[{id:"u"+Date.now(),by:"Du",stars:rate.stars,when:"gerade eben",text}].concat(USER_REVIEWS[id]||[]);
+  closeModal();
+  toast(`Danke für deine Bewertung von ${c.name}`);
+  render();
+}
+
 /* ---- boot ---- */
 render();
 onboarding();
@@ -1609,7 +1686,7 @@ window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverl
 window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;
 window.startRegister=startRegister;window.regBack=regBack;window.regNext=regNext;window.regPick=regPick;window.regAge=regAge;window.toggleRegRec=toggleRegRec;window.reg=reg;window.drawRegister=drawRegister;
 window.openLegal=openLegal;window.modal=modal;window.closeModal=closeModal;window.askDelete=askDelete;window.askImage=askImage;
-window.playIntro=playIntro;window.likePerson=likePerson;window.unmatch=unmatch;window.setExploreTab=setExploreTab;window.setRow=setRow;window.trustRow=trustRow;window.openBook=openBook;window.bookPick=bookPick;window.confirmBook=confirmBook;window.drawBook=drawBook;window.removeMyPhoto=removeMyPhoto;window.nearbyList=nearbyList;window.matchesList=matchesList;window.buildDeck=buildDeck;window.state=state;
+window.playIntro=playIntro;window.likePerson=likePerson;window.unmatch=unmatch;window.setExploreTab=setExploreTab;window.setRow=setRow;window.trustRow=trustRow;window.openBook=openBook;window.bookPick=bookPick;window.confirmBook=confirmBook;window.drawBook=drawBook;window.stars=stars;window.reviewList=reviewList;window.openRate=openRate;window.pickStars=pickStars;window.submitRate=submitRate;window.removeMyPhoto=removeMyPhoto;window.nearbyList=nearbyList;window.matchesList=matchesList;window.buildDeck=buildDeck;window.state=state;
 </script>
 </body>
 </html>

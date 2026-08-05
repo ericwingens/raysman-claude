@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel } from "../data.js";
+import { byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS } from "../data.js";
 import { photoStyle, EUR, Ico, num } from "../lib.jsx";
 
 /* Delivery quality at a glance, plus the creator's level and earned badges.
    Reads as "can I trust this person with my money" before the call button. */
-export function TrustRow({ id }) {
+export function TrustRow({ id, all }) {
   const st = STATS[id];
   if (!st) return null;
-  const r = rating(id);
+  const r = rating(id, all);
   return (
     <>
       <div className="trust">
@@ -26,11 +26,60 @@ export function TrustRow({ id }) {
   );
 }
 
+
+/* Filled/empty star run. `n` of 5. */
+export function Stars({ n, big }) {
+  return (
+    <span className={`stars ${big ? "big" : ""}`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i} className={i <= n ? "" : "off"}><Ico name="star" /></span>
+      ))}
+    </span>
+  );
+}
+
 /* Slide-in helper: adds .show a frame after mount so transitions run. */
 function useShow() {
   const [show, setShow] = useState(false);
   useEffect(() => { const r = requestAnimationFrame(() => setShow(true)); return () => cancelAnimationFrame(r); }, []);
   return show;
+}
+
+/* ---------------- Rating prompt, shown once a call has ended ---------------- */
+export function RateSheet({ id, ctx, close }) {
+  const c = byId(id);
+  const [stars, setStars] = useState(0);
+  const [text, setText] = useState("");
+
+  const submit = () => {
+    const entry = { id: "u" + Date.now(), by: "Du", stars, when: "gerade eben", text: text.trim() || "Keine weitere Rückmeldung." };
+    ctx.setReviews((r) => ({ ...r, [id]: [entry, ...(r[id] || [])] }));
+    ctx.toast(`Danke für deine Bewertung von ${c.name}`);
+    close();
+  };
+
+  return (
+    <div className="modal show" onClick={close}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(8,4,1,.5)" }} />
+      <div className="mbox" style={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
+        <h3>Wie war dein Call mit {c.name}?</h3>
+        <p>Deine Bewertung hilft anderen bei der Auswahl.</p>
+        <div className="rate-pick">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <button key={i} className={i <= stars ? "on" : ""} aria-label={`${i} Sterne`}
+              onClick={() => setStars(i)}><Ico name="star" /></button>
+          ))}
+        </div>
+        <input className="field" placeholder="Kurz sagen, wie es war (optional)"
+          value={text} onChange={(e) => setText(e.target.value)} />
+        <div className="mrow" style={{ marginTop: 12 }}>
+          <button className="btn btn-ghost btn-sm" onClick={close}>Später</button>
+          <button className="btn btn-primary btn-sm" disabled={!stars}
+            style={{ opacity: stars ? 1 : 0.5 }} onClick={submit}>Absenden</button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* ---------------- Booking: pick a package, a day, a time ----------------
@@ -134,7 +183,7 @@ export function ProfileFull({ id, ctx }) {
         </div>
 
         <div style={{ padding: "16px 18px 40px" }}>
-          <TrustRow id={id} />
+          <TrustRow id={id} all={ctx.reviews} />
           {/* Figma call-profile card: gender + bio above the call action */}
           <div style={{ display: "flex", gap: 10, margin: "12px 0 8px" }}>
             <button className="btn btn-primary" onClick={() => ctx.startCall(id)}><Ico name="phone" /> Ring me · {EUR(c.rate)}/Min</button>
@@ -159,6 +208,23 @@ export function ProfileFull({ id, ctx }) {
             </div>
           ))}
           <button className="btn btn-ghost btn-sm" onClick={() => ctx.push("book", id)}>Termin buchen</button>
+
+          <div className="section-title">
+            Bewertungen
+            <span className="muted" style={{ fontWeight: 600, fontSize: 12 }}>
+              {rating(id, ctx.reviews).avg.toFixed(1)} <Stars n={Math.round(rating(id, ctx.reviews).avg)} /> · {rating(id, ctx.reviews).count}
+            </span>
+          </div>
+          {(ctx.reviews[id] || REVIEWS[id] || []).map((r) => (
+            <div key={r.id} className="rv">
+              <div className="rv-av">{r.by.slice(0, 1)}</div>
+              <div style={{ minWidth: 0 }}>
+                <div><span className="rv-n">{r.by}</span><span className="rv-w">{r.when}</span></div>
+                <Stars n={r.stars} />
+                <p>{r.text}</p>
+              </div>
+            </div>
+          ))}
 
           <div className="section-title">Abo-Optionen</div>
           <div className="tier">

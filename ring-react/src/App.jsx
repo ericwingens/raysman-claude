@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { CREATORS, byId } from "./data.js";
+import { CREATORS, byId, REVIEWS } from "./data.js";
 import { EUR, Ico } from "./lib.jsx";
 import Onboarding from "./screens/Onboarding.jsx";
 import EditProfile from "./overlays/EditProfile.jsx";
@@ -8,7 +8,7 @@ import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
 import Chats from "./screens/Chats.jsx";
 import Me from "./screens/Me.jsx";
-import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet } from "./overlays/Overlays.jsx";
+import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet, RateSheet } from "./overlays/Overlays.jsx";
 
 export default function App() {
   // ---- global state ----
@@ -20,6 +20,8 @@ export default function App() {
   const [likedPosts, setLikedPosts] = useState(() => new Set());
   const [likedPeople, setLikedPeople] = useState(() => new Set());
   const [bookings, setBookings] = useState([]); // {id, cid, svc, dayOffset, time}
+  const [reviews, setReviews] = useState(REVIEWS);   // seeded, grows as the user rates
+  const [ratePrompt, setRatePrompt] = useState(null); // creator id awaiting a rating
   const [overlays, setOverlays] = useState([]); // stack: {kind, id}
   const [call, setCall] = useState(null); // {id, secs, cost, status}
   const [toastMsg, setToastMsg] = useState(null);
@@ -34,6 +36,10 @@ export default function App() {
   // Ref mirrors balance so ticker callbacks & spend read the current value synchronously.
   const balanceRef = useRef(balance);
   useEffect(() => { balanceRef.current = balance; }, [balance]);
+
+  // Same reason: the ticker and endCall need the live call synchronously.
+  const callRef = useRef(call);
+  useEffect(() => { callRef.current = call; }, [call]);
 
   const spend = useCallback(
     (amount, label) => {
@@ -76,6 +82,8 @@ export default function App() {
     setTimeout(() => setCall((c) => (c && c.id === id ? { ...c, status: "connected" } : c)), 1400);
   };
   const endCall = (broke = false) => {
+    const live = callRef.current;
+    const rated = live && live.secs > 0 ? live.id : null;
     setCall((c) => {
       if (c && c.secs > 0) {
         const m = Math.floor(c.secs / 60), s = String(c.secs % 60).padStart(2, "0");
@@ -84,6 +92,7 @@ export default function App() {
       return null;
     });
     if (broke) setTimeout(() => push("wallet"), 400);
+    else if (rated) setTimeout(() => setRatePrompt(rated), 500);
   };
 
   // ---- clock ----
@@ -94,6 +103,7 @@ export default function App() {
     balance, setBalance, subs, setSubs, unlocked, setUnlocked,
     likedPosts, setLikedPosts, likedPeople, setLikedPeople,
     bookings, setBookings,
+    reviews, setReviews,
     toast, spend, push, pop, popAll, startCall, endCall, setPhase,
   };
 
@@ -137,6 +147,8 @@ export default function App() {
       })}
 
       {call && <CallScreen call={call} ctx={ctx} />}
+
+      {ratePrompt && <RateSheet id={ratePrompt} ctx={ctx} close={() => setRatePrompt(null)} />}
 
       {phase === "welcome" && <Onboarding ctx={ctx} done={() => setPhase("main")} />}
 

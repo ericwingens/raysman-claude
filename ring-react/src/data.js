@@ -70,8 +70,8 @@ export const REVIEWS = {
           { id: "r2", by: "Flo", stars: 4, when: "vor 1 Woche", text: "Gutes Coaching, Termin war etwas kurzfristig verschoben." }],
 };
 
-export const rating = (id) => {
-  const rs = REVIEWS[id] || [];
+export const rating = (id, all = REVIEWS) => {
+  const rs = all[id] || [];
   if (!rs.length) return { avg: 0, count: 0 };
   return { avg: rs.reduce((s, r) => s + r.stars, 0) / rs.length, count: rs.length };
 };
@@ -87,9 +87,9 @@ export const GIFTS = [
 ];
 
 // Leaderboard score: delivered calls weighted by rating, so quality beats volume.
-export const leaderboard = () =>
+export const leaderboard = (all = REVIEWS) =>
   CREATORS.map((c) => {
-    const st = STATS[c.id], r = rating(c.id);
+    const st = STATS[c.id], r = rating(c.id, all);
     return { ...c, score: Math.round(st.calls * (r.avg || 4) * (st.completion / 100)) };
   }).sort((a, b) => b.score - a.score);
 

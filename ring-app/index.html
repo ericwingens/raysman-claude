@@ -412,11 +412,12 @@ button{font-family:inherit;color:inherit}
 .rate-pick svg{width:34px;height:34px}
 
 /* ---------- Virtual gifts and the creator leaderboard ---------- */
-.giftgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:8px 0 4px}
+.giftgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:8px 0 4px;max-height:46vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding:2px}
+.giftgrid::-webkit-scrollbar{display:none}
 .giftcard{border:1.6px solid var(--line);background:var(--card);border-radius:16px;padding:12px 6px;text-align:center;cursor:pointer}
 .giftcard.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 10%, var(--card))}
 .giftcard .g-em{font-size:28px;line-height:1.1}
-.giftcard .g-n{font-size:12px;font-weight:700;margin-top:4px}
+.giftcard .g-n{font-size:11.5px;font-weight:700;margin-top:4px;line-height:1.25}
 .giftcard .g-p{font-size:11.5px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
 .giftfly{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);font-size:54px;pointer-events:none;z-index:120;animation:giftup 1.6s ease-out forwards}
 @keyframes giftup{0%{opacity:0;transform:translate(-50%,20px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-190px) scale(1)}}
@@ -548,14 +549,27 @@ const rating = (id, all = REVIEWS) => {
   return { avg: rs.reduce((s, r) => s + r.stars, 0) / rs.length, count: rs.length };
 };
 
-// Virtual gifts, sent during a call or a live view. Prices in EUR.
+// Virtual gifts, sent during a call or a live view. Prices in EUR, ordered
+// cheapest first so the grid reads as a ladder.
 const GIFTS = [
-  { id: "rose",   em: "🌹", name: "Rose",     price: 0.99 },
-  { id: "coffee", em: "☕", name: "Kaffee",   price: 1.99 },
-  { id: "heart",  em: "💛", name: "Herz",     price: 4.99 },
-  { id: "star",   em: "⭐", name: "Star",     price: 9.99 },
-  { id: "crown",  em: "👑", name: "Krone",    price: 24.99 },
-  { id: "rocket", em: "🚀", name: "Rakete",   price: 49.99 },
+  { id: "spark",     em: "✨", name: "Funken",        price: 0.49 },
+  { id: "hands",     em: "🫶", name: "Herz-Hände",    price: 0.99 },
+  { id: "boba",      em: "🧋", name: "Bubble Tea",    price: 1.49 },
+  { id: "chill",     em: "🧊", name: "Chill",         price: 1.99 },
+  { id: "fire",      em: "🔥", name: "Feuer",         price: 2.99 },
+  { id: "wave",      em: "🌊", name: "Welle",         price: 3.99 },
+  { id: "heart",     em: "🩷", name: "Herz",          price: 4.99 },
+  { id: "phones",    em: "🎧", name: "Kopfhörer",     price: 6.99 },
+  { id: "star",      em: "🌟", name: "Star",          price: 9.99 },
+  { id: "disco",     em: "🪩", name: "Discokugel",    price: 12.99 },
+  { id: "butterfly", em: "🦋", name: "Butterfly",     price: 14.99 },
+  { id: "gem",       em: "💎", name: "Diamant",       price: 19.99 },
+  { id: "crown",     em: "👑", name: "Krone",         price: 24.99 },
+  { id: "trophy",    em: "🏆", name: "Trophäe",       price: 34.99 },
+  { id: "ufo",       em: "🛸", name: "UFO",           price: 39.99 },
+  { id: "rocket",    em: "🚀", name: "Rakete",        price: 49.99 },
+  { id: "dragon",    em: "🐉", name: "Drache",        price: 79.99 },
+  { id: "galaxy",    em: "🌌", name: "Galaxie",       price: 149.99 },
 ];
 
 // Leaderboard score: delivered calls weighted by rating, so quality beats volume.

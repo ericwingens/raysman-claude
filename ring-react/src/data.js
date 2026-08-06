@@ -76,14 +76,27 @@ export const rating = (id, all = REVIEWS) => {
   return { avg: rs.reduce((s, r) => s + r.stars, 0) / rs.length, count: rs.length };
 };
 
-// Virtual gifts, sent during a call or a live view. Prices in EUR.
+// Virtual gifts, sent during a call or a live view. Prices in EUR, ordered
+// cheapest first so the grid reads as a ladder.
 export const GIFTS = [
-  { id: "rose",   em: "🌹", name: "Rose",     price: 0.99 },
-  { id: "coffee", em: "☕", name: "Kaffee",   price: 1.99 },
-  { id: "heart",  em: "💛", name: "Herz",     price: 4.99 },
-  { id: "star",   em: "⭐", name: "Star",     price: 9.99 },
-  { id: "crown",  em: "👑", name: "Krone",    price: 24.99 },
-  { id: "rocket", em: "🚀", name: "Rakete",   price: 49.99 },
+  { id: "spark",     em: "✨", name: "Funken",        price: 0.49 },
+  { id: "hands",     em: "🫶", name: "Herz-Hände",    price: 0.99 },
+  { id: "boba",      em: "🧋", name: "Bubble Tea",    price: 1.49 },
+  { id: "chill",     em: "🧊", name: "Chill",         price: 1.99 },
+  { id: "fire",      em: "🔥", name: "Feuer",         price: 2.99 },
+  { id: "wave",      em: "🌊", name: "Welle",         price: 3.99 },
+  { id: "heart",     em: "🩷", name: "Herz",          price: 4.99 },
+  { id: "phones",    em: "🎧", name: "Kopfhörer",     price: 6.99 },
+  { id: "star",      em: "🌟", name: "Star",          price: 9.99 },
+  { id: "disco",     em: "🪩", name: "Discokugel",    price: 12.99 },
+  { id: "butterfly", em: "🦋", name: "Butterfly",     price: 14.99 },
+  { id: "gem",       em: "💎", name: "Diamant",       price: 19.99 },
+  { id: "crown",     em: "👑", name: "Krone",         price: 24.99 },
+  { id: "trophy",    em: "🏆", name: "Trophäe",       price: 34.99 },
+  { id: "ufo",       em: "🛸", name: "UFO",           price: 39.99 },
+  { id: "rocket",    em: "🚀", name: "Rakete",        price: 49.99 },
+  { id: "dragon",    em: "🐉", name: "Drache",        price: 79.99 },
+  { id: "galaxy",    em: "🌌", name: "Galaxie",       price: 149.99 },
 ];
 
 // Leaderboard score: delivered calls weighted by rating, so quality beats volume.

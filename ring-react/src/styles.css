@@ -378,11 +378,12 @@ button{font-family:inherit;color:inherit}
 .rate-pick svg{width:34px;height:34px}
 
 /* ---------- Virtual gifts and the creator leaderboard ---------- */
-.giftgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:8px 0 4px}
+.giftgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:8px 0 4px;max-height:46vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding:2px}
+.giftgrid::-webkit-scrollbar{display:none}
 .giftcard{border:1.6px solid var(--line);background:var(--card);border-radius:16px;padding:12px 6px;text-align:center;cursor:pointer}
 .giftcard.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 10%, var(--card))}
 .giftcard .g-em{font-size:28px;line-height:1.1}
-.giftcard .g-n{font-size:12px;font-weight:700;margin-top:4px}
+.giftcard .g-n{font-size:11.5px;font-weight:700;margin-top:4px;line-height:1.25}
 .giftcard .g-p{font-size:11.5px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
 .giftfly{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);font-size:54px;pointer-events:none;z-index:120;animation:giftup 1.6s ease-out forwards}
 @keyframes giftup{0%{opacity:0;transform:translate(-50%,20px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-190px) scale(1)}}

@@ -407,3 +407,16 @@ button{font-family:inherit;color:inherit}
 .sharetile .tile svg{width:26px;height:26px}
 .sharetile .lbl2{font-size:11px;font-weight:700;color:var(--ink-2);line-height:1.2}
 .sharetile:active .tile{transform:scale(.93)}
+
+/* ---------- Extra participants in a call ---------- */
+.parts{position:absolute;top:calc(var(--safe-top) + 174px);right:16px;display:flex;flex-direction:column;gap:8px;z-index:6}
+.part{width:56px;height:74px;border-radius:14px;background-size:cover;background-position:center;position:relative;box-shadow:0 6px 18px -8px rgba(0,0,0,.7);border:1.5px solid rgba(255,255,255,.35)}
+.part .pn{position:absolute;left:0;right:0;bottom:0;font-size:9.5px;font-weight:700;color:#fff;text-align:center;padding:2px 0 3px;background:linear-gradient(transparent,rgba(0,0,0,.75));border-radius:0 0 13px 13px}
+.part .drop{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:11px;cursor:pointer;border:1.5px solid var(--paper)}
+.pickrow{display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.pickrow .pk-n{font-weight:700;font-size:14.5px}
+.pickrow .pk-s{font-size:12px;color:var(--muted);margin-top:2px}
+.pickrow .pk-c{margin-left:auto;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none}
+.pickrow.on .pk-c{border-color:var(--orange);background:var(--orange);color:#fff}
+.pickrow.on .pk-c svg{width:14px;height:14px}
+.pickrow.full{opacity:.4;pointer-events:none}

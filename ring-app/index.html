@@ -441,6 +441,19 @@ button{font-family:inherit;color:inherit}
 .sharetile .tile svg{width:26px;height:26px}
 .sharetile .lbl2{font-size:11px;font-weight:700;color:var(--ink-2);line-height:1.2}
 .sharetile:active .tile{transform:scale(.93)}
+
+/* ---------- Extra participants in a call ---------- */
+.parts{position:absolute;top:calc(var(--safe-top) + 174px);right:16px;display:flex;flex-direction:column;gap:8px;z-index:6}
+.part{width:56px;height:74px;border-radius:14px;background-size:cover;background-position:center;position:relative;box-shadow:0 6px 18px -8px rgba(0,0,0,.7);border:1.5px solid rgba(255,255,255,.35)}
+.part .pn{position:absolute;left:0;right:0;bottom:0;font-size:9.5px;font-weight:700;color:#fff;text-align:center;padding:2px 0 3px;background:linear-gradient(transparent,rgba(0,0,0,.75));border-radius:0 0 13px 13px}
+.part .drop{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:11px;cursor:pointer;border:1.5px solid var(--paper)}
+.pickrow{display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.pickrow .pk-n{font-weight:700;font-size:14.5px}
+.pickrow .pk-s{font-size:12px;color:var(--muted);margin-top:2px}
+.pickrow .pk-c{margin-left:auto;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none}
+.pickrow.on .pk-c{border-color:var(--orange);background:var(--orange);color:#fff}
+.pickrow.on .pk-c svg{width:14px;height:14px}
+.pickrow.full{opacity:.4;pointer-events:none}
 </style>
 </head>
 <body>
@@ -1218,6 +1231,7 @@ function startCall(id,type){
         <button class="cbtn" onclick="toast('Mikro stumm')">${I.mic}</button>
         <button class="cbtn tip" onclick="openTip('${id}')">${I.gift}</button>
         <button class="cbtn" aria-label="Geschenk senden" onclick="openGift('${id}')">${I.star}</button>
+        <button class="cbtn" aria-label="Teilnehmer hinzufügen" onclick="openAddPeople()">${I.plus}</button>
         <button class="cbtn" onclick="toast('Kamera gewechselt')">${I.camflip}</button>
       </div>
       <button class="cbtn end" style="width:72px;height:72px" onclick="endCall()">${I.phone}</button>
@@ -1244,6 +1258,7 @@ function endCall(broke){
   const call=document.querySelector(".call");if(call){call.classList.remove("show");setTimeout(()=>call.remove(),340);}
   const mins=(state.callSecs/60);
   if(state.callSecs>0)toast(`Call beendet · ${Math.floor(mins)}:${String(state.callSecs%60).padStart(2,'0')} · ${EUR(state.callCost)}${broke?' · Guthaben leer':''}`);
+  guests=[];
   const rated=state.callSecs>0?state.callId:null;
   if(broke)setTimeout(openWallet,400);
   else if(rated)setTimeout(()=>openRate(rated),500);
@@ -1820,6 +1835,51 @@ function openShare(pid){
 }
 function shareTo(name){closeModal();toast(`Geteilt auf ${name}`);}
 
+/* =========================================================================
+   CALL GUESTS — add up to five more people to a running call.
+   Mirrors the React AddPeopleSheet; guests live only for the current call.
+   ========================================================================= */
+const MAX_GUESTS=5;
+let guests=[];
+
+function openAddPeople(){modal(drawAddPeople());}
+function drawAddPeople(){
+  const pool=CREATORS.filter(c=>c.id!==state.callId);
+  const full=guests.length>=MAX_GUESTS;
+  return `<h3 style="text-align:center">Teilnehmer hinzufügen</h3>
+    <p style="text-align:center">${guests.length} von ${MAX_GUESTS} ausgewählt${full?' — Maximum erreicht':''}</p>
+    <div style="max-height:42vh;overflow-y:auto;text-align:left">${pool.map(c=>{
+      const on=guests.includes(c.id);
+      return `<div class="pickrow ${on?'on':''} ${!on&&full?'full':''}" onclick="toggleGuest('${c.id}')">
+        <span class="avatar" style="width:38px;height:38px;${photoStyle(c.id)}"></span>
+        <div style="min-width:0">
+          <div class="pk-n">${c.name}, ${c.age}</div>
+          <div class="pk-s">${c.online?'online':'offline'} · ${EUR(c.rate)}/Min</div></div>
+        <span class="pk-c">${on?I.check:''}</span></div>`;}).join("")}</div>
+    <div class="mrow" style="margin-top:14px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Fertig</button>
+      <button class="btn btn-primary btn-sm" ${guests.length?'':'disabled'} style="opacity:${guests.length?1:.5}"
+        onclick="closeModal();toast('${guests.length} Teilnehmer im Call')">Übernehmen</button>
+    </div>`;
+}
+function toggleGuest(id){
+  if(guests.includes(id))guests=guests.filter(g=>g!==id);
+  else if(guests.length<MAX_GUESTS)guests.push(id);
+  const box=document.querySelector("#modal .mbox");
+  if(box)box.innerHTML=drawAddPeople();
+  renderGuests();
+}
+function dropGuest(id){guests=guests.filter(g=>g!==id);renderGuests();}
+function renderGuests(){
+  const call=document.querySelector(".call");if(!call)return;
+  let wrap=call.querySelector(".parts");
+  if(!guests.length){if(wrap)wrap.remove();return;}
+  if(!wrap){wrap=document.createElement("div");wrap.className="parts";call.appendChild(wrap);}
+  wrap.innerHTML=guests.map(g=>`<div class="part" style="${photoStyle(g)}">
+      <span class="drop" onclick="dropGuest('${g}')">✕</span>
+      <span class="pn">${byId(g).name}</span></div>`).join("");
+}
+
 /* ---- boot ---- */
 render();
 onboarding();
@@ -1831,7 +1891,7 @@ window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverl
 window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;
 window.startRegister=startRegister;window.regBack=regBack;window.regNext=regNext;window.regPick=regPick;window.regAge=regAge;window.toggleRegRec=toggleRegRec;window.reg=reg;window.drawRegister=drawRegister;
 window.openLegal=openLegal;window.modal=modal;window.closeModal=closeModal;window.askDelete=askDelete;window.askImage=askImage;
-window.playIntro=playIntro;window.likePerson=likePerson;window.unmatch=unmatch;window.setExploreTab=setExploreTab;window.setRow=setRow;window.trustRow=trustRow;window.openBook=openBook;window.bookPick=bookPick;window.confirmBook=confirmBook;window.drawBook=drawBook;window.stars=stars;window.reviewList=reviewList;window.openRate=openRate;window.pickStars=pickStars;window.submitRate=submitRate;window.openGift=openGift;window.pickGift=pickGift;window.sendGift=sendGift;window.flyGift=flyGift;window.leaderboardList=leaderboardList;window.openShare=openShare;window.shareTo=shareTo;window.removeMyPhoto=removeMyPhoto;window.nearbyList=nearbyList;window.matchesList=matchesList;window.buildDeck=buildDeck;window.state=state;
+window.playIntro=playIntro;window.likePerson=likePerson;window.unmatch=unmatch;window.setExploreTab=setExploreTab;window.setRow=setRow;window.trustRow=trustRow;window.openBook=openBook;window.bookPick=bookPick;window.confirmBook=confirmBook;window.drawBook=drawBook;window.stars=stars;window.reviewList=reviewList;window.openRate=openRate;window.pickStars=pickStars;window.submitRate=submitRate;window.openGift=openGift;window.pickGift=pickGift;window.sendGift=sendGift;window.flyGift=flyGift;window.leaderboardList=leaderboardList;window.openShare=openShare;window.shareTo=shareTo;window.openAddPeople=openAddPeople;window.toggleGuest=toggleGuest;window.dropGuest=dropGuest;window.removeMyPhoto=removeMyPhoto;window.nearbyList=nearbyList;window.matchesList=matchesList;window.buildDeck=buildDeck;window.state=state;
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { POSTS, byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS, GIFTS, SHARE_TARGETS } from "../data.js";
+import { CREATORS, POSTS, byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS, GIFTS, SHARE_TARGETS } from "../data.js";
 import { photoStyle, EUR, Ico, num } from "../lib.jsx";
 
 /* Delivery quality at a glance, plus the creator's level and earned badges.
@@ -46,6 +46,57 @@ function useShow() {
 }
 
 
+
+
+/* ---------------- Add up to five more people to a running call ---------------- */
+export const MAX_GUESTS = 5;
+
+export function AddPeopleSheet({ ctx, close }) {
+  const inCall = ctx.call ? ctx.call.id : null;
+  const picked = ctx.guests;
+  const full = picked.length >= MAX_GUESTS;
+
+  const toggle = (id) => {
+    if (picked.includes(id)) ctx.setGuests(picked.filter((g) => g !== id));
+    else if (!full) ctx.setGuests([...picked, id]);
+  };
+
+  const pool = CREATORS.filter((c) => c.id !== inCall);
+  return (
+    <div className="modal show" onClick={close}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(8,4,1,.5)" }} />
+      <div className="mbox" style={{ position: "relative", maxWidth: 340, textAlign: "left" }} onClick={(e) => e.stopPropagation()}>
+        <h3 style={{ textAlign: "center" }}>Teilnehmer hinzufügen</h3>
+        <p style={{ textAlign: "center" }}>
+          {picked.length} von {MAX_GUESTS} ausgewählt{full ? " — Maximum erreicht" : ""}
+        </p>
+        <div style={{ maxHeight: "42vh", overflowY: "auto" }}>
+          {pool.map((c) => {
+            const on = picked.includes(c.id);
+            return (
+              <div key={c.id} className={`pickrow ${on ? "on" : ""} ${!on && full ? "full" : ""}`} onClick={() => toggle(c.id)}>
+                <span className="avatar" style={{ width: 38, height: 38, ...photoStyle(c.id) }} />
+                <div style={{ minWidth: 0 }}>
+                  <div className="pk-n">{c.name}, {c.age}</div>
+                  <div className="pk-s">{c.online ? "online" : "offline"} · {EUR(c.rate)}/Min</div>
+                </div>
+                <span className="pk-c">{on && <Ico name="check" />}</span>
+              </div>
+            );
+          })}
+        </div>
+        <div className="mrow" style={{ marginTop: 14 }}>
+          <button className="btn btn-ghost btn-sm" onClick={close}>Fertig</button>
+          <button className="btn btn-primary btn-sm" disabled={!picked.length}
+            style={{ opacity: picked.length ? 1 : 0.5 }}
+            onClick={() => { close(); ctx.toast(`${picked.length} Teilnehmer im Call`); }}>
+            Übernehmen
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ---------------- Share a post to an external platform ---------------- */
 export function ShareSheet({ id, ctx, close }) {
@@ -495,12 +546,23 @@ export function CallScreen({ call, ctx }) {
           <div className="rate">{EUR(c.rate)} / Minute · <span className="tnum">{m}:{s}</span></div>
         </div>
       </div>
+      {ctx.guests.length > 0 && (
+        <div className="parts">
+          {ctx.guests.map((g) => (
+            <div key={g} className="part" style={photoStyle(g)}>
+              <span className="drop" onClick={() => ctx.setGuests(ctx.guests.filter((x) => x !== g))}>✕</span>
+              <span className="pn">{byId(g).name}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="self" style={photoStyle("you")} />
       <div className="controls">
         <div className="ctrow">
           <button className="cbtn" onClick={() => ctx.toast("Mikro stumm")}><Ico name="mic" /></button>
           <button className="cbtn tip" onClick={() => ctx.push("tip", call.id)}><Ico name="gift" /></button>
           <button className="cbtn" aria-label="Geschenk senden" onClick={() => ctx.openGift(call.id)}><Ico name="star" /></button>
+          <button className="cbtn" aria-label="Teilnehmer hinzufügen" onClick={ctx.openAddPeople}><Ico name="plus" /></button>
           <button className="cbtn" onClick={() => ctx.toast("Kamera gewechselt")}><Ico name="camflip" /></button>
         </div>
         <button className="cbtn end" style={{ width: 72, height: 72 }} onClick={() => ctx.endCall(false)}><Ico name="phone" /></button>

@@ -8,7 +8,7 @@ import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
 import Chats from "./screens/Chats.jsx";
 import Me from "./screens/Me.jsx";
-import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet, RateSheet, GiftSheet, ShareSheet } from "./overlays/Overlays.jsx";
+import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet, RateSheet, GiftSheet, ShareSheet, AddPeopleSheet } from "./overlays/Overlays.jsx";
 
 export default function App() {
   // ---- global state ----
@@ -24,6 +24,8 @@ export default function App() {
   const [ratePrompt, setRatePrompt] = useState(null); // creator id awaiting a rating
   const [giftFor, setGiftFor] = useState(null);      // creator id the gift picker targets
   const [shareFor, setShareFor] = useState(null);    // post id the share sheet targets
+  const [guests, setGuests] = useState([]);          // extra participants in the running call
+  const [addPeople, setAddPeople] = useState(false);
   const [flying, setFlying] = useState(null);        // emoji floating up after a gift
   const [overlays, setOverlays] = useState([]); // stack: {kind, id}
   const [call, setCall] = useState(null); // {id, secs, cost, status}
@@ -87,6 +89,7 @@ export default function App() {
   const endCall = (broke = false) => {
     const live = callRef.current;
     const rated = live && live.secs > 0 ? live.id : null;
+    setGuests([]);
     setCall((c) => {
       if (c && c.secs > 0) {
         const m = Math.floor(c.secs / 60), s = String(c.secs % 60).padStart(2, "0");
@@ -109,6 +112,7 @@ export default function App() {
     reviews, setReviews,
     openGift: setGiftFor,
     openShare: setShareFor,
+    call, guests, setGuests, openAddPeople: () => setAddPeople(true),
     flyGift: (em) => { setFlying({ em, key: Date.now() }); setTimeout(() => setFlying(null), 1700); },
     toast, spend, push, pop, popAll, startCall, endCall, setPhase,
   };
@@ -158,6 +162,7 @@ export default function App() {
 
       {giftFor && <GiftSheet id={giftFor} ctx={ctx} close={() => setGiftFor(null)} />}
       {shareFor && <ShareSheet id={shareFor} ctx={ctx} close={() => setShareFor(null)} />}
+      {addPeople && <AddPeopleSheet ctx={ctx} close={() => setAddPeople(false)} />}
       {flying && <div key={flying.key} className="giftfly">{flying.em}</div>}
 
       {phase === "welcome" && <Onboarding ctx={ctx} done={() => setPhase("main")} />}

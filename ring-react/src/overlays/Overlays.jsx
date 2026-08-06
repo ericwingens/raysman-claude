@@ -560,8 +560,8 @@ export function CallScreen({ call, ctx }) {
       <div className="controls">
         <div className="ctrow">
           <button className="cbtn" onClick={() => ctx.toast("Mikro stumm")}><Ico name="mic" /></button>
-          <button className="cbtn tip" onClick={() => ctx.push("tip", call.id)}><Ico name="gift" /></button>
-          <button className="cbtn" aria-label="Geschenk senden" onClick={() => ctx.openGift(call.id)}><Ico name="star" /></button>
+          <button className="cbtn" aria-label="Tip senden" onClick={() => ctx.push("tip", call.id)}><Ico name="bolt" /></button>
+          <button className="cbtn tip" aria-label="Geschenk senden" onClick={() => ctx.openGift(call.id)}><Ico name="gift" /></button>
           <button className="cbtn" aria-label="Teilnehmer hinzufügen" onClick={ctx.openAddPeople}><Ico name="plus" /></button>
           <button className="cbtn" onClick={() => ctx.toast("Kamera gewechselt")}><Ico name="camflip" /></button>
         </div>

@@ -399,3 +399,11 @@ button{font-family:inherit;color:inherit}
    still too narrow (the phone frame is min(430px,96vw)), it now breaks before
    the amount instead of splitting "4,99" from "€". */
 .btn .btn-amt{white-space:nowrap;font-size:.85em;opacity:.92;font-weight:700}
+
+/* ---------- Share sheet ---------- */
+.sharegrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 8px;margin:10px 0 2px}
+.sharetile{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:none;border:none;padding:0;font:inherit}
+.sharetile .tile{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;box-shadow:var(--shadow-sm)}
+.sharetile .tile svg{width:26px;height:26px}
+.sharetile .lbl2{font-size:11px;font-weight:700;color:var(--ink-2);line-height:1.2}
+.sharetile:active .tile{transform:scale(.93)}

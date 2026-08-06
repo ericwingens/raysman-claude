@@ -60,6 +60,7 @@ function Post({ p, ctx }) {
         <span className={`a ${liked ? "on" : ""}`} onClick={like}><Ico name="heart" /><span className="tnum">{num(p.likes + (liked ? 1 : 0))}</span></span>
         <span className="a" onClick={() => ctx.push("chat", c.id)}><Ico name="comment" /><span>Kommentar</span></span>
         <span className="a" onClick={() => ctx.push("tip", c.id)}><Ico name="gift" />Tip</span>
+        <span className="a" onClick={() => ctx.openShare(p.id)}><Ico name="send" /><span>Teilen</span></span>
         <span className="a spacer" style={{ color: "var(--orange)" }} onClick={() => ctx.push("tip", c.id)}><Ico name="bolt" />Senden</span>
       </div>
       <div className="post-cap"><b>{c.name}</b> {p.cap}</div>

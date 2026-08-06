@@ -8,7 +8,7 @@ import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
 import Chats from "./screens/Chats.jsx";
 import Me from "./screens/Me.jsx";
-import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet, RateSheet, GiftSheet } from "./overlays/Overlays.jsx";
+import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet, RateSheet, GiftSheet, ShareSheet } from "./overlays/Overlays.jsx";
 
 export default function App() {
   // ---- global state ----
@@ -23,6 +23,7 @@ export default function App() {
   const [reviews, setReviews] = useState(REVIEWS);   // seeded, grows as the user rates
   const [ratePrompt, setRatePrompt] = useState(null); // creator id awaiting a rating
   const [giftFor, setGiftFor] = useState(null);      // creator id the gift picker targets
+  const [shareFor, setShareFor] = useState(null);    // post id the share sheet targets
   const [flying, setFlying] = useState(null);        // emoji floating up after a gift
   const [overlays, setOverlays] = useState([]); // stack: {kind, id}
   const [call, setCall] = useState(null); // {id, secs, cost, status}
@@ -107,6 +108,7 @@ export default function App() {
     bookings, setBookings,
     reviews, setReviews,
     openGift: setGiftFor,
+    openShare: setShareFor,
     flyGift: (em) => { setFlying({ em, key: Date.now() }); setTimeout(() => setFlying(null), 1700); },
     toast, spend, push, pop, popAll, startCall, endCall, setPhase,
   };
@@ -155,6 +157,7 @@ export default function App() {
       {ratePrompt && <RateSheet id={ratePrompt} ctx={ctx} close={() => setRatePrompt(null)} />}
 
       {giftFor && <GiftSheet id={giftFor} ctx={ctx} close={() => setGiftFor(null)} />}
+      {shareFor && <ShareSheet id={shareFor} ctx={ctx} close={() => setShareFor(null)} />}
       {flying && <div key={flying.key} className="giftfly">{flying.em}</div>}
 
       {phase === "welcome" && <Onboarding ctx={ctx} done={() => setPhase("main")} />}

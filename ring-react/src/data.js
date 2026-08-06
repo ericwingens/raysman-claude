@@ -76,6 +76,18 @@ export const rating = (id, all = REVIEWS) => {
   return { avg: rs.reduce((s, r) => s + r.stars, 0) / rs.length, count: rs.length };
 };
 
+
+// Share destinations for a post. `ink` is the glyph colour on the brand tile.
+export const SHARE_TARGETS = [
+  { id: "tiktok",    name: "TikTok",    bg: "#010101", ink: "#fff" },
+  { id: "instagram", name: "Instagram", bg: "linear-gradient(135deg,#833AB4,#FD1D1D 55%,#FCB045)", ink: "#fff" },
+  { id: "snapchat",  name: "Snapchat",  bg: "#FFFC00", ink: "#111" },
+  { id: "facebook",  name: "Facebook",  bg: "#1877F2", ink: "#fff" },
+  { id: "discord",   name: "Discord",   bg: "#5865F2", ink: "#fff" },
+  { id: "twitch",    name: "Twitch",    bg: "#9146FF", ink: "#fff" },
+  { id: "xcom",      name: "X",         bg: "#0F1419", ink: "#fff" },
+];
+
 // Virtual gifts, sent during a call or a live view. Prices in EUR, ordered
 // cheapest first so the grid reads as a ladder.
 export const GIFTS = [

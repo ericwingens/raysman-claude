@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS, GIFTS } from "../data.js";
+import { POSTS, byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS, GIFTS, SHARE_TARGETS } from "../data.js";
 import { photoStyle, EUR, Ico, num } from "../lib.jsx";
 
 /* Delivery quality at a glance, plus the creator's level and earned badges.
@@ -45,6 +45,35 @@ function useShow() {
   return show;
 }
 
+
+
+/* ---------------- Share a post to an external platform ---------------- */
+export function ShareSheet({ id, ctx, close }) {
+  const p = POSTS.find((x) => x.id === id);
+  const c = p ? byId(p.cid) : null;
+  return (
+    <div className="modal show" onClick={close}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(8,4,1,.5)" }} />
+      <div className="mbox" style={{ position: "relative", maxWidth: 340 }} onClick={(e) => e.stopPropagation()}>
+        <h3>Beitrag teilen</h3>
+        <p>{c ? `${c.name} · ${p.cap.slice(0, 48)}${p.cap.length > 48 ? "…" : ""}` : "Diesen Inhalt weitergeben."}</p>
+        <div className="sharegrid">
+          {SHARE_TARGETS.map((t) => (
+            <button key={t.id} className="sharetile" onClick={() => { close(); ctx.toast(`Geteilt auf ${t.name}`); }}>
+              <span className="tile" style={{ background: t.bg, color: t.ink }}><Ico name={t.id} /></span>
+              <span className="lbl2">{t.name}</span>
+            </button>
+          ))}
+        </div>
+        <div className="mrow" style={{ marginTop: 14 }}>
+          <button className="btn btn-ghost btn-sm" onClick={close}>Abbrechen</button>
+          <button className="btn btn-primary btn-sm"
+            onClick={() => { close(); ctx.toast("Link kopiert"); }}>Link kopieren</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ---------------- Gift picker, opened from a call or a live view ----------------
    Spends from the wallet and floats the emoji up the screen. */

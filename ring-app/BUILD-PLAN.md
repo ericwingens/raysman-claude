@@ -4,7 +4,9 @@
 >
 > Dieses Dokument beschreibt den Umbau des bestehenden Single-File-HTML-Prototyps (`ring-app/index.html`) in ein echtes React-+-Vite-Web-Projekt mit späterer Portierung nach Expo/React Native, inklusive Backend- und Feature-Roadmap.
 >
-> **Stand:** M0 (interaktiver Prototyp) abgeschlossen. Alle folgenden Meilensteine sind offen.
+> **Stand:** M0 (interaktiver Prototyp) abgeschlossen — inzwischen in zwei parallel gepflegten Fassungen: dem Single-File-Prototyp (`ring-app/index.html`) und der React-App (`ring-react/`). Seit der ersten Fassung ist eine **Marktplatz-Ebene** dazugekommen (buchbare Leistungen, Termine, Bewertungen, Vertrauenskennzahlen, Geschenke, Rangliste) sowie Teilen nach außen und Gruppen-Calls — siehe §11. Alle folgenden Meilensteine sind offen.
+>
+> **Achtung:** §11 enthält drei ungelöste Fragen, die vor M3/M5 beantwortet sein müssen: Abrechnung von Gruppen-Calls, Missbrauchsschutz bei Bewertungen und Leckage bezahlter Inhalte beim Teilen.
 > **Hinweis:** Rechts- und Zahlungsaussagen in diesem Dokument sind technische Orientierung, **keine Rechtsberatung**. Vor Launch ist eine anwaltliche Prüfung zwingend (siehe §7).
 
 ---
@@ -31,6 +33,12 @@
 - **Pay-per-View** in Feed (z. B. 4,99 €) und DMs (z. B. 1,99 €).
 - **Tips** (Beträge 2/5/10/20/50 €) auf Profilen, Posts, im Chat und live im Call.
 - **Wallet-Guthaben**, das durch alle Aktionen live aktualisiert wird (Prototyp-Start: 24,50 €).
+- **Virtuelle Geschenke** (18 Artikel, **0,49 € bis 149,99 €**) im Call und im Livestream — feste Artikel mit Namen und Symbol, abgegrenzt vom frei wählbaren Tip.
+- **Buchbare Leistungspakete** je Creator (z. B. „Yoga 1:1", 45 Min, 52 €) mit Terminreservierung. **Derzeit ohne Vorauszahlung** — siehe §11.3.
+
+### Vertrauens- und Auswahlebene (neu)
+
+Reine Preisanzeige reicht nicht, um zwischen Creatorn zu wählen. Dazu kommen: **Bewertungen** mit Sternen und Text, **Vertrauenskennzahlen** (Antwortquote, Abschlussquote, Stammgästeanteil, Anzahl gelieferter Calls), **Level und Abzeichen** sowie eine **Rangliste**, deren Punktzahl gelieferte Calls mit Bewertung und Abschlussquote gewichtet — damit Masse allein niemanden nach oben trägt.
 
 ---
 
@@ -106,7 +114,7 @@ src/
 - **Object Storage:** S3-kompatibel (AWS S3 / Cloudflare R2 / MinIO) für Fotos, Videos, PPV-Assets. Zugriff nur über **signierte, zeitlich begrenzte URLs**; PPV-Medien niemals öffentlich.
 - **Media/CDN-Ebene:** CDN (CloudFront / Cloudflare) vor dem Storage; Transcoding-Pipeline (z. B. `ffmpeg`-Worker oder Mux/Cloudflare Stream) für Video-Varianten, Thumbnails und HLS für Livestream/VOD.
 - **Realtime:** WebSocket-Gateway (NestJS Gateway + Redis-Adapter) für Chat, Presence, Typing, Livestream-Chat, Tip-Events, Call-Signaling-Events.
-- **Payments:** Stripe (+ Stripe Connect für Payouts) und PayPal; Webhook-Handler für asynchrone Bestätigung. Adult-Content-Policy-Risiko siehe §10 (ggf. CCBill/Segpay).
+- **Payments:** Stripe (+ Stripe Connect für Payouts) als Abwickler für Karte, **Apple Pay und Google Pay** (§4.2), dazu PayPal; Webhook-Handler für asynchrone Bestätigung. Adult-Content-Policy-Risiko siehe §10 (ggf. CCBill/Segpay).
 - **Async/Jobs:** BullMQ (Redis) für Payout-Batches, Transcoding, Benachrichtigungen, Webhook-Retries.
 
 ### 2.4 Echtzeit-Calls (WebRTC)
@@ -141,8 +149,18 @@ Kern-Entities (Postgres). PKs `id` (UUID/ULID), Timestamps `created_at`/`updated
 | **LivestreamSession** | `creator_id`, `title`, `status` (`live`/`ended`), `room_id`, `viewer_count`, `started_at`, `recording_media_id` | Livestream + optionale VOD-Aufzeichnung |
 | **Payout** | `creator_id`, `amount`, `period`, `status`, `provider_ref`, `fees` | Stripe-Connect-Auszahlung (§4) |
 | **ModerationCase / Report** | `subject_type`, `subject_id`, `reporter_id`, `reason`, `status`, `resolution` | Trust & Safety (§7) |
+| **CreatorService** | `creator_id`, `name`, `description`, `duration_min`, `price`, `active`, `sort_order` | Buchbares Paket; Prototyp: 2 je Creator, 19–89 € |
+| **AvailabilityRule** | `creator_id`, `weekday`, `slot_start`, `slot_end`, `timezone`, `active` | Wiederkehrende Verfügbarkeit; erzeugt die Slots der Wochenleiste |
+| **AvailabilityException** | `creator_id`, `date`, `blocked`, `slot_start`, `slot_end` | Einzelne Sperrungen/Zusatzzeiten, schlagen die Regel |
+| **Booking** | `fan_id`, `creator_id`, `service_id`, `starts_at`, `duration_min`, `price`, `status` (`reserved`/`confirmed`/`completed`/`no_show`/`canceled`), `call_id`, `ledger_tx_id?` | `starts_at` in UTC, Anzeige in der Zeitzone des Fans. `ledger_tx_id` bleibt leer, solange nicht vorab kassiert wird (§11.3) |
+| **Review** | `booking_id?`, `call_id?`, `author_id`, `creator_id`, `stars` (1–5), `body`, `status` (`published`/`hidden`/`flagged`), `edited_at` | **Mindestens eine der beiden Referenzen ist Pflicht** — keine Bewertung ohne stattgefundene Leistung (§11.2) |
+| **CreatorStats** | `creator_id`, `response_rate`, `completion_rate`, `repeat_rate`, `calls_delivered`, `rating_avg`, `rating_count`, `level`, `badges[]`, `computed_at` | Materialisierte Sicht, per Job neu berechnet — nicht von Hand pflegbar |
+| **Gift** | `code`, `name`, `symbol`, `price`, `active`, `sort_order` | Katalog, 18 Artikel; Preise als Cent-Integer |
+| **GiftTransaction** | `sender_id`, `recipient_id`, `gift_id`, `price_paid`, `context` (`call`/`live`/`profile`), `context_id`, `ledger_tx_id` | Wie Tip, aber mit Artikelbezug für Auswertung und Bestenlisten |
+| **CallParticipant** | `call_id`, `user_id`, `role` (`host`/`callee`/`guest`), `joined_at`, `left_at`, `billed_share` | Gruppen-Calls; `billed_share` offen bis §11.1 entschieden ist |
+| **ShareEvent** | `user_id`, `subject_type` (`post`/`profile`), `subject_id`, `target` (`tiktok`/`instagram`/…/`copy_link`), `created_at` | Nur Absicht und Ziel protokollieren, keine Inhalte |
 
-**Faustregel:** Alles, was Geld bewegt (PPV, Abo, Tip, Call-Tick, Top-up, Payout, Refund), erzeugt **genau eine** `WalletTransaction`-Zeile mit `idempotency_key`. Der `Wallet.balance` ist eine materialisierte Sicht und muss jederzeit = Summe des Ledgers sein (Invariante, per Job prüfbar).
+**Faustregel:** Alles, was Geld bewegt (PPV, Abo, Tip, **Geschenk**, Call-Tick, **Buchung**, Top-up, Payout, Refund), erzeugt **genau eine** `WalletTransaction`-Zeile mit `idempotency_key`. Der `Wallet.balance` ist eine materialisierte Sicht und muss jederzeit = Summe des Ledgers sein (Invariante, per Job prüfbar).
 
 ---
 
@@ -156,9 +174,26 @@ Kern-Entities (Postgres). PKs `id` (UUID/ULID), Timestamps `created_at`/`updated
 
 ### 4.2 Aufladen (Top-up)
 
-- Stripe (Payment Intents / Checkout) und PayPal. Guthaben wird **erst nach Webhook-Bestätigung** gutgeschrieben (`payment_intent.succeeded`), nicht clientseitig.
+- **Stripe** als primärer Abwickler (Payment Intents / Checkout), **PayPal** als zweite Schiene. Guthaben wird **erst nach Webhook-Bestätigung** gutgeschrieben (`payment_intent.succeeded`), nicht clientseitig.
 - Idempotenz: `idempotency_key` pro Top-up-Versuch; Webhook-Handler idempotent (Provider-`event.id` als Dedupe-Key).
 - Packs wie im Prototyp: 10 / 25 / 50 / 100 €.
+
+#### Zahlungsmittel: Apple Pay, Google Pay, Karte
+
+Wichtig für die Planung: **Apple Pay und Google Pay sind keine eigenen Zahlungsdienstleister, sondern Zahlungsmittel, die über Stripe laufen.** Es gibt also nicht drei Integrationen, sondern eine — Stripe — mit drei Knöpfen davor. Das reduziert den Aufwand erheblich, verschiebt ihn aber in die Einrichtung:
+
+| Mittel | Weg | Aufwand |
+|---|---|---|
+| **Karte** (Visa/Mastercard/Amex) | Stripe Payment Element | Basis |
+| **Apple Pay** | Stripe Payment Request Button / Payment Element | **Domain-Verifizierung** bei Apple je Domain, Zertifikatsdatei unter `/.well-known/`; nur über HTTPS und nur in Safari/iOS-WebViews |
+| **Google Pay** | dito | Merchant-Konfiguration in Stripe, keine Domain-Datei nötig |
+| **PayPal** | eigene Integration | separat, nicht über Stripe |
+
+- **Ein Ledger-Pfad für alle.** Egal welches Mittel: Es entsteht dieselbe `WalletTransaction` vom Typ `topup`. Das Zahlungsmittel wird nur als Metadatum (`provider_ref`, `payment_method_type`) mitgeschrieben — für Auswertung und Support, nicht für die Buchungslogik. Nichts an der Guthabenlogik darf vom Zahlungsmittel abhängen.
+- **Verfügbarkeit prüfen, nicht raten.** Die Wallet-Oberfläche darf den Apple-Pay-Knopf nur zeigen, wenn das Gerät ihn wirklich anbietet (`PaymentRequest.canMakePayment()`); sonst steht dort ein toter Knopf. Fallback ist immer die Kartenzahlung.
+- **SCA/3-D-Secure** ist bei Apple Pay und Google Pay durch die Geräte-Authentifizierung in der Regel bereits erfüllt, bei reiner Kartenzahlung nicht — der Flow muss den zusätzlichen Bestätigungsschritt aushalten (§7, Chargeback/Fraud).
+
+**Die entscheidende Einschränkung** steht in §10: In einer **nativen** App aus dem App Store bzw. Play Store dürfen digitale Güter — und Wallet-Guthaben ist ein digitales Gut — nach den Store-Regeln **nicht** über Apple Pay, Google Pay oder Stripe verkauft werden, sondern nur über **In-App-Purchase** mit deren Provision. Apple Pay ist für physische Waren und externe Dienstleistungen gedacht, nicht für App-Währung. Praktische Folge: Apple Pay und Google Pay sind die richtige Wahl für die **Web-PWA**, die damit auch der primäre Aufladekanal bleibt; die native App braucht entweder IAP oder verzichtet auf das Aufladen und verweist auf den Browser. Diese Weiche muss **vor M8** fallen, nicht danach.
 
 ### 4.3 Holds/Escrow für Calls
 
@@ -191,7 +226,13 @@ jede Sekunde: cost += perSec
 - **Refunds:** Gegenbuchung im Ledger (`refund`), Verknüpfung zur Original-Tx; Provider-Refund nur bei Kartenzahlungen relevant, Wallet-interne Stornos als Ledger-Reversal.
 - **Idempotenz** überall: Top-ups, Webhooks, Ticks, Payouts.
 
-### 4.6 Steuern / VAT (DE/EU-Kontext)
+### 4.6 Geschenke und Buchungen
+
+**Geschenke** verhalten sich abrechnungstechnisch wie Tips: sofortige Abbuchung vom Guthaben, eine Ledger-Zeile (`type=tip`, `ref_type=gift`), Gutschrift beim Creator abzüglich Provision. Der Unterschied ist inhaltlich, nicht finanziell — ein Geschenk hat Artikel, Namen und Symbol und ist damit auswertbar (beliebteste Artikel, Umsatz je Artikel, Bestenlisten). Der Katalog liegt in der Datenbank, nicht im Client, damit Preise und Sortiment ohne App-Release änderbar sind.
+
+**Buchungen** sind derzeit **reine Reservierungen ohne Zahlungsvorgang**. Das war eine bewusste Produktentscheidung (Treuhand wurde für diese Runde verworfen), hat aber Folgen, die vor M3 zu klären sind — siehe §11.3.
+
+### 4.7 Steuern / VAT (DE/EU-Kontext)
 
 - **USt. auf digitale Dienstleistungen** an Endverbraucher in der EU: Leistungsort = Wohnsitz des Kunden (**MOSS/OSS**-Verfahren). USt.-Satz nach Kundenland; Nachweis (2 nicht-widersprüchliche Belege, z. B. Rechnungsland + IP) erforderlich.
 - **Kleinunternehmerregelung (§ 19 UStG):** falls anwendbar, keine USt.-Ausweisung — für eine skalierende Plattform aber meist nicht praktikabel.
@@ -243,7 +284,9 @@ Fan tippt „Ring me · X €/Min"  (Profil oder Discover-Call-Button)
 
 - **TURN/SFU:** LiveKit-Räume pro Call; coturn für Fallback-Relay. Call-Tokens kurzlebig, an `Call.id` gebunden.
 - **Tips im Call:** `openTip` bleibt live erreichbar (Prototyp: Tip-Button im Call-Controls-Bereich) → separate Ledger-Tx (`tip`, context=`call`).
+- **Geschenke im Call:** eigener Knopf in der Call-Leiste, gleiche Behandlung wie Tips, zusätzlich `GiftTransaction` (§4.6).
 - **Livestream-Calls:** `type=live` wird ebenfalls pro Minute abgerechnet (Prototyp-Hinweis: „Live-Anrufe werden pro Minute abgerechnet").
+- **Gruppen-Calls:** Der Anrufer kann bis zu **5 weitere Teilnehmer** in einen laufenden Call holen. Technisch ist das für einen SFU unkritisch — LiveKit-Räume sind ohnehin mehrteilnehmerfähig, jeder Beitritt bekommt ein eigenes kurzlebiges Token, und `CallParticipant` protokolliert Beitritt und Austritt. **Kaufmännisch ist es ungeklärt** (§11.1). Zusätzlich: Jeder Hinzugefügte muss **selbst zustimmen**, bevor sein Medienstrom läuft — niemand wird ungefragt in einen Call gezogen.
 - **Recording & Consent:** Aufzeichnung nur mit **beidseitiger, protokollierter Einwilligung** (DSGVO, ggf. § 201 StGB Vertraulichkeit des Wortes). Recording-Egress von LiveKit → Storage; Aufbewahrung/Retention definieren.
 
 ---
@@ -260,6 +303,10 @@ WebSocket-Gateway (NestJS + Redis-Adapter). Kanäle/Events:
 | **Livestream-Chat** | `live.message`, `live.viewerCount` | pro `LivestreamSession.room_id` |
 | **Tip-Animationen** | `tip.received` | löst Herz-Burst (`heartBurst`) & Toast aus |
 | **Call-Signaling** | `call.ring`, `call.tick`, `call.ended`, `call.cutoff` | Ticker-Sync, aber Abrechnung serverseitig |
+| **Gruppen-Call** | `call.invite`, `call.participant.joined`, `call.participant.left`, `call.invite.declined` | Einladung braucht Zustimmung des Eingeladenen, bevor Medien fließen |
+| **Geschenke** | `gift.sent` | Artikel + Absender, löst die Flug-Animation bei allen Teilnehmern aus |
+| **Buchungen** | `booking.created`, `booking.reminder`, `booking.starting`, `booking.canceled` | Erinnerung als Push; `booking.starting` verlinkt direkt in den Call |
+| **Bewertungen** | `review.requested`, `review.published` | `review.requested` nach Call-Ende, einmalig und ablaufend |
 
 Presence & Fan-out über Redis Pub/Sub; horizontale Skalierung der WS-Nodes über den Redis-Adapter.
 
@@ -277,6 +324,9 @@ Presence & Fan-out über Redis Pub/Sub; horizontale Skalierung der WS-Nodes übe
 - **DSA (Digital Services Act):** Melde-/Abhilfeverfahren („Notice & Action"), Transparenzpflichten, Kontaktstelle, ggf. Trusted-Flagger-Prozesse.
 - **Reporting & Blocking:** Nutzer können Profile/Posts/Nachrichten melden und blockieren; Block wirkt auf Chat, Call, Discovery, Feed.
 - **Chargeback / Fraud:** Velocity-Checks, Device-Fingerprinting, 3-D-Secure (SCA/PSD2) bei Kartenzahlung, Limits für Neukunden, manuelle Review bei Auffälligkeiten; Chargeback-Handling im Ledger.
+- **Bewertungen:** Nur zu einer tatsächlich stattgefundenen Leistung (Call oder Buchung), pro Leistung genau eine, editierbar innerhalb einer Frist. Bewertungen sind meldbar und moderierbar wie jeder andere Inhalt. Ohne Kaufbindung ist ein Bewertungssystem in kurzer Zeit wertlos (§11.2). **Gekaufte Bewertungen und das Entfernen negativer Bewertungen gegen Entgelt sind nach UWG unzulässig** — die Plattform darf Creatorn keinen Weg anbieten, schlechte Bewertungen verschwinden zu lassen.
+- **Teilen nach außen:** Geteilt werden darf nur, was öffentlich ist. Für Abo- oder PPV-Inhalte darf der Teilen-Vorgang **niemals** die Mediendatei oder eine signierte URL nach außen geben, sondern nur einen Landeplatz-Link, der beim Empfänger erneut die Zugangsprüfung durchläuft (§11.4). `ShareEvent` protokolliert Absicht und Ziel, nicht den Inhalt.
+- **Gruppen-Calls:** Zustimmung jedes Hinzugefügten vor Medienübertragung; Blockierungen wirken auch hier — wer jemanden blockiert hat, kann nicht mit ihm in denselben Raum gezogen werden. Aufzeichnung braucht die Einwilligung **aller** Anwesenden, nicht nur der beiden ursprünglichen.
 - **Impressum & AGB (DE-Pflicht):** Impressum (§ 5 DDG/TMG), AGB, Datenschutzerklärung, Widerrufsbelehrung (bzw. Hinweis auf Erlöschen des Widerrufsrechts bei digitalen Inhalten), Zahlungs-/Nutzungsbedingungen für Fans und Creator. Der Prototyp verlinkt bereits „AGB", „Datenschutz" und „Datenschutz & Impressum".
 
 ---
@@ -289,24 +339,37 @@ Vollständiges Screen-Inventar aus dem Mockup „Ring – Mockup – v6", das pi
 |---|---|---|---|
 | 1 | **Welcome** | teils (Onboarding-Cluster) | Ring-Branding, Avatar-Cluster, „Los geht's" / Anmelden |
 | 2 | **Login** | offen | Anmeldung |
-| 3 | **Register** | offen | Basis-Registrierung |
-| 3a | Register · **Gender** | offen | `gender` |
-| 3b | Register · **Looking for** | offen | `looking_for` |
-| 3c | Register · **Age** | offen | `birthdate`/`age` |
-| 3d | Register · **Profile picture** | offen | Avatar-Upload |
-| 4 | **Start Recording** (Video-Intro) | offen | Video-Vorstellung des Nutzers |
+| 3 | **Register** | ✅ | 6-stufiger Flow mit Fortschrittsbalken |
+| 3a | Register · **Gender** | ✅ | `gender`, Weiter erst nach Auswahl |
+| 3b | Register · **Looking for** | ✅ | `looking_for` |
+| 3c | Register · **Age** | ✅ | Schieberegler ab 18 |
+| 3d | Register · **Profile picture** | ✅ | Avatar-Auswahl (Demo) |
+| 4 | **Start Recording** (Voice-Intro) | ✅ | Wellenform + Timer, simuliert |
 | 5 | **Home / Discover** | ✅ Swipe-Deck | Like/Pass/Super-Ring/Call, Badges, €/Min |
 | 6 | **Explore** | ✅ | Live-Stories, Creator-Grid |
-| 7 | **Matches** | teils (Chats „Neue Matches") | dedizierter Matches-Screen prüfen |
+| 7 | **Matches** | ✅ | Eigener Tab in Explore, mit Anrufen und Entfernen |
 | 8 | **Call Screen** | ✅ | Live-Cost-Ticker pro Minute |
-| 9 | **Profile** (Creator) | ✅ | Tiers, Gallery, „Ring me", Livestream |
-| 10 | **Profile settings** | teils (Me) | Einstellungen |
-| 10a | Settings · **Change photo** | offen | Foto ändern |
-| 10b | Settings · **Delete account** | offen | Konto löschen |
-| 11 | **Data Privacy** | offen (verlinkt) | Datenschutz |
-| 12 | **Imprint** | offen (verlinkt) | Impressum |
+| 9 | **Profile** (Creator) | ✅ | Tiers, Gallery, Ring me, Livestream, **Vertrauenskennzahlen, Leistungen, Bewertungen** |
+| 10 | **Profile settings** | ✅ | Fotos, Sprachnachricht, Profilfelder, Termine |
+| 10a | Settings · **Change photo** | ✅ | Dialog Galerie/Kamera |
+| 10b | Settings · **Delete account** | ✅ | Konto löschen, mit Bestätigung |
+| 11 | **Data Privacy** | ✅ | Volle Seite, Platzhaltertext |
+| 12 | **Imprint** | ✅ | Volle Seite, Platzhaltertext |
 
-Zusätzlich im Prototyp vorhanden (Fanso-Funktion, in Ring-Look): **Feed** (PPV-Lock), **Chats/Chat-Detail** (paid DM), **Wallet** (Top-up + Tx-History), **Tip-Sheet**. Diese sind gegen die restlichen Figma-Screens design-abzugleichen.
+Zusätzlich im Prototyp vorhanden (Fanso-Funktion, in Ring-Look): **Feed** (PPV-Lock), **Chats/Chat-Detail** (paid DM), **Wallet** (Top-up + Tx-History), **Tip-Sheet**.
+
+Neu hinzugekommen und **ohne Figma-Vorlage** — diese brauchen einen Design-Abgleich, bevor sie als final gelten:
+
+| Screen | Inhalt |
+|---|---|
+| **Buchung** | Paketwahl, Wochenleiste, Zeitfenster, Bestätigung |
+| **Meine Termine** | Liste im eigenen Profil, mit Leerzustand |
+| **Bewertungsabfrage** | Dialog nach Call-Ende, 5 Sterne + Text |
+| **Bewertungsliste** | Im Creator-Profil, unter den Leistungen |
+| **Geschenke-Galerie** | 18 Artikel, scrollendes Raster |
+| **Rangliste** | Top 5 im Explore-Tab |
+| **Teilen** | 7 Plattform-Kacheln + Link kopieren |
+| **Teilnehmer hinzufügen** | Auswahlliste mit Obergrenze 5 |
 
 ---
 
@@ -316,12 +379,13 @@ Grobe Sequenzierung (keine fixen Daten); jeder Meilenstein liefert etwas Testbar
 
 | MS | Titel | Inhalt | Abhängig von |
 |---|---|---|---|
-| **M0** | **Prototyp** ✅ | Single-File-HTML: Onboarding, Discover, Explore, Feed, Chats, Profil, Call, Wallet, Me, Dark/Light | — |
+| **M0** | **Prototyp** ✅ | Zwei gepflegte Fassungen (Single-File + React): Onboarding inkl. 6-stufiger Registrierung, Discover, Explore mit Matches, Feed mit Teilen, Chats, Profil mit Kennzahlen/Leistungen/Bewertungen, Call mit Geschenken und Gästen, Buchung, Wallet, Me, Rechtsseiten | — |
 | **M1** | **React/Vite-App + Design-System** | Vite+TS-Setup, Monorepo, `tokens.ts` (light/dark), Komponenten (Button/Chip/Avatar/Sheet/Tier/PostCard), Screens als Routen, Mock-Daten aus Prototyp portiert | M0 |
 | **M2** | **Auth + Profile + Feed** | Registrierung (inkl. Gender/Looking-for/Age/Foto/Start-Recording), Login, User/CreatorProfile, Discover-Swipe gegen API, Explore, Feed (ohne Zahlungen) | M1, Backend-Grundgerüst |
 | **M3** | **Wallet + Payments + Abos + PPV** | Postgres-Ledger, Stripe/PayPal-Top-up, Wallet-Screen, SubscriptionTier/Subscription, PostUnlock (PPV), Stripe Connect Payout-Grundlage | M2 |
 | **M4** | **Chat + Paid DMs** | Conversations, WebSocket-Chat, Presence/Typing, bezahlte DMs (`PaidMessageUnlock`), Tips (Profil/Post/Chat) | M3 |
 | **M5** | **WebRTC Paid Calls** | LiveKit + coturn, Signaling, server-autoritatives Per-Minute-Metering, Live-Ticker, Cutoff, Settlement, Receipt, Tips im Call | M3, M4 |
+| **M5.5** | **Marktplatz-Ebene** | CreatorService, Verfügbarkeiten, Booking, Review mit Leistungsbindung + Moderation, CreatorStats-Job, Gift-Katalog + GiftTransaction, Rangliste, Teilen mit Zugangsprüfung, Gruppen-Calls inkl. Zustimmung und Abrechnungsmodell | M3, M5 |
 | **M6** | **Livestream** | LivestreamSession, HLS/Egress, Live-Chat, Live-Tips, optionale VOD-Aufzeichnung | M5 |
 | **M7** | **Trust/Safety + Moderation + KYC** | Altersverifikation, Creator-KYC, Moderations-Queue, Reporting/Blocking, DSGVO/DSA-Flows, Impressum/AGB/Datenschutz | M2–M6 |
 | **M8** | **Native (Expo) + Store-Submission** | Expo/RN-App aus geteiltem Core, `react-native-webrtc`, Push, IAP-Prüfung, App-Store/Play-Store-Einreichung | M1–M7 |
@@ -337,6 +401,11 @@ Grobe Sequenzierung (keine fixen Daten); jeder Meilenstein liefert etwas Testbar
 | **Skalierung Medien & Calls** | Video/Livestream-Transcoding, SFU-Bandbreite, TURN-Relay-Kosten skalieren steil mit Nutzung. | Managed-Optionen (Mux/Cloudflare Stream, LiveKit Cloud) gegen Self-Host abwägen; CDN-Caching; Autoscaling der SFU-/TURN-Nodes; Kostenmonitoring. |
 | **Moderationskosten & -haftung** | Menschliche Moderation ist teuer; Haftung bei illegalen Inhalten (CSAM, Nichteinwilligung) ist gravierend. | Automatik-Vorfilter + Review-Queue, klare Melde-/Löschprozesse (DSA), Auslagerung an Moderations-Dienstleister prüfen, revisionssichere Logs. |
 | **Betrug / Chargebacks** | Micro-Transaktionen + Prepaid-Wallet + Auszahlungen sind Betrugsziele. | 3-D-Secure/SCA, Velocity-/Device-Checks, Neukunden-Limits, Payout-Holdbacks. |
+| **Gruppen-Call-Abrechnung** | Bis zu 6 Personen im Raum, aber nur ein Zahler und ein Minutenpreis. Ohne Modell verschenkt die Plattform Creator-Einnahmen und macht die Kosten für den Anrufer unvorhersehbar. | Modell vor M5.5 entscheiden (§11.1); Metering von „pro Call" auf „pro Teilnehmer" umbauen, Preisanzeige vor dem Hinzufügen. |
+| **Manipulierte Bewertungen** | Bewertungen ohne Leistungsnachweis, Mehrfachbewertungen und gekaufte Sterne entwerten Bewertungen **und** die darauf aufbauende Rangliste. Gekaufte Bewertungen sind zudem nach UWG unzulässig. | Harte Bindung an `call_id`/`booking_id`, eine je Leistung, Mindestdauer, Meldeweg, Mindestfallzahl vor Anzeige (§11.2, §11.5). |
+| **Leckage bezahlter Inhalte beim Teilen** | Ein geteilter Link auf PPV- oder Abo-Material umgeht die Bezahlschranke; signierte Storage-URLs lassen sich nicht zurückrufen. | Teilen erzeugt nur Landeplatz-Links mit erneuter Zugangsprüfung, nie Mediendateien oder signierte URLs (§11.4). |
+| **Store-Regeln vs. Apple Pay / Google Pay** | Wallet-Guthaben ist ein digitales Gut. In der nativen App ist dafür IAP vorgeschrieben — Apple Pay, Google Pay und Stripe sind dort **nicht** zulässig. | Aufladen primär in der Web-PWA (dort sind Apple Pay und Google Pay genau richtig); native App entweder mit IAP oder ohne Aufladefunktion. Weiche vor M8 (§4.2). |
+| **Ausfallrisiko bei Terminen** | Buchungen ohne Anzahlung: Ein Nichterscheinen kostet den Fan nichts und den Creator die freigehaltene Zeit. | Stornofrist und No-Show-Regel definieren; Anzahlung erneut bewerten (§11.3). |
 | **Rechtliche Komplexität (DE/EU)** | JMStV-Altersverifikation, DSGVO, DSA, DAC7, USt./OSS, Impressum/AGB — hoher Compliance-Aufwand. | Fachanwalt + Steuerberater ab M2/M3 einbinden; Compliance als eigener Arbeitsstrang (M7), nicht als Nachgedanke. |
 
 ### Offene Fragen (zu klären)
@@ -347,4 +416,55 @@ Grobe Sequenzierung (keine fixen Daten); jeder Meilenstein liefert etwas Testbar
 4. Self-hosted (LiveKit/coturn/MinIO) vs. Managed-Provider — Trade-off Kosten/Kontrolle/Time-to-Market.
 5. Provisions-/Fee-Struktur pro Umsatzart final definieren.
 6. Recording-Policy für Calls/Livestreams (rechtlich + Nutzererwartung).
+7. **Gruppen-Calls: welches Abrechnungsmodell?** (§11.1) — blockiert das Metering-Design.
+8. Zeitfenster und Mindestfallzahl je Vertrauenskennzahl, bevor sie öffentlich angezeigt wird (§11.5).
+9. Stornofrist und Folgen eines Nichterscheinens bei Buchungen (§11.3).
+10. Aufladen in der nativen App: IAP akzeptieren oder auf den Browser verweisen? (§4.2, §10)
 ```
+
+---
+
+## 11. Marktplatz-Ebene — was gebaut ist und was offen bleibt
+
+Diese Funktionen sind im Prototyp fertig und bedienbar, tragen aber Entscheidungen in sich, die im Prototyp nicht wehtun und in Produktion sofort.
+
+### 11.1 Gruppen-Calls: Abrechnung ungeklärt
+
+**Gebaut:** Der Anrufer holt bis zu 5 weitere Teilnehmer in einen laufenden Call, sichtbar als Kacheln, einzeln entfernbar.
+
+**Offen:** Wer bezahlt? Der Prototyp holt Gäste kostenlos dazu — das ist als Geschäftsmodell nicht haltbar, weil ein Creator dann bei sechs Zuhörern denselben Minutenpreis bekommt wie bei einem. Drei denkbare Modelle:
+
+| Modell | Wirkung | Nachteil |
+|---|---|---|
+| **Anrufer zahlt alles** | Einfach, eine Abrechnung, ein Guthaben | Bei 5 Gästen wird es für den Anrufer schnell teuer, ohne dass er es vorher merkt |
+| **Jeder zahlt seinen Anteil** | Fair, skaliert | Jeder Gast braucht ausreichend Guthaben; was passiert, wenn einem mittendrin das Guthaben ausgeht? |
+| **Aufschlag pro Kopf** | Creator-Einnahme wächst mit der Runde | Preisanzeige wird erklärungsbedürftig |
+
+Bis das entschieden ist, bleibt `CallParticipant.billed_share` bewusst leer. **Die Entscheidung gehört vor M5.5**, weil sie den Metering-Kern aus §4.4 verändert: aus einem Zähler pro Call wird einer pro Teilnehmer, mit eigenem Cutoff je Guthaben.
+
+### 11.2 Bewertungen: nur mit Leistungsnachweis
+
+**Gebaut:** Sterne plus Text, abgefragt nach Call-Ende, sofort im Profil sichtbar, verschiebt den Durchschnitt.
+
+**Offen:** Im Prototyp kann jede beendete Verbindung bewertet werden. In Produktion braucht es harte Bindung an `booking_id` oder `call_id`, genau eine Bewertung je Leistung, eine Mindestdauer (eine Bewertung nach vier Sekunden Call sagt nichts), eine Bearbeitungsfrist und einen Meldeweg. Ohne das ist das System innerhalb von Wochen wertlos — und die Rangliste aus §11.5, die auf den Bewertungen aufbaut, gleich mit.
+
+### 11.3 Buchungen ohne Vorauszahlung
+
+**Gebaut:** Paket wählen, Tag und Uhrzeit wählen, reservieren. Es wird **nichts** abgebucht; bezahlt wird beim Call zum Minutenpreis.
+
+**Offen:** Ohne Vorauszahlung kostet ein Nichterscheinen niemanden etwas. Der Creator hält eine Stunde frei und bekommt womöglich nichts. Zu klären ist mindestens: Stornofrist, Verhalten bei Nichterscheinen, und ob eine Anzahlung eingeführt wird. Letzteres wurde für diese Runde bewusst verworfen — das ist als Produktentscheidung in Ordnung, muss aber vor einem echten Marktstart erneut auf den Tisch, sonst trägt der Creator das gesamte Ausfallrisiko.
+
+Außerdem: `Booking.starts_at` gehört in UTC, angezeigt in der Zeitzone des Fans. Der Prototyp rechnet mit der lokalen Zeit des Browsers und kennt keine Zeitzonen — sobald Creator und Fan in verschiedenen Zonen sitzen, ist das falsch.
+
+### 11.4 Teilen: Zugangsprüfung beim Empfänger
+
+**Gebaut:** Teilen-Sheet an jedem Beitrag mit sieben Zielen und Link kopieren.
+
+**Offen:** Der Prototyp teilt nur symbolisch. In Produktion ist die Regel bindend: ein geteilter Link führt auf eine Landeseite, die **beim Empfänger erneut prüft**, ob er den Inhalt sehen darf. Für PPV- und Abo-Inhalte wird nie die Mediendatei geteilt, sondern eine Vorschau plus Kaufaufforderung. Andernfalls ist jeder geteilte Link ein Leck — und bei signierten Storage-URLs ein Leck, das sich nicht zurückholen lässt.
+
+### 11.5 Kennzahlen, Level und Rangliste sind berechnet, nicht gepflegt
+
+**Gebaut:** Antwortquote, Abschlussquote, Stammgästeanteil, gelieferte Calls, Level, Abzeichen und eine Rangliste, deren Punktzahl gelieferte Calls mit Bewertung und Abschlussquote multipliziert.
+
+**Offen:** Im Prototyp sind diese Werte fest hinterlegt. In Produktion sind sie ausnahmslos **abgeleitet** und gehören in einen periodischen Job (`CreatorStats.computed_at`), nicht in ein editierbares Feld — sonst sind sie manipulierbar und damit wertlos. Zu definieren ist je Kennzahl das Zeitfenster (Antwortquote der letzten 30 Tage? aller Zeiten?) und die Mindestfallzahl, ab der sie überhaupt angezeigt wird. Ein Creator mit einem gelieferten Call und fünf Sternen darf nicht die Rangliste anführen.
+

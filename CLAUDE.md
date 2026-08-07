@@ -1,12 +1,26 @@
 ## gstack (REQUIRED — global install)
 
-**Before doing ANY work, verify gstack is installed:**
+**Before doing ANY work, verify gstack is installed.** Run the same check the
+`PreToolUse` hook enforces, so your preflight and the gate never disagree:
 
 ```bash
-test -d ~/.claude/skills/gstack/bin && echo "GSTACK_OK" || echo "GSTACK_MISSING"
+# Details (blocking reason or warnings) go to stderr and stay visible.
+.claude/hooks/check-gstack.sh > /tmp/gstack-check.json
+grep -q '"permissionDecision":"deny"' /tmp/gstack-check.json \
+  && echo "GSTACK_BLOCKED" || echo "GSTACK_OK"
 ```
 
-If GSTACK_MISSING: STOP. Do not proceed. Tell the user:
+The check has two tiers:
+
+- **Blocking** — gstack is absent, or the checkout is incomplete/not executable.
+  Skills are denied outright.
+- **Warning** — gstack runs, but `./setup --team` never finished, team mode is
+  off, or the setup is stale. Skills still run. Sandboxed environments land here
+  legitimately: gstack's `setup` runs under `set -e` and exits while installing
+  Playwright's Chromium, before it writes `~/.gstack/.last-setup-version`.
+  Surface the warning to the user; do not silently ignore it.
+
+If GSTACK_BLOCKED: STOP. Do not proceed. Tell the user:
 
 > gstack is required for all AI-assisted work in this repo.
 > Install it:

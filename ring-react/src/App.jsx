@@ -143,6 +143,7 @@ export default function App() {
           <Tab v="explore" cur={view} set={setView} icon="compass" label="Explore" />
           <button className="tab center" onClick={() => setView("feed")}>
             <span className="fab"><Ico name="plus" /></span>
+            <span>Add</span>
           </button>
           <Tab v="chats" cur={view} set={setView} icon="chat" label="Chats" dot />
           <Tab v="me" cur={view} set={setView} icon="user" label="Me" />

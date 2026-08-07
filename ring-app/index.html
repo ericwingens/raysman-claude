@@ -240,14 +240,14 @@ button{font-family:inherit;color:inherit}
 .call .cbtn svg{width:24px;height:24px}
 
 /* ---------- Bottom tab bar ---------- */
-.tabbar{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;align-items:flex-end;padding:9px 8px calc(env(safe-area-inset-bottom,10px) + 12px);background:color-mix(in srgb,var(--paper) 88%, transparent);backdrop-filter:blur(18px);border-top:1px solid var(--line);z-index:50}
+.tabbar{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,10px) + 10px);display:flex;justify-content:space-around;align-items:flex-end;padding:10px 6px 11px;z-index:50}
+.tabbar::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:34px;background:color-mix(in srgb,var(--paper) 92%, transparent);backdrop-filter:blur(18px);border:1px solid var(--line);box-shadow:0 18px 40px -18px rgba(60,30,10,.38),0 2px 6px -2px rgba(60,30,10,.12);-webkit-mask-image:radial-gradient(48px 24px at 50% 0,transparent 99%,#000 100%);mask-image:radial-gradient(48px 24px at 50% 0,transparent 99%,#000 100%)}
 .tab{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-weight:700;padding:4px 8px;flex:1;position:relative}
 .tab svg{width:25px;height:25px}
 .tab.on{color:var(--orange)}
 .tab .dot{position:absolute;top:1px;right:calc(50% - 16px);width:8px;height:8px;background:var(--heart);border-radius:50%;border:1.5px solid var(--paper)}
-.tab.center{flex:0}
-.tab.center .fab{width:52px;height:52px;border-radius:50%;background:var(--brand-grad);display:grid;place-items:center;color:#fff;box-shadow:0 12px 24px -10px rgba(245,118,26,.8);margin-bottom:2px;margin-top:-14px}
-.tab.center .fab svg{width:26px;height:26px}
+.tab.center{flex:0 0 auto;padding-inline:2px}
+.tab.center .fab{width:66px;height:44px;border-radius:18px;background:var(--brand-grad);display:grid;place-items:center;color:#fff;box-shadow:0 14px 26px -10px rgba(245,118,26,.85),inset 0 1px 0 rgba(255,255,255,.45);margin:-26px 0 3px;transform:translateY(-10px)}
 
 /* ---------- Onboarding (welcome screen per Figma) ---------- */
 .onb{position:absolute;inset:0;z-index:90;background:var(--paper);display:flex;flex-direction:column;transition:opacity .4s, transform .4s}
@@ -454,6 +454,10 @@ button{font-family:inherit;color:inherit}
 .pickrow.on .pk-c{border-color:var(--orange);background:var(--orange);color:#fff}
 .pickrow.on .pk-c svg{width:14px;height:14px}
 .pickrow.full{opacity:.4;pointer-events:none}
+
+/* Active tab gets a short underline, matching the reference navigation. */
+.tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
+.tab.center .fab svg{width:26px;height:26px}
 </style>
 </head>
 <body>
@@ -726,7 +730,7 @@ function tabbar(){
   return `<nav class="tabbar">
     ${t("discover",I.layers,"Discover")}
     ${t("explore",I.compass,"Explore")}
-    <button class="tab center" onclick="go('feed')"><span class="fab">${I.plus}</span></button>
+    <button class="tab center" onclick="go('feed')"><span class="fab">${I.plus}</span><span>Add</span></button>
     ${t("chats",I.chat,"Chats",true)}
     ${t("me",I.user,"Me")}
   </nav>`;

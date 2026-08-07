@@ -25,6 +25,7 @@ If GSTACK_BLOCKED: STOP. Do not proceed. Tell the user:
 > gstack is required for all AI-assisted work in this repo.
 > Install it:
 > ```bash
+> scripts/setup-claude-code.sh          # bootstraps gstack + council, or:
 > git clone --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
 > cd ~/.claude/skills/gstack && ./setup --team
 > ```

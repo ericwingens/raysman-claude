@@ -2,6 +2,33 @@
 
 A Claude Code workspace that is also a **plugin marketplace**.
 
+## Environment setup
+
+Project-level config (`.claude/`, `.mcp.json`) is restored automatically in every
+fresh web container. Anything that lives in `$HOME` is **not** — gstack and the
+global council have to be reinstalled each time. `scripts/setup-claude-code.sh`
+does that in one shot:
+
+```bash
+scripts/setup-claude-code.sh                  # full bootstrap
+scripts/setup-claude-code.sh --skip-gstack    # or skip individual steps
+scripts/setup-claude-code.sh --help
+```
+
+It clones gstack and runs `./setup --team`, installs the vendored council
+globally, then verifies project-scoped plugins and the gstack guard, ending with
+a summary of anything that needs attention.
+
+- **Claude Code on the web:** point your *environment setup script* here so every
+  fresh container is bootstrapped on startup.
+- **Local machine:** run it once from a checkout; `~/.claude` persists.
+
+The script is idempotent and exits 0 whenever the environment is usable. A
+partial gstack setup is reported as a warning rather than a failure: gstack's own
+`setup` runs under `set -e` and aborts on the Playwright Chromium download, which
+a sandbox network allowlist routinely blocks. Non-browser skills still work in
+that state, so the bootstrap continues instead of leaving the container half-set-up.
+
 ## Marketplace
 
 `.claude-plugin/marketplace.json` defines the `raysman-claude` marketplace. Add it
@@ -101,9 +128,10 @@ scripts/install-council-global.sh /some/dir  # or an explicit target
 ```
 
 - **Local machine:** run it once from a checkout; `~/.claude` persists.
-- **Claude Code on the web:** point your *environment setup script* at
-  `scripts/install-council-global.sh` so every fresh container installs the
-  council globally on startup.
+- **Claude Code on the web:** prefer `scripts/setup-claude-code.sh` as your
+  *environment setup script* — it runs this installer as one of its steps, plus
+  gstack. Point it at `scripts/install-council-global.sh` only if you want the
+  council and nothing else.
 
 The installer is fully offline (no network, no external repo) — it sources
 straight from this repo's `.claude/` copy.

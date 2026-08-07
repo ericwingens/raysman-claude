@@ -45,9 +45,33 @@ snapshot and reused, so gstack lands in `$HOME` once and persists — the script
 re-runs only when you edit it, when the allowed hosts change, or after ~7 days.
 
 The council step is deliberately absent: it installs from this repo's vendored
-copy, which the environment cannot assume is present. Run
-`scripts/setup-claude-code.sh` inside a session for that, or move it into a
-`SessionStart` hook.
+copy, which the environment cannot assume is present. The `SessionStart` hook
+below covers it instead.
+
+### SessionStart hook (repo-tracked, cloud *and* local)
+
+`.claude/settings.json` runs `scripts/session-start-bootstrap.sh` on every
+`startup|resume`. Unlike the environment setup script it lives in the repo, needs
+no web UI, and works locally too. It does nothing and prints nothing when the
+environment is already good, and splits work by cost:
+
+| | Step | Why |
+| :--- | :--- | :--- |
+| **sync** | install the vendored council | offline file copy, effectively instant |
+| **sync** | clone gstack | this is what the `PreToolUse` gate checks — without it every skill is denied |
+| **async** | `./setup --team` | installs Bun and downloads Playwright's Chromium; too slow to block a session on |
+
+So a fresh container has a working gstack gate within seconds, while the slow
+completion finishes in the background (log: `$TMPDIR/gstack-bootstrap.log`).
+`/browse` and `/qa` stay unavailable until it does.
+
+The async step is attempted **once per container**, guarded by
+`~/.gstack/.hook-setup-attempted`: gstack writes `.last-setup-version` only on
+success, so a sandbox that blocks the Chromium download would otherwise retry the
+whole install on every single session start.
+
+The script never runs under `set -e` and always exits 0 — a hook must not be able
+to break session start.
 
 The script is idempotent and exits 0 whenever the environment is usable. A
 partial gstack setup is reported as a warning rather than a failure: gstack's own

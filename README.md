@@ -48,6 +48,41 @@ check status. Add another HTTP server with:
 claude mcp add --transport http --scope project <name> <url>
 ```
 
+## claude-mem
+
+[claude-mem](https://github.com/thedotmack/claude-mem) is a persistent memory
+compression system for Claude Code — it captures tool observations, writes
+semantic summaries at session end, and restores them at the start of the next
+session so context survives across sessions and compactions.
+
+It is installed as a **project-scoped plugin**, so `.claude/settings.json`
+declares both the upstream marketplace and the enabled plugin and every fresh web
+container picks it up automatically:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "thedotmack": { "source": { "source": "github", "repo": "thedotmack/claude-mem" } }
+  },
+  "enabledPlugins": { "claude-mem@thedotmack": true }
+}
+```
+
+To reproduce that from scratch (or install it in another repo):
+
+```bash
+claude plugin marketplace add thedotmack/claude-mem --scope project
+claude plugin install claude-mem@thedotmack --scope project
+```
+
+The plugin ships 6 lifecycle hooks (Setup, SessionStart, UserPromptSubmit,
+PostToolUse, PreToolUse, Stop), an `mcp-search` MCP server, and 19 skills —
+including `/mem-search` to query stored memories, `/timeline-report`,
+`/standup`, and `/learn-codebase`. Its `Setup` hook installs the runtime
+dependencies (Bun, bundled SQLite) on first run; Node.js 20+ is required.
+
+Check status with `claude plugin list` or `claude plugin details claude-mem@thedotmack`.
+
 ## Council of High Intelligence
 
 The [`/council`](https://github.com/0xNyk/council-of-high-intelligence) skill and

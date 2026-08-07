@@ -19,9 +19,35 @@ It clones gstack and runs `./setup --team`, installs the vendored council
 globally, then verifies project-scoped plugins and the gstack guard, ending with
 a summary of anything that needs attention.
 
-- **Claude Code on the web:** point your *environment setup script* here so every
-  fresh container is bootstrapped on startup.
 - **Local machine:** run it once from a checkout; `~/.claude` persists.
+- **Claude Code on the web:** the environment's **Setup script** field takes an
+  *inline* Bash script, and an environment is not bound to one repository, so it
+  cannot simply call this script by path. Paste a self-contained equivalent
+  instead (see below).
+
+### Web environment setup script
+
+Open [claude.ai/code](https://claude.ai/code) → environment settings → **Setup
+script**, and paste:
+
+```bash
+#!/bin/bash
+# gstack — required by CLAUDE.md. Never fail the session: a non-zero exit
+# prevents the container from starting at all.
+git clone --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack || true
+(cd ~/.claude/skills/gstack && timeout 240 ./setup --team) || true
+```
+
+Two constraints from the docs shape that snippet: the script **must exit zero**
+(a non-zero exit fails the session), and it should **finish within ~5 minutes**
+so the environment snapshot can build. The result is cached as a filesystem
+snapshot and reused, so gstack lands in `$HOME` once and persists — the script
+re-runs only when you edit it, when the allowed hosts change, or after ~7 days.
+
+The council step is deliberately absent: it installs from this repo's vendored
+copy, which the environment cannot assume is present. Run
+`scripts/setup-claude-code.sh` inside a session for that, or move it into a
+`SessionStart` hook.
 
 The script is idempotent and exits 0 whenever the environment is usable. A
 partial gstack setup is reported as a warning rather than a failure: gstack's own

@@ -98,3 +98,31 @@ Activate one in a session by referencing it by name, e.g.
 This repo also requires gstack for AI-assisted work — see [CLAUDE.md](./CLAUDE.md).
 The `gstack-guard` plugin packages that requirement so it can be shared with other
 teams and repos via the marketplace.
+
+### Global install (all repos / machines)
+
+gstack lives in `~/.claude/`, not in this repo, so a fresh container starts
+without it. Run the installer to clone gstack and register `/qa`, `/ship`,
+`/review`, `/investigate`, `/browse` and the rest of the suite:
+
+```bash
+scripts/install-gstack-global.sh            # installs into ~/.claude
+scripts/install-gstack-global.sh /some/dir  # or an explicit target
+```
+
+- **Local machine:** run it once from a checkout; `~/.claude` persists.
+- **Claude Code on the web:** point your *environment setup script* at
+  `scripts/install-gstack-global.sh` so every fresh container installs gstack
+  on startup.
+
+Requires `bun` on `PATH`. Idempotent — re-running updates an existing clone.
+
+**Chromium.** gstack's setup aborts unless Playwright's Chromium launches, and
+skill registration happens *after* that check — so a failed browser probe means
+no gstack skills at all, not just a broken `/browse`. Sandboxed environments
+often ship a pinned Chromium under `$PLAYWRIGHT_BROWSERS_PATH` while blocking
+`cdn.playwright.dev`, and gstack usually pins a *different* build number. The
+installer reuses the browser already on disk under the build number Playwright
+asks for, rather than routing around the egress policy. If no local browser
+exists, gstack's own download runs untouched — and if that download is blocked,
+allow `cdn.playwright.dev` in the environment's network policy.

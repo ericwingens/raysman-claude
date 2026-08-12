@@ -95,6 +95,10 @@ Activate one in a session by referencing it by name, e.g.
 
 ## gstack
 
-This repo also requires gstack for AI-assisted work — see [CLAUDE.md](./CLAUDE.md).
-The `gstack-guard` plugin packages that requirement so it can be shared with other
-teams and repos via the marketplace.
+[gstack](https://github.com/garrytan/gstack) is **optional** for this repo. Skills
+like `/qa`, `/ship`, `/review`, and `/investigate` are routed to when installed —
+see [CLAUDE.md](./CLAUDE.md) — and requests are handled directly when they are not.
+
+Teams that *do* want gstack enforced can install the `gstack-guard` plugin from the
+marketplace, which blocks skill usage until gstack is present globally. This repo
+does not install it on itself.

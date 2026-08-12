@@ -25,6 +25,12 @@
       "skillPath": "skills/css-animations/SKILL.md",
       "computedHash": "44c8a279548753b8aa41d4afbf0f33d4235fa1407beda6395afb3959a745a07d"
     },
+    "cuopt-numerical-optimization-api": {
+      "source": "nvidia/skills",
+      "sourceType": "github",
+      "skillPath": "skills/cuopt-numerical-optimization-api/SKILL.md",
+      "computedHash": "ed7494d3ffc5dff302f2325d366656b9bc5cde5ed7e91321529336614d4d238c"
+    },
     "firecrawl": {
       "source": "firecrawl/cli",
       "sourceType": "github",

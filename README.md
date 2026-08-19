@@ -36,16 +36,37 @@ claude plugin validate ./plugins/gstack-guard  # validates the plugin
 `.mcp.json` defines project-scoped MCP servers that load in every session on this
 repo (project-level config is restored on each fresh web container).
 
-| Server | Transport | URL |
-| :----- | :-------- | :-- |
+| Server | Transport | Endpoint / command |
+| :----- | :-------- | :----------------- |
 | `moda` | HTTP | `https://mcp.moda.app/mcp` |
+| `mcp-server-for-revit` | stdio | `cmd /c npx -y mcp-server-for-revit` |
 
 Project MCP servers require a one-time approval per user before Claude Code
 activates them — run `claude` and approve when prompted, or `claude mcp list` to
-check status. Add another HTTP server with:
+check status. Add another server with:
 
 ```shell
-claude mcp add --transport http --scope project <name> <url>
+claude mcp add --transport http --scope project <name> <url>   # HTTP
+claude mcp add --scope project <name> -- <command> [args...]   # stdio
+```
+
+### `mcp-server-for-revit` (Windows only)
+
+Drives Autodesk Revit over the [`mcp-server-for-revit`](https://www.npmjs.com/package/mcp-server-for-revit)
+npm package. Revit is Windows-only, so this server only starts on a Windows host:
+
+- The `cmd /c` wrapper is the standard Windows workaround — Claude Code cannot
+  spawn the `npx` shim directly there.
+- On Linux/macOS (including Claude Code on the web containers) there is no `cmd`,
+  so the server fails to start and its tools are unavailable. That is expected;
+  ignore the connection error, or skip approving this server on those hosts.
+- It also needs the companion Revit add-in installed and Revit running, otherwise
+  the server starts but has nothing to talk to.
+
+It was added with:
+
+```shell
+claude mcp add --scope project mcp-server-for-revit -- cmd /c npx -y mcp-server-for-revit
 ```
 
 ## Council of High Intelligence

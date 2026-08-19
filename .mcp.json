@@ -3,6 +3,17 @@
     "moda": {
       "type": "http",
       "url": "https://mcp.moda.app/mcp"
+    },
+    "mcp-server-for-revit": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "mcp-server-for-revit"
+      ],
+      "env": {}
     }
   }
 }

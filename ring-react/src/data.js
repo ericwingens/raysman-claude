@@ -81,6 +81,18 @@ export const rating = (id, all = REVIEWS) => {
 };
 
 
+/* Report reasons. Ordered by how often they occur in practice, with the two
+   that trigger an immediate human review (minors, scam) kept visible. */
+export const REPORT_REASONS = [
+  { id: "harass", label: "Belästigung oder Beleidigung" },
+  { id: "nudity", label: "Nacktheit oder sexuelle Inhalte" },
+  { id: "scam",   label: "Betrug oder Geldforderung" },
+  { id: "fake",   label: "Fake-Profil oder gestohlene Identität" },
+  { id: "minor",  label: "Person wirkt minderjährig" },
+  { id: "spam",   label: "Spam oder Werbung" },
+  { id: "other",  label: "Etwas anderes" },
+];
+
 // Share destinations for a post. `ink` is the glyph colour on the brand tile.
 export const SHARE_TARGETS = [
   { id: "tiktok",    name: "TikTok",    bg: "#010101", ink: "#fff" },

@@ -5,8 +5,9 @@ import { photoStyle, EUR, Ico, RingLockup } from "../lib.jsx";
 /* Swipe deck — like/pass/super-ring/call, with creator badges & €/min pricing. */
 export default function Discover({ ctx }) {
   const [idx, setIdx] = useState(0);
-  const cards = CREATORS.slice(idx, idx + 3);
-  const c = CREATORS[idx];
+  const pool = CREATORS.filter((x) => !ctx.blocked.has(x.id));
+  const cards = pool.slice(idx, idx + 3);
+  const c = pool[idx];
 
   const advance = (dir) => {
     if (dir === "right" && c) {

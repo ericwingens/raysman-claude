@@ -8,7 +8,7 @@ import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
 import Chats from "./screens/Chats.jsx";
 import Me from "./screens/Me.jsx";
-import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet, RateSheet, GiftSheet, ShareSheet, AddPeopleSheet } from "./overlays/Overlays.jsx";
+import { ProfileFull, ChatFull, TipSheet, WalletSheet, CallScreen, LegalFull, BookSheet, RateSheet, GiftSheet, ShareSheet, AddPeopleSheet, MoreSheet, ReportSheet, BlockedFull } from "./overlays/Overlays.jsx";
 
 export default function App() {
   // ---- global state ----
@@ -26,6 +26,9 @@ export default function App() {
   const [shareFor, setShareFor] = useState(null);    // post id the share sheet targets
   const [guests, setGuests] = useState([]);          // extra participants in the running call
   const [freeUsed, setFreeUsed] = useState(() => new Set()); // creators whose free minutes are spent
+  const [blocked, setBlocked] = useState(() => new Set());   // creators the user has blocked
+  const [moreFor, setMoreFor] = useState(null);   // {id, what} — the ⋯ action menu
+  const [reportFor, setReportFor] = useState(null); // {id, what} — the report form
   const [addPeople, setAddPeople] = useState(false);
   const [flying, setFlying] = useState(null);        // emoji floating up after a gift
   const [overlays, setOverlays] = useState([]); // stack: {kind, id}
@@ -51,6 +54,11 @@ export default function App() {
   // still available, so the set is mirrored and written through.
   const freeUsedRef = useRef(freeUsed);
   useEffect(() => { freeUsedRef.current = freeUsed; }, [freeUsed]);
+
+  // Blocking has to take effect inside the same click that triggers it —
+  // startCall and endCall read the set before React re-renders.
+  const blockedRef = useRef(blocked);
+  useEffect(() => { blockedRef.current = blocked; }, [blocked]);
 
   const spend = useCallback(
     (amount, label) => {
@@ -97,7 +105,24 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call?.status, call?.id]);
 
+  // Blocking closes whatever is open on that person and cuts a running call.
+  const block = (id) => {
+    blockedRef.current = new Set(blockedRef.current).add(id);
+    setBlocked(blockedRef.current);
+    setGuests((g) => g.filter((x) => x !== id));
+    if (callRef.current && callRef.current.id === id) endCall(false);
+    popAll();
+    toast(`${byId(id).name} blockiert — ihr seht euch nicht mehr.`);
+  };
+  const unblock = (id) => {
+    blockedRef.current = new Set(blockedRef.current);
+    blockedRef.current.delete(id);
+    setBlocked(blockedRef.current);
+    toast(`${byId(id).name} entsperrt.`);
+  };
+
   const startCall = (id) => {
+    if (blockedRef.current.has(id)) { toast(`${byId(id).name} ist blockiert — erst entsperren.`); return; }
     popAll();
     const free = freeUsedRef.current.has(id) ? 0 : FREE_SECS;
     if (free) {
@@ -137,6 +162,9 @@ export default function App() {
     openShare: setShareFor,
     call, guests, setGuests, openAddPeople: () => setAddPeople(true),
     freeUsed,
+    blocked, block, unblock,
+    openMore: (id, what) => setMoreFor({ id, what }),
+    openReport: (id, what) => setReportFor({ id, what }),
     flyGift: (em) => { setFlying({ em, key: Date.now() }); setTimeout(() => setFlying(null), 1700); },
     toast, spend, push, pop, popAll, startCall, endCall, setPhase,
   };
@@ -176,7 +204,7 @@ export default function App() {
       {/* overlay stack */}
       {overlays.length > 0 && <div className="sheet-scrim show" onClick={pop} />}
       {overlays.map((o) => {
-        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet }[o.kind];
+        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet, blocked: BlockedFull }[o.kind];
         return P ? <P key={o.key} id={o.id} ctx={ctx} /> : null;
       })}
 
@@ -187,6 +215,8 @@ export default function App() {
       {giftFor && <GiftSheet id={giftFor} ctx={ctx} close={() => setGiftFor(null)} />}
       {shareFor && <ShareSheet id={shareFor} ctx={ctx} close={() => setShareFor(null)} />}
       {addPeople && <AddPeopleSheet ctx={ctx} close={() => setAddPeople(false)} />}
+      {moreFor && <MoreSheet {...moreFor} ctx={ctx} close={() => setMoreFor(null)} />}
+      {reportFor && <ReportSheet {...reportFor} ctx={ctx} close={() => setReportFor(null)} />}
       {flying && <div key={flying.key} className="giftfly">{flying.em}</div>}
 
       {phase === "welcome" && <Onboarding ctx={ctx} done={() => setPhase("main")} />}

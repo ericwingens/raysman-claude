@@ -20,7 +20,8 @@ export default function Explore({ ctx }) {
     return () => clearTimeout(t);
   }, [playing]);
 
-  const matches = CREATORS.filter((c) => ctx.likedPeople.has(c.id) || ["mia", "sofia"].includes(c.id));
+  const people = CREATORS.filter((c) => !ctx.blocked.has(c.id));
+  const matches = people.filter((c) => ctx.likedPeople.has(c.id) || ["mia", "sofia"].includes(c.id));
 
   return (
     <>
@@ -38,9 +39,9 @@ export default function Explore({ ctx }) {
 
       {tab === "explore" && (
         <>
-          <div className="section-title">Jetzt Live <span className="muted" style={{ fontWeight: 600, fontSize: 12 }}>{CREATORS.filter((c) => c.live).length} aktiv</span></div>
+          <div className="section-title">Jetzt Live <span className="muted" style={{ fontWeight: 600, fontSize: 12 }}>{people.filter((c) => c.live).length} aktiv</span></div>
           <div className="hscroll">
-            {CREATORS.map((c, i) => (
+            {people.map((c, i) => (
               <div key={c.id} className="story" onClick={() => (c.live ? ctx.startCall(c.id) : ctx.push("profile", c.id))}>
                 <div className={`av ${i > 2 ? "seen" : ""}`}>
                   <div style={photoStyle(c.id)}>{c.live && <span className="lv">LIVE</span>}</div>
@@ -51,7 +52,7 @@ export default function Explore({ ctx }) {
           </div>
 
           <div className="section-title">In deiner Nähe</div>
-          {CREATORS.map((c) => (
+          {people.map((c) => (
             <div key={c.id} className="lrow">
               <div className="avatar" style={photoStyle(c.id)} onClick={() => ctx.push("profile", c.id)}>
                 {c.online && <span className="presence" />}
@@ -76,7 +77,7 @@ export default function Explore({ ctx }) {
           <div className="section-title">Rangliste der Woche
             <span className="muted" style={{ fontWeight: 600, fontSize: 12 }}>nach Calls &amp; Bewertung</span>
           </div>
-          {leaderboard(ctx.reviews).slice(0, 5).map((c, i) => (
+          {leaderboard(ctx.reviews).filter((c) => !ctx.blocked.has(c.id)).slice(0, 5).map((c, i) => (
             <div key={c.id} className="lbrow" onClick={() => ctx.push("profile", c.id)}>
               <div className={`rank ${i < 3 ? "top" : ""}`}>{i + 1}</div>
               <div className="avatar" style={{ width: 38, height: 38, ...photoStyle(c.id) }} />
@@ -90,7 +91,7 @@ export default function Explore({ ctx }) {
 
           <div className="section-title">Empfohlene Creator <a onClick={() => ctx.toast("Alle Creator")}>Alle</a></div>
           <div className="creator-grid">
-            {CREATORS.map((c) => (
+            {people.map((c) => (
               <div key={c.id} className="ccard" onClick={() => ctx.push("profile", c.id)}>
                 <div style={{ position: "absolute", inset: 0, ...photoStyle(c.id + "x") }} />
                 <div className="grad" />

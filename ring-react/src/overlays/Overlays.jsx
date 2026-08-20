@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CREATORS, POSTS, byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS, GIFTS, SHARE_TARGETS } from "../data.js";
+import { CREATORS, POSTS, byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS, GIFTS, SHARE_TARGETS, REPORT_REASONS } from "../data.js";
 import { photoStyle, EUR, Ico, num } from "../lib.jsx";
 
 /* Delivery quality at a glance, plus the creator's level and earned badges.
@@ -61,7 +61,7 @@ export function AddPeopleSheet({ ctx, close }) {
     else if (!full) ctx.setGuests([...picked, id]);
   };
 
-  const pool = CREATORS.filter((c) => c.id !== inCall);
+  const pool = CREATORS.filter((c) => c.id !== inCall && !ctx.blocked.has(c.id));
   return (
     <div className="modal show" onClick={close}>
       <div style={{ position: "absolute", inset: 0, background: "rgba(8,4,1,.5)" }} />
@@ -93,6 +93,110 @@ export function AddPeopleSheet({ ctx, close }) {
             Übernehmen
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Safety: the ⋯ menu, reporting, and the block list ----------------
+   `what` is "profile" | "post" | "chat" — it only changes the wording; a report
+   always attaches to the creator, because that is who gets reviewed. */
+export function MoreSheet({ id, what, ctx, close }) {
+  const c = byId(id);
+  const isBlocked = ctx.blocked.has(id);
+  const noun = what === "post" ? "Beitrag" : what === "chat" ? "Chat" : "Profil";
+  return (
+    <div className="modal show" onClick={close}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(8,4,1,.5)" }} />
+      <div className="mbox" style={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
+        <h3>{c.name}</h3>
+        <p>Was möchtest du tun?</p>
+        <button className="btn btn-ghost btn-sm act-row"
+          onClick={() => { close(); ctx.openReport(id, what); }}>
+          <Ico name="flag" />{noun} melden
+        </button>
+        <button className="btn btn-ghost btn-sm act-row danger" style={{ marginTop: 8 }}
+          onClick={() => { close(); isBlocked ? ctx.unblock(id) : ctx.block(id); }}>
+          <Ico name="block" />{isBlocked ? "Blockierung aufheben" : `${c.name} blockieren`}
+        </button>
+        <button className="btn btn-ghost btn-sm" style={{ marginTop: 12 }} onClick={close}>Abbrechen</button>
+      </div>
+    </div>
+  );
+}
+
+export function ReportSheet({ id, what, ctx, close }) {
+  const c = byId(id);
+  const [reason, setReason] = useState(null);
+  const [note, setNote] = useState("");
+  const [alsoBlock, setAlsoBlock] = useState(false);
+  const noun = what === "post" ? "Beitrag" : what === "chat" ? "Nachricht" : "Profil";
+
+  const submit = () => {
+    close();
+    ctx.toast("Meldung eingegangen — wir prüfen sie innerhalb von 24 Stunden.");
+    if (alsoBlock) setTimeout(() => ctx.block(id), 300);
+  };
+
+  return (
+    <div className="modal show" onClick={close}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(8,4,1,.5)" }} />
+      <div className="mbox" style={{ position: "relative", maxWidth: 340, textAlign: "left" }} onClick={(e) => e.stopPropagation()}>
+        <h3 style={{ textAlign: "center" }}>{noun} melden</h3>
+        <p style={{ textAlign: "center" }}>Deine Meldung ist anonym — {c.name} erfährt nicht, von wem sie kommt.</p>
+        <div className="reasons">
+          {REPORT_REASONS.map((r) => (
+            <div key={r.id} className={`reason ${reason === r.id ? "on" : ""}`} onClick={() => setReason(r.id)}>
+              <span className="rk">{reason === r.id && <Ico name="check" />}</span>
+              <span>{r.label}</span>
+            </div>
+          ))}
+        </div>
+        <input className="field" placeholder="Was ist passiert? (optional)"
+          value={note} onChange={(e) => setNote(e.target.value)} />
+        <div className={`blockopt ${alsoBlock ? "on" : ""}`} onClick={() => setAlsoBlock(!alsoBlock)}>
+          <span className="bx">{alsoBlock && <Ico name="check" />}</span>
+          <span>{c.name} zusätzlich blockieren</span>
+        </div>
+        <div className="mrow" style={{ marginTop: 14 }}>
+          <button className="btn btn-ghost btn-sm" onClick={close}>Abbrechen</button>
+          <button className="btn btn-primary btn-sm" disabled={!reason}
+            style={{ opacity: reason ? 1 : 0.5, background: "var(--heart)", boxShadow: "none" }}
+            onClick={submit}>Melden</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function BlockedFull({ ctx }) {
+  const show = useShow();
+  const list = CREATORS.filter((c) => ctx.blocked.has(c.id));
+  return (
+    <div className={`full ${show ? "show" : ""}`}>
+      <div className="ftop">
+        <button className="iconbtn" onClick={ctx.pop}><Ico name="arrow" /></button>
+        <h3>Blockierte Profile</h3>
+        <span style={{ width: 42 }} />
+      </div>
+      <div className="fscreen" style={{ padding: "4px 18px 30px" }}>
+        <p className="muted" style={{ fontSize: 13, lineHeight: 1.5 }}>
+          Blockierte Profile siehst du nirgends mehr — nicht in Discover, Explore, im Feed oder in den Chats.
+          Sie können dich weder anrufen noch anschreiben.
+        </p>
+        {list.length === 0
+          ? <p className="muted center" style={{ fontSize: 13, marginTop: 30 }}>Du hast niemanden blockiert.</p>
+          : list.map((c) => (
+              <div key={c.id} className="bl-row">
+                <span className="avatar" style={{ width: 40, height: 40, ...photoStyle(c.id) }} />
+                <div style={{ minWidth: 0 }}>
+                  <div className="bl-n">{c.name}, {c.age}</div>
+                  <div className="bl-s">{c.city} · blockiert</div>
+                </div>
+                <button className="btn btn-outline btn-sm" style={{ width: "auto", marginLeft: "auto" }}
+                  onClick={() => ctx.unblock(c.id)}>Entsperren</button>
+              </div>
+            ))}
       </div>
     </div>
   );
@@ -294,7 +398,8 @@ export function ProfileFull({ id, ctx }) {
           <div style={{ position: "absolute", inset: 0, ...photoStyle(id) }} />
           <div className="grad" />
           <button className="iconbtn back" style={{ position: "absolute" }} onClick={ctx.pop}><Ico name="arrow" /></button>
-          {c.live && <span className="chip live" style={{ position: "absolute", top: "calc(var(--safe-top) + 34px)", right: 16 }}>● LIVE</span>}
+          <button className="iconbtn more" aria-label="Mehr" onClick={() => ctx.openMore(id, "profile")}><Ico name="more" /></button>
+          {c.live && <span className="chip live" style={{ position: "absolute", top: "calc(var(--safe-top) + 34px)", right: 68 }}>● LIVE</span>}
           <div className="info">
             <div className="nm">{c.name} <span style={{ fontWeight: 500 }}>{c.age}</span> {c.verified && <span className="badge-verif"><Ico name="verif" /></span>}</div>
             <div style={{ opacity: 0.9, fontSize: 13.5, marginTop: 4 }}>{c.city} · {c.dist} km · {c.followers} Follower</div>
@@ -424,6 +529,7 @@ export function ChatFull({ id, ctx }) {
           </div>
           <button className="iconbtn" style={{ color: "var(--live)" }} onClick={() => ctx.startCall(id)}><Ico name="phone" /></button>
           <button className="iconbtn" style={{ color: "var(--orange)" }} onClick={() => ctx.startCall(id)}><Ico name="video" /></button>
+          <button className="iconbtn" aria-label="Mehr" onClick={() => ctx.openMore(id, "chat")}><Ico name="more" /></button>
         </div>
 
         <div ref={boxRef} className="fscreen" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>

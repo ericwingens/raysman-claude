@@ -3,7 +3,9 @@ import { CHATS, byId } from "../data.js";
 import { photoStyle, Ico } from "../lib.jsx";
 
 export default function Chats({ ctx }) {
-  const newMatches = [...ctx.likedPeople, "mia", "sofia"].filter((v, i, a) => a.indexOf(v) === i && byId(v)).slice(0, 6);
+  const newMatches = [...ctx.likedPeople, "mia", "sofia"]
+    .filter((v, i, a) => a.indexOf(v) === i && byId(v) && !ctx.blocked.has(v)).slice(0, 6);
+  const rows = CHATS.filter((ch) => !ctx.blocked.has(ch.cid));
   return (
     <>
       <div className="appbar" style={{ padding: "6px 0 10px" }}>
@@ -25,7 +27,8 @@ export default function Chats({ ctx }) {
       </div>
 
       <div className="section-title">Unterhaltungen</div>
-      {CHATS.map((ch) => {
+      {rows.length === 0 && <p className="muted" style={{ fontSize: 13 }}>Keine Unterhaltungen.</p>}
+      {rows.map((ch) => {
         const c = byId(ch.cid);
         return (
           <div key={ch.cid} className="chat-row" onClick={() => ctx.push("chat", ch.cid)}>

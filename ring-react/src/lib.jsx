@@ -79,6 +79,9 @@ const SVG = {
   twitch: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.3 2 2.5 6.2v13.1h4.5V22h2.6l2.7-2.7h3.6L21.5 14V2Zm15.4 11.3-2.6 2.6h-4.5l-2.6 2.6v-2.6H6.6V3.7h13.1Z"/><path d="M14.6 7h1.7v4.8h-1.7Zm-4.4 0h1.7v4.8h-1.7Z"/></svg>',
   xcom: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.7 2.25h3.3l-7.2 8.24L22.3 21.75h-6.63l-5.2-6.79-5.94 6.79H1.22l7.7-8.8L1.7 2.25h6.8l4.7 6.2Zm-1.16 17.5h1.83L7.55 4.14H5.58Z"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18.5" cy="12" r="2"/></svg>',
+  flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 5h11l-1.6 3.5L16 12H5"/></svg>',
+  block: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
 };
 
 // Renders an inline SVG icon. display:contents so the <svg> is the layout child.

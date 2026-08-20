@@ -10,7 +10,7 @@ export default function Feed({ ctx }) {
         <div><h1>Feed</h1><div className="sub">Von Creators, denen du folgst</div></div>
         <button className="iconbtn" onClick={() => ctx.toast("Benachrichtigungen")}><Ico name="bell" /></button>
       </div>
-      {POSTS.map((p) => <Post key={p.id} p={p} ctx={ctx} />)}
+      {POSTS.filter((p) => !ctx.blocked.has(p.cid)).map((p) => <Post key={p.id} p={p} ctx={ctx} />)}
     </>
   );
 }
@@ -42,6 +42,7 @@ function Post({ p, ctx }) {
           <div className="t">{c.city} · {p.time}</div>
         </div>
         <button className="btn btn-outline btn-sm" style={{ width: "auto", marginLeft: "auto", padding: "8px 14px" }} onClick={() => ctx.push("profile", c.id)}>Profil</button>
+        <button className="iconbtn" style={{ width: 34, height: 34 }} aria-label="Mehr" onClick={() => ctx.openMore(c.id, "post")}><Ico name="more" /></button>
       </div>
 
       <div className="post-media">

@@ -88,6 +88,9 @@ export default function Me({ ctx }) {
       })}
       {ctx.subs.size === 0 && <p className="muted" style={{ fontSize: 13 }}>Noch keine Abos.</p>}
 
+      <div className="section-title">Sicherheit</div>
+      <Row icon="block" label="Blockierte Profile" right={ctx.blocked.size ? `${ctx.blocked.size}` : "keine"} onClick={() => ctx.push("blocked")} />
+
       <div className="section-title">Rechtliches & Konto</div>
       <Row icon="lock" label="Datenschutz" right="" onClick={() => ctx.push("legal", "privacy")} />
       <Row icon="user" label="Impressum" right="" onClick={() => ctx.push("legal", "imprint")} />

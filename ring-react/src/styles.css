@@ -427,6 +427,25 @@ button{font-family:inherit;color:inherit}
 .chip.free{background:var(--live)}
 .call .ticker .freeleft{margin-top:8px;background:var(--live);color:#fff;border-radius:999px;padding:4px 12px;font-size:11.5px;font-weight:800;letter-spacing:.02em}
 
+/* ---------- Report & block ---------- */
+.iconbtn.more{position:absolute;top:calc(var(--safe-top) + 30px);right:16px;z-index:5;background:rgba(255,255,255,.9)}
+.act-row{justify-content:flex-start;gap:10px;padding:13px 15px;font-size:14px}
+.act-row.danger{color:var(--heart);border-color:color-mix(in srgb,var(--heart) 30%, var(--line))}
+.reasons{display:flex;flex-direction:column;gap:7px;margin:4px 0 10px;max-height:36vh;overflow-y:auto;scrollbar-width:none}
+.reasons::-webkit-scrollbar{display:none}
+.reason{display:flex;align-items:center;gap:10px;border:1.6px solid var(--line);background:var(--card);border-radius:14px;padding:11px 13px;font-size:13.5px;font-weight:600;cursor:pointer;line-height:1.3}
+.reason.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 10%, var(--card));color:var(--orange-ink)}
+.reason .rk{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+.reason.on .rk{border-color:var(--orange);background:var(--orange);color:#fff}
+.reason.on .rk svg{width:12px;height:12px}
+.blockopt{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--ink-2);cursor:pointer;padding:4px 2px}
+.blockopt .bx{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+.blockopt.on .bx{border-color:var(--heart);background:var(--heart);color:#fff}
+.blockopt.on .bx svg{width:12px;height:12px}
+.bl-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.bl-row .bl-n{font-weight:700;font-size:14.5px}
+.bl-row .bl-s{font-size:12px;color:var(--muted);margin-top:2px}
+
 /* Active tab gets a short underline, matching the reference navigation. */
 .tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
 .tab.center .fab svg{width:26px;height:26px}

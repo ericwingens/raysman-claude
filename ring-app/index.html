@@ -461,6 +461,25 @@ button{font-family:inherit;color:inherit}
 .chip.free{background:var(--live)}
 .call .ticker .freeleft{margin-top:8px;background:var(--live);color:#fff;border-radius:999px;padding:4px 12px;font-size:11.5px;font-weight:800;letter-spacing:.02em}
 
+/* ---------- Report & block ---------- */
+.iconbtn.more{position:absolute;top:calc(var(--safe-top) + 30px);right:16px;z-index:5;background:rgba(255,255,255,.9)}
+.act-row{justify-content:flex-start;gap:10px;padding:13px 15px;font-size:14px}
+.act-row.danger{color:var(--heart);border-color:color-mix(in srgb,var(--heart) 30%, var(--line))}
+.reasons{display:flex;flex-direction:column;gap:7px;margin:4px 0 10px;max-height:36vh;overflow-y:auto;scrollbar-width:none}
+.reasons::-webkit-scrollbar{display:none}
+.reason{display:flex;align-items:center;gap:10px;border:1.6px solid var(--line);background:var(--card);border-radius:14px;padding:11px 13px;font-size:13.5px;font-weight:600;cursor:pointer;line-height:1.3}
+.reason.on{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 10%, var(--card));color:var(--orange-ink)}
+.reason .rk{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+.reason.on .rk{border-color:var(--orange);background:var(--orange);color:#fff}
+.reason.on .rk svg{width:12px;height:12px}
+.blockopt{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--ink-2);cursor:pointer;padding:4px 2px}
+.blockopt .bx{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+.blockopt.on .bx{border-color:var(--heart);background:var(--heart);color:#fff}
+.blockopt.on .bx svg{width:12px;height:12px}
+.bl-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.bl-row .bl-n{font-weight:700;font-size:14.5px}
+.bl-row .bl-s{font-size:12px;color:var(--muted);margin-top:2px}
+
 /* Active tab gets a short underline, matching the reference navigation. */
 .tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
 .tab.center .fab svg{width:26px;height:26px}
@@ -523,6 +542,9 @@ const CREATORS=[
   {id:"amira",name:"Amira",age:25,city:"Frankfurt",dist:3,tags:["Gaming","Tech"],rate:1.29,online:false,live:false,verified:true,followers:"22.3k",bio:"Full-time Streamerin. Coaching in Valorant & CS, plus exklusive Gaming-Nights nur für Subs.",subs:7100},
 ];
 const byId=id=>CREATORS.find(c=>c.id===id);
+/* Everything a blocked creator would appear in goes through these two. */
+const visible=()=>CREATORS.filter(c=>!state.blocked.has(c.id));
+const visiblePosts=()=>POSTS.filter(p=>!state.blocked.has(p.cid));
 
 /* Free trial minutes. Granted once per creator, not once per call — otherwise
    a fan could hang up and redial forever. */
@@ -592,6 +614,18 @@ const rating = (id, all = REVIEWS) => {
   return { avg: rs.reduce((s, r) => s + r.stars, 0) / rs.length, count: rs.length };
 };
 
+
+/* Report reasons. Ordered by how often they occur in practice, with the two
+   that trigger an immediate human review (minors, scam) kept visible. */
+const REPORT_REASONS = [
+  { id: "harass", label: "Belästigung oder Beleidigung" },
+  { id: "nudity", label: "Nacktheit oder sexuelle Inhalte" },
+  { id: "scam",   label: "Betrug oder Geldforderung" },
+  { id: "fake",   label: "Fake-Profil oder gestohlene Identität" },
+  { id: "minor",  label: "Person wirkt minderjährig" },
+  { id: "spam",   label: "Spam oder Werbung" },
+  { id: "other",  label: "Etwas anderes" },
+];
 
 // Share destinations for a post. `ink` is the glyph colour on the brand tile.
 const SHARE_TARGETS = [
@@ -684,6 +718,7 @@ const state={
   bookings:[],
   deckIdx:0,
   freeUsed:new Set(),
+  blocked:new Set(),
   callTimer:null, callSecs:0, callCost:0, callRate:1.99, callId:null, callFree:0,
 };
 const EUR=n=>n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
@@ -714,6 +749,9 @@ const I={
   bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
   moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  more:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18.5" cy="12" r="2"/></svg>',
+  flag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 5h11l-1.6 3.5L16 12H5"/></svg>',
+  block:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
   tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82a4.83 4.83 0 0 1-1.03-.9 4.96 4.96 0 0 1-1.1-2.42h-3.3v13.2a2.9 2.9 0 0 1-2.9 2.7 2.9 2.9 0 1 1 .8-5.68v-3.32a6.2 6.2 0 0 0-.8-.05A6.2 6.2 0 1 0 14.5 15V8.42a8.2 8.2 0 0 0 4.8 1.53V6.62a4.8 4.8 0 0 1-2.7-.8Z"/></svg>',
   instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.6"/><circle cx="12" cy="12" r="4.4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
   snapchat: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2c2.9 0 4.87 2.15 4.87 5.06 0 1.05-.08 1.93-.18 2.53.5.28 1.15.2 1.63.02.4-.14.8.06.92.45.12.39-.09.8-.48.98-.58.28-1.35.58-1.74.96.29 1.27 1.56 2.53 3 2.92.39.1.6.5.48.88-.2.6-1.26.9-2.32 1.07-.1.3-.19.68-.29.97-.1.3-.4.48-.7.4-.48-.1-1.06-.2-1.73-.1-.68.1-1.16.48-1.74.86-.58.39-1.16.77-1.93.77s-1.35-.38-1.93-.77c-.58-.38-1.06-.76-1.74-.86-.67-.1-1.25 0-1.73.1-.3.08-.6-.1-.7-.4-.1-.29-.19-.67-.29-.97-1.06-.17-2.12-.47-2.32-1.07-.12-.38.09-.78.48-.88 1.44-.39 2.71-1.65 3-2.92-.39-.38-1.16-.68-1.74-.96-.39-.18-.6-.59-.48-.98.12-.39.52-.59.92-.45.48.18 1.13.26 1.63-.02-.1-.6-.18-1.48-.18-2.53C7.13 4.35 9.1 2.2 12 2.2Z"/></svg>',
@@ -777,7 +815,7 @@ function renderDiscover(pad){
 function buildDeck(){
   const deck=document.getElementById("deck");if(!deck)return;
   deck.innerHTML="";
-  const list=CREATORS.slice(state.deckIdx,state.deckIdx+3).reverse();
+  const list=visible().slice(state.deckIdx,state.deckIdx+3).reverse();
   if(list.length===0){deck.innerHTML=`<div style="position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);padding:30px"><div><div style="font-size:40px">🎉</div><p style="font-weight:700;color:var(--ink)">Das war's für heute!</p><p style="font-size:13px">Schau später wieder rein für neue Vorschläge.</p><button class="btn btn-outline btn-sm" style="width:auto" onclick="state.deckIdx=0;buildDeck()">Neu starten</button></div></div>`;return;}
   list.forEach((c,i)=>{
     const top=i===list.length-1;
@@ -838,7 +876,7 @@ function heartBurst(){
 
 /* ---------- EXPLORE ---------- */
 function renderExplore(pad){
-  const live=CREATORS.filter(c=>c.live);
+  const live=visible().filter(c=>c.live);
   pad.innerHTML=`
   <div class="appbar" style="padding:6px 0 10px"><div><h1>Explore</h1><div class="sub">Voice-Intros anhören, liken, anrufen</div></div>
     <button class="wallet-chip" onclick="openWallet()"><span class="coin">${I.bolt}</span><span data-bal>${EUR(state.balance)}</span></button></div>
@@ -847,8 +885,8 @@ function renderExplore(pad){
     <button class="${exploreTab==='matches'?'on':''}" onclick="setExploreTab('matches')">Matches</button></div>
   ${exploreTab==='matches'?matchesList():`
   <div class="section-title">Jetzt Live <span class="muted" style="font-weight:600;font-size:12px">${live.length} aktiv</span></div>
-  <div class="hscroll">${CREATORS.map((c,i)=>`
-    <div class="story" onclick="${c.live?`startLiveView('${c.id}')`:`openProfile('${c.id}')`}">
+  <div class="hscroll">${visible().map((c,i)=>`
+    <div class="story" onclick=""${c.live?`startLiveView('${c.id}')`:`openProfile('${c.id}')`}">
       <div class="av ${i>2?'seen':''}"><div style="${photoStyle(c.id)}">${c.live?'<span class="lv">LIVE</span>':''}</div></div>
       <div class="nm">${c.name}</div>
     </div>`).join("")}</div>
@@ -858,8 +896,8 @@ function renderExplore(pad){
   ${leaderboardList()}
 
   <div class="section-title">Empfohlene Creator <a onclick="toast('Alle Creator')">Alle</a></div>
-  <div class="creator-grid">${CREATORS.map(c=>`
-    <div class="ccard" onclick="openProfile('${c.id}')">
+  <div class="creator-grid">${visible().map(c=>`
+    <div class="ccard" onclick=""openProfile('${c.id}')">
       <div class="photo" style="position:absolute;inset:0;${photoStyle(c.id+'x')}"></div>
       <div class="grad"></div>
       <div class="top">${c.live?'<span class="chip live" style="font-size:10px;padding:4px 8px">● LIVE</span>':'<span></span>'}
@@ -872,7 +910,7 @@ function renderExplore(pad){
 /* "In deiner Nähe" — avatar, name/age, location, and the two round actions
    (voice intro + like) that the React Explore screen has. */
 function nearbyList(){
-  return `<div class="section-title">In deiner Nähe</div>` + CREATORS.map(c=>`
+  return `<div class="section-title">In deiner Nähe</div>` + visible().map(c=>`
     <div class="lrow">
       <div class="avatar" style="${photoStyle(c.id)}" onclick="openProfile('${c.id}')">
         ${c.online?'<span class="presence"></span>':''}</div>
@@ -890,7 +928,7 @@ function nearbyList(){
 
 /* Matches tab — call or unmatch, mirroring the React screen. */
 function matchesList(){
-  const ms=CREATORS.filter(c=>(state.liked.has(c.id)||["mia","sofia"].includes(c.id))&&!_unmatched.has(c.id));
+  const ms=visible().filter(c=>(state.liked.has(c.id)||["mia","sofia"].includes(c.id))&&!_unmatched.has(c.id));
   if(!ms.length)return `<p class="muted center" style="font-size:13px;margin-top:30px">Noch keine Matches — like Leute in Explore oder Discover.</p>`;
   return `<div class="section-title">Deine Matches <span class="muted" style="font-weight:600;font-size:12px">${ms.length}</span></div>` + ms.map(c=>`
     <div class="lrow">
@@ -914,7 +952,7 @@ function renderFeed(pad){
   pad.innerHTML=`
   <div class="appbar" style="padding:6px 0 10px"><div><h1>Feed</h1><div class="sub">Von Creators, denen du folgst</div></div>
     <button class="iconbtn" onclick="toast('Benachrichtigungen')">${I.bell}</button></div>
-  <div id="feedlist">${POSTS.map(postCard).join("")}</div>`;
+  <div id="feedlist">${visiblePosts().map(postCard).join("")}</div>`;
 }
 function postCard(p){
   const c=byId(p.cid);const unlocked=state.unlocked.has(p.id)||!p.ppv;const liked=state.liked.has("post_"+p.id);
@@ -923,6 +961,7 @@ function postCard(p){
       <div class="avatar ring" onclick="openProfile('${c.id}')"><div style="${photoStyle(c.id)}"></div></div>
       <div><div class="n" onclick="openProfile('${c.id}')">${c.name} ${c.verified?`<span class="badge-verif" style="width:15px;height:15px;font-size:9px">${I.verif}</span>`:''}</div><div class="t">${c.city} · ${p.time}</div></div>
       <button class="btn btn-outline btn-sm" style="width:auto;margin-left:auto;padding:8px 14px" onclick="openProfile('${c.id}')">Profil</button>
+      <button class="iconbtn" style="width:34px;height:34px" aria-label="Mehr" onclick="openMore('${c.id}','post')">${I.more}</button>
     </div>
     <div class="post-media">
       <div class="photo" style="position:absolute;inset:0;${photoStyle(p.id)};${unlocked?'':'filter:blur(2px)'}"></div>
@@ -949,7 +988,7 @@ function likePost(id,el){const key="post_"+id;const p=POSTS.find(x=>x.id===id);c
 function unlockPost(id){const p=POSTS.find(x=>x.id===id);
   if(state.balance<p.price){toast("Guthaben zu niedrig — bitte aufladen.");openWallet();return;}
   updateBalance(-p.price);state.unlocked.add(id);toast(`Freigeschaltet! ${EUR(p.price)} abgebucht.`);
-  document.getElementById("feedlist").innerHTML=POSTS.map(postCard).join("");}
+  document.getElementById("feedlist").innerHTML=visiblePosts().map(postCard).join("");}
 
 /* ---------- CHATS ---------- */
 function renderChats(pad){
@@ -957,10 +996,11 @@ function renderChats(pad){
   <div class="appbar" style="padding:6px 0 10px"><div><h1>Chats</h1><div class="sub">Nachrichten & Matches</div></div>
     <button class="iconbtn" onclick="toast('Neue Nachricht')">${I.send}</button></div>
   <div class="section-title">Neue Matches</div>
-  <div class="hscroll">${[...state.liked].filter(id=>byId(id)).concat(["mia","sofia"]).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6).map(id=>{const c=byId(id);return `
+  <div class="hscroll">${[...state.liked].filter(id=>byId(id)&&!state.blocked.has(id)).concat(["mia","sofia"].filter(id=>!state.blocked.has(id))).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6).map(id=>{const c=byId(id);return `
     <div class="story" onclick="openChat('${id}')"><div class="av"><div style="${photoStyle(id)}"></div></div><div class="nm">${c.name}</div></div>`;}).join("")}</div>
   <div class="section-title">Unterhaltungen</div>
-  ${CHATS.map(ch=>{const c=byId(ch.cid);return `
+  ${CHATS.filter(ch=>!state.blocked.has(ch.cid)).length?'':'<p class="muted" style="font-size:13px">Keine Unterhaltungen.</p>'}
+  ${CHATS.filter(ch=>!state.blocked.has(ch.cid)).map(ch=>{const c=byId(ch.cid);return `
     <div class="chat-row" onclick="openChat('${ch.cid}')">
       <div class="avatar" style="${photoStyle(c.id)}">${ch.online?'<span class="presence"></span>':''}</div>
       <div style="min-width:0"><div class="n">${c.name} ${c.verified?`<span class="badge-verif" style="width:14px;height:14px;font-size:8px">${I.verif}</span>`:''}</div>
@@ -1024,6 +1064,9 @@ function renderMe(pad){
   ${row(I.bell,"Benachrichtigungen","toast('Benachrichtigungen')","")}
   ${row(I.lock,"Privatsphäre & Sicherheit","toast('Privatsphäre')","")}
 
+  <div class="section-title">Sicherheit</div>
+  ${row(I.block,"Blockierte Profile","openBlocked()",state.blocked.size?String(state.blocked.size):"keine")}
+
   <div class="section-title">Rechtliches & Konto</div>
   ${row(I.lock,"Datenschutz","openLegal('privacy')","")}
   ${row(I.user,"Impressum","openLegal('imprint')","")}
@@ -1081,7 +1124,8 @@ function openProfile(id){
       <div class="photo" style="position:absolute;inset:0;${photoStyle(id)}"></div>
       <div class="grad"></div>
       <button class="iconbtn back" style="position:absolute" onclick="closeOverlay()">${I.arrow}</button>
-      ${c.live?'<span class="chip live" style="position:absolute;top:calc(var(--safe-top) + 34px);right:16px">● LIVE</span>':''}
+      <button class="iconbtn more" aria-label="Mehr" onclick="openMore('${id}','profile')">${I.more}</button>
+      ${c.live?'<span class="chip live" style="position:absolute;top:calc(var(--safe-top) + 34px);right:68px">● LIVE</span>':''}
       <div class="info">
         <div class="nm">${c.name} <span style="font-weight:500">${c.age}</span> ${c.verified?`<span class="badge-verif">${I.verif}</span>`:''}</div>
         <div style="opacity:.9;font-size:13.5px;margin-top:4px">${c.city} · ${c.dist} km · ${c.followers} Follower</div>
@@ -1147,6 +1191,7 @@ function openChat(id){
       </div>
       <button class="iconbtn" style="color:var(--live)" onclick="startCall('${id}','audio')">${I.phone}</button>
       <button class="iconbtn" style="color:var(--orange)" onclick="startCall('${id}','video')">${I.video}</button>
+      <button class="iconbtn" aria-label="Mehr" onclick="openMore('${id}','chat')">${I.more}</button>
     </div>
     <div class="fscreen" style="padding:16px;display:flex;flex-direction:column;gap:10px" id="msgs">
       ${bubble("in","Hey! Schön dass du da bist 😊 Wie war dein Tag?")}
@@ -1239,6 +1284,7 @@ function topUp(){const a=state._pack||25;updateBalance(a);toast(`${EUR(a)} aufge
    CALL SCREEN (paid, per-minute ticker)
    ========================================================================= */
 function startCall(id,type){
+  if(state.blocked.has(id)){toast(`${byId(id).name} ist blockiert — erst entsperren.`);return;}
   closeOverlay();
   const c=byId(id);state.callRate=c.rate;state.callSecs=0;state.callCost=0;state.callId=id;
   // Burn the allowance at dial time, so hanging up and redialling can't reset it.
@@ -1851,7 +1897,7 @@ function flyGift(em){
 
 /* Top creators, scored by delivered calls weighted by rating. */
 function leaderboardList(){
-  return leaderboard(USER_REVIEWS).slice(0,5).map((c,i)=>`
+  return leaderboard(USER_REVIEWS).filter(c=>!state.blocked.has(c.id)).slice(0,5).map((c,i)=>`
     <div class="lbrow" onclick="openProfile('${c.id}')">
       <div class="rank ${i<3?'top':''}">${i+1}</div>
       <div class="avatar" style="width:38px;height:38px;${photoStyle(c.id)}"></div>
@@ -1891,7 +1937,7 @@ let guests=[];
 
 function openAddPeople(){modal(drawAddPeople());}
 function drawAddPeople(){
-  const pool=CREATORS.filter(c=>c.id!==state.callId);
+  const pool=visible().filter(c=>c.id!==state.callId);
   const full=guests.length>=MAX_GUESTS;
   return `<h3 style="text-align:center">Teilnehmer hinzufügen</h3>
     <p style="text-align:center">${guests.length} von ${MAX_GUESTS} ausgewählt${full?' — Maximum erreicht':''}</p>
@@ -1927,6 +1973,96 @@ function renderGuests(){
       <span class="pn">${byId(g).name}</span></div>`).join("");
 }
 
+/* =========================================================================
+   REPORT & BLOCK — `what` is "profile" | "post" | "chat" and only changes the
+   wording; a report always attaches to the creator, because that is who gets
+   reviewed. Blocking takes effect everywhere at once via visible().
+   ========================================================================= */
+const report={cid:null,what:null,reason:null,note:"",block:false};
+
+function openMore(id,what){
+  const c=byId(id),blocked=state.blocked.has(id);
+  const noun=what==="post"?"Beitrag":what==="chat"?"Chat":"Profil";
+  modal(`<h3>${c.name}</h3>
+    <p>Was möchtest du tun?</p>
+    <button class="btn btn-ghost btn-sm act-row" onclick="closeModal();openReport('${id}','${what}')">${I.flag}${noun} melden</button>
+    <button class="btn btn-ghost btn-sm act-row danger" style="margin-top:8px"
+      onclick="closeModal();${blocked?`unblockUser('${id}')`:`blockUser('${id}')`}">${I.block}${blocked?'Blockierung aufheben':c.name+' blockieren'}</button>
+    <button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="closeModal()">Abbrechen</button>`);
+}
+
+function openReport(id,what){
+  report.cid=id;report.what=what;report.reason=null;report.note="";report.block=false;
+  modal(drawReport());
+  const box=document.querySelector("#modal .mbox");if(box)box.style.textAlign="left";
+}
+function drawReport(){
+  const c=byId(report.cid);
+  const noun=report.what==="post"?"Beitrag":report.what==="chat"?"Nachricht":"Profil";
+  return `<h3 style="text-align:center">${noun} melden</h3>
+    <p style="text-align:center">Deine Meldung ist anonym — ${c.name} erfährt nicht, von wem sie kommt.</p>
+    <div class="reasons">${REPORT_REASONS.map(r=>`
+      <div class="reason ${report.reason===r.id?'on':''}" onclick="pickReason('${r.id}')">
+        <span class="rk">${report.reason===r.id?I.check:''}</span><span>${r.label}</span>
+      </div>`).join("")}</div>
+    <input class="field" id="reportNote" placeholder="Was ist passiert? (optional)" value="${report.note}"
+      oninput="report.note=this.value">
+    <div class="blockopt ${report.block?'on':''}" onclick="toggleReportBlock()">
+      <span class="bx">${report.block?I.check:''}</span><span>${c.name} zusätzlich blockieren</span>
+    </div>
+    <div class="mrow" style="margin-top:14px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Abbrechen</button>
+      <button class="btn btn-primary btn-sm" ${report.reason?'':'disabled'}
+        style="opacity:${report.reason?1:.5};background:var(--heart);box-shadow:none"
+        onclick="submitReport()">Melden</button>
+    </div>`;
+}
+function redrawReport(){const box=document.querySelector("#modal .mbox");if(box){box.style.textAlign="left";box.innerHTML=drawReport();}}
+function pickReason(id){report.reason=id;redrawReport();}
+function toggleReportBlock(){report.block=!report.block;redrawReport();}
+function submitReport(){
+  const id=report.cid,also=report.block;
+  closeModal();
+  toast("Meldung eingegangen — wir prüfen sie innerhalb von 24 Stunden.");
+  if(also)setTimeout(()=>blockUser(id),300);
+}
+
+function blockUser(id){
+  state.blocked.add(id);
+  guests=guests.filter(g=>g!==id);
+  if(state.callId===id&&state.callTimer)endCall(false);
+  closeOverlay();closeModal();
+  toast(`${byId(id).name} blockiert — ihr seht euch nicht mehr.`);
+  render();
+}
+function unblockUser(id){
+  state.blocked.delete(id);
+  toast(`${byId(id).name} entsperrt.`);
+  const open=document.querySelector(".full");
+  if(open&&open.dataset.view==="blocked")openBlocked();else render();
+}
+
+function openBlocked(){
+  const list=CREATORS.filter(c=>state.blocked.has(c.id));
+  const node=overlay(`
+    <div class="ftop">
+      <button class="iconbtn" onclick="closeOverlay()">${I.arrow}</button>
+      <h3>Blockierte Profile</h3>
+      <span style="width:42px"></span>
+    </div>
+    <div class="fscreen" style="padding:4px 18px 30px">
+      <p class="muted" style="font-size:13px;line-height:1.5">Blockierte Profile siehst du nirgends mehr — nicht in Discover, Explore, im Feed oder in den Chats. Sie können dich weder anrufen noch anschreiben.</p>
+      ${list.length===0
+        ? '<p class="muted center" style="font-size:13px;margin-top:30px">Du hast niemanden blockiert.</p>'
+        : list.map(c=>`<div class="bl-row">
+            <span class="avatar" style="width:40px;height:40px;${photoStyle(c.id)}"></span>
+            <div style="min-width:0"><div class="bl-n">${c.name}, ${c.age}</div><div class="bl-s">${c.city} · blockiert</div></div>
+            <button class="btn btn-outline btn-sm" style="width:auto;margin-left:auto" onclick="unblockUser('${c.id}')">Entsperren</button>
+          </div>`).join("")}
+    </div>`,"full");
+  node.dataset.view="blocked";
+}
+
 /* ---- boot ---- */
 render();
 onboarding();
@@ -1937,6 +2073,7 @@ window.likePost=likePost;window.unlockPost=unlockPost;window.unlockDM=unlockDM;w
 window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverlay;window.openEditProfile=openEditProfile;window.openEditField=openEditField;window.openPhotos=openPhotos;window.saveProfile=saveProfile;window.toggleVis=toggleVis;window.markDirty=markDirty;window.pickOpt=pickOpt;window.toggleInt=toggleInt;window.toggleRec=toggleRec;window.removePhoto=removePhoto;window.addPhoto=addPhoto;window.ME=ME;
 window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;
 window.startRegister=startRegister;window.regBack=regBack;window.regNext=regNext;window.regPick=regPick;window.regAge=regAge;window.toggleRegRec=toggleRegRec;window.reg=reg;window.drawRegister=drawRegister;
+window.openMore=openMore;window.openReport=openReport;window.pickReason=pickReason;window.toggleReportBlock=toggleReportBlock;window.submitReport=submitReport;window.blockUser=blockUser;window.unblockUser=unblockUser;window.openBlocked=openBlocked;window.report=report;
 window.openLegal=openLegal;window.modal=modal;window.closeModal=closeModal;window.askDelete=askDelete;window.askImage=askImage;
 window.playIntro=playIntro;window.likePerson=likePerson;window.unmatch=unmatch;window.setExploreTab=setExploreTab;window.setRow=setRow;window.trustRow=trustRow;window.openBook=openBook;window.bookPick=bookPick;window.confirmBook=confirmBook;window.drawBook=drawBook;window.stars=stars;window.reviewList=reviewList;window.openRate=openRate;window.pickStars=pickStars;window.submitRate=submitRate;window.openGift=openGift;window.pickGift=pickGift;window.sendGift=sendGift;window.flyGift=flyGift;window.leaderboardList=leaderboardList;window.openShare=openShare;window.shareTo=shareTo;window.openAddPeople=openAddPeople;window.toggleGuest=toggleGuest;window.dropGuest=dropGuest;window.removeMyPhoto=removeMyPhoto;window.nearbyList=nearbyList;window.matchesList=matchesList;window.buildDeck=buildDeck;window.state=state;
 </script>

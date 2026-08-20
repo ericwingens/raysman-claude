@@ -45,6 +45,8 @@ Reine Preisanzeige reicht nicht, um zwischen Creatorn zu wählen. Dazu kommen: *
 
 Die App hatte lange nur die Fan-Ansicht. Dazu kommt jetzt das **Creator-Studio**: Einnahmen (heute, Woche, Monat, gesamt), Kennzahlen zu Calls, Minuten, Geschenkumsatz und Abos, die **Top-Unterstützer**, die **kommenden Termine aus Creator-Sicht**, der **Auszahlungsstand** — und die drei Stellschrauben, die ein Creator selbst setzen können muss: **Minutenpreis**, **Leistungspakete** und **Verfügbarkeiten**. Überall wird brutto und netto ausgewiesen, damit die Provision nie überrascht (§4.5). Was Änderungen an diesen Stellschrauben mit bereits bestehenden Buchungen machen, steht in §11.7.
 
+Dazu kommt **„Meine Statistiken"** als eigener Punkt: Zeitraumwahl über 7 Tage, 30 Tage oder 12 Monate, vier Kennzahlen jeweils mit der Veränderung gegenüber der Vorperiode, und Diagramme zu Einnahmenverlauf, Einnahmequellen, Calls, starken Wochentagen, besten Uhrzeiten, neuen gegenüber wiederkehrenden Fans und der Bewertungsverteilung. Aggregation, Zeitzone und die Grenze, ab der ein Aggregat Rückschlüsse auf einzelne Fans erlaubt, stehen in §11.8.
+
 ### Schutz- und Kommunikationsebene (neu)
 
 **Melden und Blocken** ist keine Zusatzfunktion, sondern Betriebsvoraussetzung — ohne sie ist die App weder DSA-konform noch für Creator zumutbar. Die Semantik (was ein Block sieht, was er nicht verrät, was mit laufenden Calls und Abos passiert) steht in §7.1. Dazu kommen **Sprachnachrichten im Chat** als asynchrones Gegenstück zum bezahlten Call: dieselbe Aufnahme- und Wellenform-Mechanik wie das Voice-Intro der Registrierung, aber als Nachricht im Verlauf.
@@ -173,6 +175,7 @@ Kern-Entities (Postgres). PKs `id` (UUID/ULID), Timestamps `created_at`/`updated
 | **VoiceMessage** | `message_id`, `media_id`, `duration_ms`, `waveform` (int[], normalisiert), `transcript?`, `moderation_status` | 1:1 zu `Message` mit `kind=voice`; `Media.type` bekommt dafür den Wert `audio`. `waveform` wird serverseitig aus der Datei berechnet, nicht vom Client übernommen |
 | **CreatorEarning** | `creator_id`, `period` (`day`/`week`/`month`), `period_start`, `gross`, `fee`, `net`, `by_source` (jsonb: `call`/`gift`/`tip`/`sub`/`ppv`), `computed_at` | Materialisierte Sicht für das Creator-Studio; aus dem Ledger berechnet, nie von Hand gepflegt |
 | **CreatorSupporter** | `creator_id`, `fan_id`, `lifetime_spend`, `calls_count`, `first_seen_at`, `last_seen_at` | Materialisierte Sicht — speist die Liste „Top-Unterstützer". Fans sehen ihre eigene Position nie |
+| **CreatorSeries** | `creator_id`, `bucket` (`day`/`month`), `bucket_start`, `revenue`, `calls`, `minutes`, `new_fans`, `returning_fans`, `by_source` (jsonb), `by_hour` (int[12]) | Zeitreihe für „Meine Statistiken" (§9, M5.6). Ein Eimer je Tag bzw. Monat, per Job aus dem Ledger und aus `Call` gefüllt — **nicht** live über den Rohdaten aggregiert, sonst wird jeder Diagrammwechsel zur Volltabellensuche |
 
 **Faustregel:** Alles, was Geld bewegt (PPV, Abo, Tip, **Geschenk**, Call-Tick, **Buchung**, Top-up, Payout, Refund), erzeugt **genau eine** `WalletTransaction`-Zeile mit `idempotency_key`. Der `Wallet.balance` ist eine materialisierte Sicht und muss jederzeit = Summe des Ledgers sein (Invariante, per Job prüfbar).
 
@@ -242,7 +245,7 @@ jede Sekunde: wenn (elapsed < free_secs):          # Freiminuten, §4.8
 - **Plattform-Provision / Fee:** konfigurierbarer Prozentsatz (z. B. 20 %) pro Umsatzart; transparent im Ledger führen (Brutto, Fee, Netto).
 - **Refunds:** Gegenbuchung im Ledger (`refund`), Verknüpfung zur Original-Tx; Provider-Refund nur bei Kartenzahlungen relevant, Wallet-interne Stornos als Ledger-Reversal.
 - **Idempotenz** überall: Top-ups, Webhooks, Ticks, Payouts.
-- **Creator-Sicht (Studio):** Der Creator sieht Einnahmen, Auszahlbetrag, nächsten Auszahlungstermin und die letzten Auszahlungen. Alle Zahlen kommen aus `CreatorEarning`/`Payout` und damit aus dem Ledger — es gibt keinen zweiten Rechenweg. Die Provision wird **überall brutto/netto ausgewiesen**, auch schon beim Setzen eines Preises („bei X €/Min bleiben dir Y €"), damit der Creator nie über die Fee stolpert.
+- **Creator-Sicht (Studio und Statistiken):** Der Creator sieht Einnahmen, Auszahlbetrag, nächsten Auszahlungstermin und die letzten Auszahlungen. Alle Zahlen kommen aus `CreatorEarning`/`CreatorSeries`/`Payout` und damit aus dem Ledger — es gibt keinen zweiten Rechenweg. Das ist die wichtigste Eigenschaft der Statistikseite: eine Kennzahl, die dort anders steht als auf der Auszahlung, kostet mehr Vertrauen, als jedes Diagramm einbringt. Die Provision wird **überall brutto/netto ausgewiesen**, auch schon beim Setzen eines Preises („bei X €/Min bleiben dir Y €"), damit der Creator nie über die Fee stolpert.
 
 ### 4.6 Geschenke und Buchungen
 
@@ -440,7 +443,7 @@ Grobe Sequenzierung (keine fixen Daten); jeder Meilenstein liefert etwas Testbar
 | **M4** | **Chat + Paid DMs + Sprachnachrichten** | Conversations, WebSocket-Chat, Presence/Typing, bezahlte DMs (`PaidMessageUnlock`), Tips (Profil/Post/Chat), Sprachnachrichten (`VoiceMessage`: Upload, serverseitige Wellenform, Moderation) | M3 |
 | **M5** | **WebRTC Paid Calls** | LiveKit + coturn, Signaling, server-autoritatives Per-Minute-Metering inkl. Freiminuten-Fenster (`FreeMinuteGrant`), Live-Ticker, Cutoff, Settlement, Receipt, Tips im Call | M3, M4 |
 | **M5.5** | **Marktplatz-Ebene** | CreatorService, Verfügbarkeiten, Booking, Review mit Leistungsbindung + Moderation, CreatorStats-Job, Gift-Katalog + GiftTransaction, Rangliste, Teilen mit Zugangsprüfung, Gruppen-Calls inkl. Zustimmung und Abrechnungsmodell | M3, M5 |
-| **M5.6** | **Creator-Studio** | Einnahmen- und Auszahlungssicht (`CreatorEarning`, `Payout`), Top-Unterstützer (`CreatorSupporter`), kommende Buchungen aus Creator-Sicht, Editoren für Minutenpreis, Leistungspakete und Verfügbarkeiten inkl. der Regeln aus §11.7 | M3, M5.5 |
+| **M5.6** | **Creator-Studio + Statistiken** | Einnahmen- und Auszahlungssicht (`CreatorEarning`, `Payout`), Top-Unterstützer (`CreatorSupporter`), kommende Buchungen aus Creator-Sicht, Editoren für Minutenpreis, Leistungspakete und Verfügbarkeiten inkl. der Regeln aus §11.7. Dazu „Meine Statistiken": `CreatorSeries`-Job, Zeitraumwahl (7 Tage / 30 Tage / 12 Monate), Vorperiodenvergleich, Diagramme zu Einnahmen, Quellen, Calls, Wochentagen, Uhrzeiten, neuen vs. wiederkehrenden Fans und Bewertungsverteilung | M3, M5.5 |
 | **M6** | **Livestream** | LivestreamSession, HLS/Egress, Live-Chat, Live-Tips, optionale VOD-Aufzeichnung | M5 |
 | **M7** | **Trust/Safety + Moderation + KYC** | Altersverifikation, Creator-KYC, Moderations-Queue, Melden und Blocken nach §7.1 (inkl. Eskalationsschlange und DSA-Rückmeldung), Audio-Moderation, DSGVO/DSA-Flows, Impressum/AGB/Datenschutz | M2–M6 |
 | **M8** | **Native (Expo) + Store-Submission** | Expo/RN-App aus geteiltem Core, `react-native-webrtc`, Push, IAP-Prüfung, App-Store/Play-Store-Einreichung | M1–M7 |
@@ -542,3 +545,11 @@ Im Creator-Studio kann der Creator Minutenpreis, Leistungspakete und Verfügbark
 - **Ein gelöschtes Leistungspaket** darf eine bestehende Buchung nicht mitreißen. `CreatorService` wird deaktiviert (`active=false`), nicht gelöscht, solange noch Buchungen daran hängen.
 - **Eine zurückgenommene Verfügbarkeit** kollidiert womöglich mit einem bereits reservierten Termin. Die App muss das beim Speichern erkennen und die Wahl lassen: Termin behalten oder absagen — Absagen ist eine Nachricht an den Fan, kein stiller Vorgang.
 - **Preisänderung während eines laufenden Calls** gilt nicht mehr für diesen Call. `Call.rate_per_min` wird beim Start eingefroren; das ist im Datenmodell bereits so angelegt.
+
+### 11.8 Statistiken: Aggregation und Datenschutz
+
+Die Statistikseite ist im Prototyp mit erzeugten, aber reproduzierbaren Zahlen gefüllt. Produktiv hängen an ihr drei Entscheidungen:
+
+- **Vorberechnen statt live rechnen.** `CreatorSeries` wird per Job gefüllt. Ein Creator mit drei Jahren Historie, der auf „12 Monate" tippt, darf keine Aggregation über die Rohtabellen auslösen. Der Job läuft nachts plus inkrementell nach jedem abgeschlossenen Call.
+- **Zeitzone.** Ein Tag endet in der Zeitzone des Creators, nicht in UTC — sonst wandern Abendcalls in den Folgetag und die Kachel „Beste Uhrzeiten" wird falsch. `bucket_start` deshalb mit der Creator-Zeitzone berechnen und diese am Profil festhalten.
+- **Keine Rückschlüsse auf einzelne Fans.** „Beste Uhrzeiten" und „neue vs. wiederkehrende Fans" sind Aggregate. Sobald ein Eimer nur einen einzigen Fan enthält, ist er kein Aggregat mehr, sondern eine Aussage über diese Person. Eimer unterhalb einer Mindestanzahl werden deshalb zusammengefasst und nicht einzeln ausgewiesen. Für „Top-Unterstützer" gilt derselbe Gedanke in die andere Richtung: der Creator sieht die Summe, die ein Fan bei **ihm** gelassen hat — niemals dessen Ausgaben bei anderen.

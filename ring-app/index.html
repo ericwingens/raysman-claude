@@ -455,6 +455,12 @@ button{font-family:inherit;color:inherit}
 .pickrow.on .pk-c svg{width:14px;height:14px}
 .pickrow.full{opacity:.4;pointer-events:none}
 
+/* ---------- Free first minutes ---------- */
+.freebar{display:flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--live) 12%, var(--card));border:1px solid color-mix(in srgb,var(--live) 34%, var(--line));color:#12794A;border-radius:14px;padding:10px 13px;font-size:13px;font-weight:700;margin:12px 0 2px}
+.freebar svg{width:16px;height:16px;flex:none}
+.chip.free{background:var(--live)}
+.call .ticker .freeleft{margin-top:8px;background:var(--live);color:#fff;border-radius:999px;padding:4px 12px;font-size:11.5px;font-weight:800;letter-spacing:.02em}
+
 /* Active tab gets a short underline, matching the reference navigation. */
 .tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
 .tab.center .fab svg{width:26px;height:26px}
@@ -517,6 +523,10 @@ const CREATORS=[
   {id:"amira",name:"Amira",age:25,city:"Frankfurt",dist:3,tags:["Gaming","Tech"],rate:1.29,online:false,live:false,verified:true,followers:"22.3k",bio:"Full-time Streamerin. Coaching in Valorant & CS, plus exklusive Gaming-Nights nur für Subs.",subs:7100},
 ];
 const byId=id=>CREATORS.find(c=>c.id===id);
+
+/* Free trial minutes. Granted once per creator, not once per call — otherwise
+   a fan could hang up and redial forever. */
+const FREE_SECS=180;
 
 /* ---------------------------------------------------------------------------
  * Marketplace layer: what a creator sells, how well they deliver, and how they
@@ -673,7 +683,8 @@ const state={
   liked:new Set(),
   bookings:[],
   deckIdx:0,
-  callTimer:null, callSecs:0, callCost:0, callRate:1.99, callId:null,
+  freeUsed:new Set(),
+  callTimer:null, callSecs:0, callCost:0, callRate:1.99, callId:null, callFree:0,
 };
 const EUR=n=>n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const num=n=>n.toLocaleString("de-DE");
@@ -760,7 +771,7 @@ function renderDiscover(pad){
     <button class="round lg like" onclick="swipe('right')" aria-label="Like">${I.heart}</button>
     <button class="round md star" onclick="superLike()" aria-label="Super Ring">${I.star}</button>
   </div>
-  <p class="center muted" style="font-size:11.5px;margin-top:14px">Anrufe über die Ring-Funktion kosten je nach Creator ab 0,99 €/Min.</p>`;
+  <p class="center muted" style="font-size:11.5px;margin-top:14px">Die ersten 3 Minuten mit jedem Creator sind gratis — danach ab 0,99 €/Min.</p>`;
   buildDeck();
 }
 function buildDeck(){
@@ -782,6 +793,7 @@ function buildDeck(){
         <div class="row">
           ${c.live?`<span class="chip live">● LIVE</span>`:c.online?`<span class="chip"><span style="width:7px;height:7px;background:var(--live);border-radius:50%"></span>Online</span>`:`<span class="chip">${c.dist} km entfernt</span>`}
           <span class="chip price">${I.phone} ${EUR(c.rate)}/Min</span>
+          ${state.freeUsed.has(c.id)?'':'<span class="chip free">3 Min gratis</span>'}
         </div>
         <div class="row">${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
       </div>`;
@@ -1078,6 +1090,7 @@ function openProfile(id){
     </div>
     <div class="pad" style="padding:16px 18px 40px">
       ${trustRow(id)}
+      ${state.freeUsed.has(id)?'':`<div class="freebar">${I.bolt}Die ersten 3 Minuten mit ${c.name} sind gratis</div>`}
       <div style="display:flex;gap:10px;margin:12px 0 8px">
         <button class="btn btn-primary" onclick="startCall('${id}','video')">${I.phone}Ring me<span class="btn-amt">· ${EUR(c.rate)}/Min</span></button>
         <button class="round md" style="flex:none;border:1px solid var(--line)" onclick="openChat('${id}')">${I.chat}</button>
@@ -1228,6 +1241,9 @@ function topUp(){const a=state._pack||25;updateBalance(a);toast(`${EUR(a)} aufge
 function startCall(id,type){
   closeOverlay();
   const c=byId(id);state.callRate=c.rate;state.callSecs=0;state.callCost=0;state.callId=id;
+  // Burn the allowance at dial time, so hanging up and redialling can't reset it.
+  state.callFree=state.freeUsed.has(id)?0:FREE_SECS;
+  if(state.callFree)state.freeUsed.add(id);
   const call=document.createElement("div");call.className="call";
   call.innerHTML=`
     <div class="bg" style="${photoStyle(id)}"></div>
@@ -1235,7 +1251,8 @@ function startCall(id,type){
     <div class="top">
       <div class="who">${c.name}</div>
       <div class="status" id="callStatus">${type==='live'?'Livestream läuft':'verbindet…'}</div>
-      <div class="ticker"><div class="cost tnum" id="callCost">0,00 €</div><div class="rate">${EUR(c.rate)} / Minute · <span id="callTime">00:00</span></div></div>
+      <div class="ticker"><div class="cost tnum" id="callCost">0,00 €</div><div class="rate">${EUR(c.rate)} / Minute · <span id="callTime">00:00</span></div>
+        ${state.callFree?`<div class="freeleft" id="callFree">Gratis · noch <span class="tnum">03:00</span></div>`:''}</div>
     </div>
     <div class="self" style="${photoStyle('you')}"></div>
     <div class="controls">
@@ -1247,7 +1264,7 @@ function startCall(id,type){
         <button class="cbtn" onclick="toast('Kamera gewechselt')">${I.camflip}</button>
       </div>
       <button class="cbtn end" style="width:72px;height:72px" onclick="endCall()">${I.phone}</button>
-      <div style="font-size:12px;opacity:.8">${type==='live'?'Live-Anrufe werden pro Minute abgerechnet':'Abrechnung startet bei Verbindung'}</div>
+      <div style="font-size:12px;opacity:.8" id="callHint">${state.callFree?'Die ersten 3 Minuten sind gratis':(type==='live'?'Live-Anrufe werden pro Minute abgerechnet':'Abrechnung startet bei Verbindung')}</div>
     </div>`;
   document.getElementById("phone").appendChild(call);
   requestAnimationFrame(()=>call.classList.add("show"));
@@ -1255,13 +1272,30 @@ function startCall(id,type){
     state.callTimer=setInterval(tickCall,1000);},1400);
 }
 function tickCall(){
+  const wasFree=state.callSecs<state.callFree;
   state.callSecs++;
-  const perSec=state.callRate/60;
-  state.callCost+=perSec;
-  if(state.balance-perSec<=0){updateBalance(-state.balance);endCall(true);return;}
-  updateBalance(-perSec);
-  const cc=document.getElementById("callCost");const ct=document.getElementById("callTime");
-  if(cc)cc.textContent=EUR(state.callCost);
+  if(wasFree){
+    // Free window: the clock runs, the balance does not.
+    const left=Math.max(0,state.callFree-state.callSecs);
+    const fl=document.getElementById("callFree");
+    if(fl){
+      if(left>0)fl.innerHTML=`Gratis · noch <span class="tnum">${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}</span>`;
+      else fl.remove();
+    }
+    if(left===0){
+      const h=document.getElementById("callHint");
+      if(h)h.textContent="Abrechnung läuft pro Minute — Abbruch bei Guthaben 0";
+      toast("Freiminuten aufgebraucht — ab jetzt läuft die Abrechnung");
+    }
+  }else{
+    const perSec=state.callRate/60;
+    state.callCost+=perSec;
+    if(state.balance-perSec<=0){updateBalance(-state.balance);endCall(true);return;}
+    updateBalance(-perSec);
+    const cc=document.getElementById("callCost");
+    if(cc)cc.textContent=EUR(state.callCost);
+  }
+  const ct=document.getElementById("callTime");
   const m=String(Math.floor(state.callSecs/60)).padStart(2,"0"),s=String(state.callSecs%60).padStart(2,"0");
   if(ct)ct.textContent=`${m}:${s}`;
 }
@@ -1269,7 +1303,8 @@ function endCall(broke){
   clearInterval(state.callTimer);state.callTimer=null;
   const call=document.querySelector(".call");if(call){call.classList.remove("show");setTimeout(()=>call.remove(),340);}
   const mins=(state.callSecs/60);
-  if(state.callSecs>0)toast(`Call beendet · ${Math.floor(mins)}:${String(state.callSecs%60).padStart(2,'0')} · ${EUR(state.callCost)}${broke?' · Guthaben leer':''}`);
+  const gratis=state.callFree>0?' · 3 Freiminuten inklusive':'';
+  if(state.callSecs>0)toast(`Call beendet · ${Math.floor(mins)}:${String(state.callSecs%60).padStart(2,'0')} · ${EUR(state.callCost)}${gratis}${broke?' · Guthaben leer':''}`);
   guests=[];
   const rated=state.callSecs>0?state.callId:null;
   if(broke)setTimeout(openWallet,400);

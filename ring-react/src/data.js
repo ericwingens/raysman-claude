@@ -12,6 +12,10 @@ export const CREATORS = [
 
 export const byId = (id) => CREATORS.find((c) => c.id === id);
 
+/* Free trial minutes. Granted once per creator, not once per call — otherwise
+   a fan could hang up and redial forever. */
+export const FREE_SECS = 180;
+
 /* ---------------------------------------------------------------------------
  * Marketplace layer: what a creator sells, how well they deliver, and how they
  * rank. Attached by id so the CREATORS rows above stay readable.

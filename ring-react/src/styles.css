@@ -421,6 +421,12 @@ button{font-family:inherit;color:inherit}
 .pickrow.on .pk-c svg{width:14px;height:14px}
 .pickrow.full{opacity:.4;pointer-events:none}
 
+/* ---------- Free first minutes ---------- */
+.freebar{display:flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--live) 12%, var(--card));border:1px solid color-mix(in srgb,var(--live) 34%, var(--line));color:#12794A;border-radius:14px;padding:10px 13px;font-size:13px;font-weight:700;margin:12px 0 2px}
+.freebar svg{width:16px;height:16px;flex:none}
+.chip.free{background:var(--live)}
+.call .ticker .freeleft{margin-top:8px;background:var(--live);color:#fff;border-radius:999px;padding:4px 12px;font-size:11.5px;font-weight:800;letter-spacing:.02em}
+
 /* Active tab gets a short underline, matching the reference navigation. */
 .tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
 .tab.center .fab svg{width:26px;height:26px}

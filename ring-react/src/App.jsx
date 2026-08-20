@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { CREATORS, byId, REVIEWS } from "./data.js";
+import { CREATORS, byId, REVIEWS, FREE_SECS } from "./data.js";
 import { EUR, Ico } from "./lib.jsx";
 import Onboarding from "./screens/Onboarding.jsx";
 import EditProfile from "./overlays/EditProfile.jsx";
@@ -25,6 +25,7 @@ export default function App() {
   const [giftFor, setGiftFor] = useState(null);      // creator id the gift picker targets
   const [shareFor, setShareFor] = useState(null);    // post id the share sheet targets
   const [guests, setGuests] = useState([]);          // extra participants in the running call
+  const [freeUsed, setFreeUsed] = useState(() => new Set()); // creators whose free minutes are spent
   const [addPeople, setAddPeople] = useState(false);
   const [flying, setFlying] = useState(null);        // emoji floating up after a gift
   const [overlays, setOverlays] = useState([]); // stack: {kind, id}
@@ -46,6 +47,11 @@ export default function App() {
   const callRef = useRef(call);
   useEffect(() => { callRef.current = call; }, [call]);
 
+  // startCall has to know *before* the re-render whether the free minutes are
+  // still available, so the set is mirrored and written through.
+  const freeUsedRef = useRef(freeUsed);
+  useEffect(() => { freeUsedRef.current = freeUsed; }, [freeUsed]);
+
   const spend = useCallback(
     (amount, label) => {
       if (balanceRef.current < amount) {
@@ -64,10 +70,20 @@ export default function App() {
   const popAll = () => setOverlays([]);
 
   // ---- paid call ticker ----
+  // The first `call.free` seconds run without charge; only after that does the
+  // per-second rate start moving the balance.
   useEffect(() => {
     if (!call || call.status !== "connected") return;
     const c = byId(call.id);
     const t = setInterval(() => {
+      const live = callRef.current;
+      if (!live) return;
+      if (live.secs < live.free) {
+        const next = live.secs + 1;
+        setCall((cc) => (cc ? { ...cc, secs: cc.secs + 1 } : cc));
+        if (next >= live.free) toast("Freiminuten aufgebraucht — ab jetzt läuft die Abrechnung");
+        return;
+      }
       const perSec = c.rate / 60;
       if (balanceRef.current - perSec <= 0) {
         setBalance(0);
@@ -83,7 +99,13 @@ export default function App() {
 
   const startCall = (id) => {
     popAll();
-    setCall({ id, secs: 0, cost: 0, status: "connecting" });
+    const free = freeUsedRef.current.has(id) ? 0 : FREE_SECS;
+    if (free) {
+      // Burn the allowance at dial time, so hanging up and redialling can't reset it.
+      freeUsedRef.current = new Set(freeUsedRef.current).add(id);
+      setFreeUsed(freeUsedRef.current);
+    }
+    setCall({ id, secs: 0, cost: 0, free, status: "connecting" });
     setTimeout(() => setCall((c) => (c && c.id === id ? { ...c, status: "connected" } : c)), 1400);
   };
   const endCall = (broke = false) => {
@@ -93,7 +115,8 @@ export default function App() {
     setCall((c) => {
       if (c && c.secs > 0) {
         const m = Math.floor(c.secs / 60), s = String(c.secs % 60).padStart(2, "0");
-        toast(`Call beendet · ${m}:${s} · ${EUR(c.cost)}${broke ? " · Guthaben leer" : ""}`);
+        const gratis = c.free > 0 ? " · 3 Freiminuten inklusive" : "";
+        toast(`Call beendet · ${m}:${s} · ${EUR(c.cost)}${gratis}${broke ? " · Guthaben leer" : ""}`);
       }
       return null;
     });
@@ -113,6 +136,7 @@ export default function App() {
     openGift: setGiftFor,
     openShare: setShareFor,
     call, guests, setGuests, openAddPeople: () => setAddPeople(true),
+    freeUsed,
     flyGift: (em) => { setFlying({ em, key: Date.now() }); setTimeout(() => setFlying(null), 1700); },
     toast, spend, push, pop, popAll, startCall, endCall, setPhase,
   };

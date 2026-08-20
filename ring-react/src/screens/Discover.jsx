@@ -41,7 +41,7 @@ export default function Discover({ ctx }) {
         ) : (
           [...cards].reverse().map((cc, i) => (
             <Card key={cc.id} c={cc} depth={cards.length - 1 - i}
-              top={i === cards.length - 1}
+              top={i === cards.length - 1} free={!ctx.freeUsed.has(cc.id)}
               onOpen={() => ctx.push("profile", cc.id)}
               onSwipe={advance} />
           ))
@@ -55,13 +55,13 @@ export default function Discover({ ctx }) {
         <button className="round md star" onClick={() => { if (c) { ctx.toast(`Super Ring an ${c.name}! ⭐`); setIdx((i) => i + 1); } }} aria-label="Super Ring"><Ico name="star" /></button>
       </div>
       <p className="center muted" style={{ fontSize: 11.5, marginTop: 14 }}>
-        Anrufe über die Ring-Funktion kosten je nach Creator ab 0,99 €/Min.
+        Die ersten 3 Minuten mit jedem Creator sind gratis — danach ab 0,99 €/Min.
       </p>
     </>
   );
 }
 
-function Card({ c, depth, top, onOpen, onSwipe }) {
+function Card({ c, depth, top, free, onOpen, onSwipe }) {
   const el = useRef(null);
   const drag = useRef({ on: false, sx: 0, sy: 0, dx: 0, dy: 0, moved: false });
 
@@ -113,6 +113,7 @@ function Card({ c, depth, top, onOpen, onSwipe }) {
             : c.online ? <span className="chip"><span style={{ width: 7, height: 7, background: "var(--live)", borderRadius: "50%" }} />Online</span>
             : <span className="chip">{c.dist} km entfernt</span>}
           <span className="chip price"><Ico name="phone" /> {EUR(c.rate)}/Min</span>
+          {free && <span className="chip free">3 Min gratis</span>}
         </div>
         <div className="row">{c.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
       </div>

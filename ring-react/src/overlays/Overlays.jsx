@@ -304,6 +304,9 @@ export function ProfileFull({ id, ctx }) {
 
         <div style={{ padding: "16px 18px 40px" }}>
           <TrustRow id={id} all={ctx.reviews} />
+          {!ctx.freeUsed.has(id) && (
+            <div className="freebar"><Ico name="bolt" />Die ersten 3 Minuten mit {c.name} sind gratis</div>
+          )}
           {/* Figma call-profile card: gender + bio above the call action */}
           <div style={{ display: "flex", gap: 10, margin: "12px 0 8px" }}>
             <button className="btn btn-primary" onClick={() => ctx.startCall(id)}><Ico name="phone" />Ring me<span className="btn-amt">· {EUR(c.rate)}/Min</span></button>
@@ -534,6 +537,9 @@ export function CallScreen({ call, ctx }) {
   const c = byId(call.id);
   const m = String(Math.floor(call.secs / 60)).padStart(2, "0");
   const s = String(call.secs % 60).padStart(2, "0");
+  const freeLeft = Math.max(0, (call.free || 0) - call.secs);
+  const fm = String(Math.floor(freeLeft / 60)).padStart(2, "0");
+  const fs = String(freeLeft % 60).padStart(2, "0");
   return (
     <div className={`call ${show ? "show" : ""}`}>
       <div className="bg" style={photoStyle(call.id)} />
@@ -544,6 +550,7 @@ export function CallScreen({ call, ctx }) {
         <div className="ticker">
           <div className="cost tnum">{EUR(call.cost)}</div>
           <div className="rate">{EUR(c.rate)} / Minute · <span className="tnum">{m}:{s}</span></div>
+          {freeLeft > 0 && <div className="freeleft">Gratis · noch <span className="tnum">{fm}:{fs}</span></div>}
         </div>
       </div>
       {ctx.guests.length > 0 && (
@@ -566,7 +573,9 @@ export function CallScreen({ call, ctx }) {
           <button className="cbtn" onClick={() => ctx.toast("Kamera gewechselt")}><Ico name="camflip" /></button>
         </div>
         <button className="cbtn end" style={{ width: 72, height: 72 }} onClick={() => ctx.endCall(false)}><Ico name="phone" /></button>
-        <div style={{ fontSize: 12, opacity: 0.8 }}>Abrechnung läuft pro Minute — Abbruch bei Guthaben 0</div>
+        <div style={{ fontSize: 12, opacity: 0.8 }}>
+          {freeLeft > 0 ? "Die ersten 3 Minuten sind gratis" : "Abrechnung läuft pro Minute — Abbruch bei Guthaben 0"}
+        </div>
       </div>
     </div>
   );

@@ -35,10 +35,19 @@
 - **Wallet-Guthaben**, das durch alle Aktionen live aktualisiert wird (Prototyp-Start: 24,50 €).
 - **Virtuelle Geschenke** (18 Artikel, **0,49 € bis 149,99 €**) im Call und im Livestream — feste Artikel mit Namen und Symbol, abgegrenzt vom frei wählbaren Tip.
 - **Buchbare Leistungspakete** je Creator (z. B. „Yoga 1:1", 45 Min, 52 €) mit Terminreservierung. **Derzeit ohne Vorauszahlung** — siehe §11.3.
+- **Erste drei Minuten gratis**, einmalig je Fan-Creator-Paar. Senkt die Einstiegshürde vor dem ersten bezahlten Call; wer sie kaufmännisch trägt, ist noch offen — siehe §4.8 und §11.6.
 
 ### Vertrauens- und Auswahlebene (neu)
 
 Reine Preisanzeige reicht nicht, um zwischen Creatorn zu wählen. Dazu kommen: **Bewertungen** mit Sternen und Text, **Vertrauenskennzahlen** (Antwortquote, Abschlussquote, Stammgästeanteil, Anzahl gelieferter Calls), **Level und Abzeichen** sowie eine **Rangliste**, deren Punktzahl gelieferte Calls mit Bewertung und Abschlussquote gewichtet — damit Masse allein niemanden nach oben trägt.
+
+### Creator-Ebene (neu)
+
+Die App hatte lange nur die Fan-Ansicht. Dazu kommt jetzt das **Creator-Studio**: Einnahmen (heute, Woche, Monat, gesamt), Kennzahlen zu Calls, Minuten, Geschenkumsatz und Abos, die **Top-Unterstützer**, die **kommenden Termine aus Creator-Sicht**, der **Auszahlungsstand** — und die drei Stellschrauben, die ein Creator selbst setzen können muss: **Minutenpreis**, **Leistungspakete** und **Verfügbarkeiten**. Überall wird brutto und netto ausgewiesen, damit die Provision nie überrascht (§4.5). Was Änderungen an diesen Stellschrauben mit bereits bestehenden Buchungen machen, steht in §11.7.
+
+### Schutz- und Kommunikationsebene (neu)
+
+**Melden und Blocken** ist keine Zusatzfunktion, sondern Betriebsvoraussetzung — ohne sie ist die App weder DSA-konform noch für Creator zumutbar. Die Semantik (was ein Block sieht, was er nicht verrät, was mit laufenden Calls und Abos passiert) steht in §7.1. Dazu kommen **Sprachnachrichten im Chat** als asynchrones Gegenstück zum bezahlten Call: dieselbe Aufnahme- und Wellenform-Mechanik wie das Voice-Intro der Registrierung, aber als Nachricht im Verlauf.
 
 ---
 
@@ -148,7 +157,7 @@ Kern-Entities (Postgres). PKs `id` (UUID/ULID), Timestamps `created_at`/`updated
 | **Match / Like** | `from_user_id`, `to_user_id`, `kind` (`like`/`superlike`/`pass`), `is_match` | Discovery-Swipe; `superlike` = „Super Ring" |
 | **LivestreamSession** | `creator_id`, `title`, `status` (`live`/`ended`), `room_id`, `viewer_count`, `started_at`, `recording_media_id` | Livestream + optionale VOD-Aufzeichnung |
 | **Payout** | `creator_id`, `amount`, `period`, `status`, `provider_ref`, `fees` | Stripe-Connect-Auszahlung (§4) |
-| **ModerationCase / Report** | `subject_type`, `subject_id`, `reporter_id`, `reason`, `status`, `resolution` | Trust & Safety (§7) |
+| **ModerationCase / Report** | `subject_type` (`profile`/`post`/`message`/`review`/`call`), `subject_id`, `reporter_id`, `reason` (`harassment`/`nudity`/`scam`/`fake`/`minor`/`spam`/`other`), `note`, `also_blocked`, `status`, `priority`, `resolution` | Trust & Safety (§7.1). `reason=minor` und `reason=scam` gehen sofort in die Eskalationsschlange, nicht in die normale Queue |
 | **CreatorService** | `creator_id`, `name`, `description`, `duration_min`, `price`, `active`, `sort_order` | Buchbares Paket; Prototyp: 2 je Creator, 19–89 € |
 | **AvailabilityRule** | `creator_id`, `weekday`, `slot_start`, `slot_end`, `timezone`, `active` | Wiederkehrende Verfügbarkeit; erzeugt die Slots der Wochenleiste |
 | **AvailabilityException** | `creator_id`, `date`, `blocked`, `slot_start`, `slot_end` | Einzelne Sperrungen/Zusatzzeiten, schlagen die Regel |
@@ -159,6 +168,11 @@ Kern-Entities (Postgres). PKs `id` (UUID/ULID), Timestamps `created_at`/`updated
 | **GiftTransaction** | `sender_id`, `recipient_id`, `gift_id`, `price_paid`, `context` (`call`/`live`/`profile`), `context_id`, `ledger_tx_id` | Wie Tip, aber mit Artikelbezug für Auswertung und Bestenlisten |
 | **CallParticipant** | `call_id`, `user_id`, `role` (`host`/`callee`/`guest`), `joined_at`, `left_at`, `billed_share` | Gruppen-Calls; `billed_share` offen bis §11.1 entschieden ist |
 | **ShareEvent** | `user_id`, `subject_type` (`post`/`profile`), `subject_id`, `target` (`tiktok`/`instagram`/…/`copy_link`), `created_at` | Nur Absicht und Ziel protokollieren, keine Inhalte |
+| **Block** | `blocker_id`, `blocked_id`, `created_at`, `source` (`profile`/`chat`/`post`/`report`) | Unique(blocker, blocked). Wirkt in **beide** Richtungen sichtbar (§7.1) und ist die einzige Quelle für alle Sichtbarkeitsfilter |
+| **FreeMinuteGrant** | `fan_id`, `creator_id`, `seconds_granted`, `seconds_used`, `granted_at`, `first_call_id` | Unique(fan, creator) — die Freiminuten gibt es **einmal je Paar**, nicht je Call (§4.8). Wird beim Wählen angelegt, nicht beim Verbinden |
+| **VoiceMessage** | `message_id`, `media_id`, `duration_ms`, `waveform` (int[], normalisiert), `transcript?`, `moderation_status` | 1:1 zu `Message` mit `kind=voice`; `Media.type` bekommt dafür den Wert `audio`. `waveform` wird serverseitig aus der Datei berechnet, nicht vom Client übernommen |
+| **CreatorEarning** | `creator_id`, `period` (`day`/`week`/`month`), `period_start`, `gross`, `fee`, `net`, `by_source` (jsonb: `call`/`gift`/`tip`/`sub`/`ppv`), `computed_at` | Materialisierte Sicht für das Creator-Studio; aus dem Ledger berechnet, nie von Hand gepflegt |
+| **CreatorSupporter** | `creator_id`, `fan_id`, `lifetime_spend`, `calls_count`, `first_seen_at`, `last_seen_at` | Materialisierte Sicht — speist die Liste „Top-Unterstützer". Fans sehen ihre eigene Position nie |
 
 **Faustregel:** Alles, was Geld bewegt (PPV, Abo, Tip, **Geschenk**, Call-Tick, **Buchung**, Top-up, Payout, Refund), erzeugt **genau eine** `WalletTransaction`-Zeile mit `idempotency_key`. Der `Wallet.balance` ist eine materialisierte Sicht und muss jederzeit = Summe des Ledgers sein (Invariante, per Job prüfbar).
 
@@ -199,7 +213,7 @@ Wichtig für die Planung: **Apple Pay und Google Pay sind keine eigenen Zahlungs
 
 Zwei praktikable Varianten:
 
-1. **Prepaid-Cutoff (empfohlen, spiegelt den Prototyp):** Da das Guthaben bereits vorab kassiert wurde, ist keine separate Karten-Autorisierung nötig. Beim Call-Start wird geprüft, ob Guthaben > Mindestbetrag (z. B. ≥ 1 Minute Rate). Danach **pro Tick abbuchen** und bei Guthaben = 0 hart trennen.
+1. **Prepaid-Cutoff (empfohlen, spiegelt den Prototyp):** Da das Guthaben bereits vorab kassiert wurde, ist keine separate Karten-Autorisierung nötig. Beim Call-Start wird geprüft, ob Guthaben > Mindestbetrag (z. B. ≥ 1 Minute Rate). Danach **pro Tick abbuchen** und bei Guthaben = 0 hart trennen. **Ausnahme:** solange dem Paar noch Freiminuten zustehen, entfällt dieser Check (§4.8).
 2. **Card-Auth + Capture (falls ohne Prepaid-Wallet):** Beim Call-Start Betrag X autorisieren (Hold), nach Call-Ende die tatsächliche Dauer capturen, Rest freigeben. Aufwändiger, Auth-Ablaufzeiten beachten.
 
 ### 4.4 Per-Minute-Call-Billing (mirror des Prototyps)
@@ -208,7 +222,10 @@ Prototyp-Logik (`tickCall`), die serverseitig autoritativ nachgebaut wird:
 
 ```
 perSec        = rate_per_min / 60
-jede Sekunde: cost += perSec
+jede Sekunde: wenn (elapsed < free_secs):          # Freiminuten, §4.8
+                  elapsed += 1                      # Uhr läuft, Ledger nicht
+                  weiter
+              cost += perSec
               wenn (balance - perSec) <= 0:
                   balance = 0; call beenden (end_reason = "cutoff")
               sonst:
@@ -225,6 +242,7 @@ jede Sekunde: cost += perSec
 - **Plattform-Provision / Fee:** konfigurierbarer Prozentsatz (z. B. 20 %) pro Umsatzart; transparent im Ledger führen (Brutto, Fee, Netto).
 - **Refunds:** Gegenbuchung im Ledger (`refund`), Verknüpfung zur Original-Tx; Provider-Refund nur bei Kartenzahlungen relevant, Wallet-interne Stornos als Ledger-Reversal.
 - **Idempotenz** überall: Top-ups, Webhooks, Ticks, Payouts.
+- **Creator-Sicht (Studio):** Der Creator sieht Einnahmen, Auszahlbetrag, nächsten Auszahlungstermin und die letzten Auszahlungen. Alle Zahlen kommen aus `CreatorEarning`/`Payout` und damit aus dem Ledger — es gibt keinen zweiten Rechenweg. Die Provision wird **überall brutto/netto ausgewiesen**, auch schon beim Setzen eines Preises („bei X €/Min bleiben dir Y €"), damit der Creator nie über die Fee stolpert.
 
 ### 4.6 Geschenke und Buchungen
 
@@ -242,6 +260,16 @@ jede Sekunde: cost += perSec
 
 ---
 
+### 4.8 Freiminuten (die ersten drei Minuten)
+
+Jeder Fan bekommt bei **jedem Creator einmalig** die ersten drei Minuten geschenkt. Das ist ein Akquise-Instrument, kein Rabatt — die entscheidende Regel ist deshalb, dass das Kontingent **an das Paar (Fan, Creator) gebunden** ist und nicht an den einzelnen Call.
+
+- **Vergabe beim Wählen, nicht beim Verbinden.** `FreeMinuteGrant` wird angelegt, sobald der Fan den Anruf auslöst. Wer auflegt und sofort neu wählt, bekommt keine neuen drei Minuten. (Der Prototyp macht es genauso: das Kontingent wird beim Dial verbraucht.)
+- **Kein Guthaben-Mindestbetrag für den ersten Call.** Der Guthaben-Check aus §4.3 greift erst, wenn die Freiminuten aufgebraucht sind. Ein Fan ohne Guthaben kann den ersten Call also führen — aber nur drei Minuten lang.
+- **Metering:** die Sekunden laufen normal, nur ohne Ledger-Buchung (§4.4). Beim Übergang wird der Fan sichtbar informiert; ab dann gilt die reguläre Abrechnung inklusive Cutoff.
+- **Creator-Vergütung:** Freiminuten werden dem Creator **nicht** vom Fan bezahlt. Ob die Plattform sie dem Creator erstattet (Akquise-Kosten der Plattform) oder ob der Creator sie trägt (Akquise-Kosten des Creators), ist eine kaufmännische Entscheidung und **noch offen** — siehe §11.6. Solange sie offen ist, buchen wir die Freiminuten mit `gross=0` und markieren den Call-Abschnitt in `Call.free_secs`, damit die Entscheidung später rückwirkend auswertbar bleibt.
+- **Missbrauch:** Mehrfachkonten sind der offensichtliche Angriff (neuer Account = wieder überall drei Minuten frei). Gegenmaßnahmen gehören zur Altersverifikation und zum Fraud-Stack (§7): verifizierte Telefonnummer bzw. Ausweis als Voraussetzung für Freiminuten, Device-Fingerprinting, Velocity-Limits.
+
 ## 5. Paid Calls (WebRTC) — End-to-End-Flow
 
 ```
@@ -249,8 +277,12 @@ Fan tippt „Ring me · X €/Min"  (Profil oder Discover-Call-Button)
    │
    ▼
 [1] Guthaben-Check/Autorisierung
-    - Backend prüft: balance >= min. (z. B. 1 Min Rate)?  sonst → Wallet
-    - Call-Row angelegt (status=ringing), rate_per_min gesetzt
+    - Backend prüft: besteht eine Blockierung in einer der beiden
+      Richtungen?  dann Abbruch, kein Klingeln (§7.1)
+    - Freiminuten offen?  dann FreeMinuteGrant anlegen, Guthaben-Check
+      überspringen (§4.8)
+    - sonst: balance >= min. (z. B. 1 Min Rate)?  sonst → Wallet
+    - Call-Row angelegt (status=ringing), rate_per_min + free_secs gesetzt
    │
    ▼
 [2] Signaling (WebSocket)
@@ -283,6 +315,7 @@ Fan tippt „Ring me · X €/Min"  (Profil oder Discover-Call-Button)
 **Weitere Aspekte:**
 
 - **TURN/SFU:** LiveKit-Räume pro Call; coturn für Fallback-Relay. Call-Tokens kurzlebig, an `Call.id` gebunden.
+- **Freiminuten im Call:** Der Ticker zeigt während der Freiminuten einen Countdown statt eines steigenden Betrags; beim Ablauf wechselt der Hinweistext und der Fan bekommt eine Meldung. Der Wechsel ist ein **Server-Event**, nicht nur eine Client-Animation — sonst läuft die Anzeige beim ersten Reconnect aus dem Tritt.
 - **Tips im Call:** `openTip` bleibt live erreichbar (Prototyp: Tip-Button im Call-Controls-Bereich) → separate Ledger-Tx (`tip`, context=`call`).
 - **Geschenke im Call:** eigener Knopf in der Call-Leiste, gleiche Behandlung wie Tips, zusätzlich `GiftTransaction` (§4.6).
 - **Livestream-Calls:** `type=live` wird ebenfalls pro Minute abgerechnet (Prototyp-Hinweis: „Live-Anrufe werden pro Minute abgerechnet").
@@ -322,12 +355,33 @@ Presence & Fan-out über Redis Pub/Sub; horizontale Skalierung der WS-Nodes übe
 - **Consent & 2257-artige Nachweise:** Für erwachsene Inhalte Nachweise über Einwilligung und Alter aller abgebildeten Personen führen (US-2257-Analogie; in DE über Vertrags-/Einwilligungsdokumentation). Aufbewahrung revisionssicher.
 - **DSGVO/DSGVO-Betroffenenrechte:** Rechtsgrundlagen, Auftragsverarbeiter-Verträge (AVV) mit Stripe/PayPal/LiveKit/Storage/CDN, Auskunft/Löschung/Export, Datensparsamkeit, Verschlüsselung at-rest & in-transit, Löschkonzept/Retention.
 - **DSA (Digital Services Act):** Melde-/Abhilfeverfahren („Notice & Action"), Transparenzpflichten, Kontaktstelle, ggf. Trusted-Flagger-Prozesse.
-- **Reporting & Blocking:** Nutzer können Profile/Posts/Nachrichten melden und blockieren; Block wirkt auf Chat, Call, Discovery, Feed.
+- **Reporting & Blocking:** siehe §7.1 — der Prototyp hat beides, und die Semantik dahinter ist nicht trivial.
 - **Chargeback / Fraud:** Velocity-Checks, Device-Fingerprinting, 3-D-Secure (SCA/PSD2) bei Kartenzahlung, Limits für Neukunden, manuelle Review bei Auffälligkeiten; Chargeback-Handling im Ledger.
 - **Bewertungen:** Nur zu einer tatsächlich stattgefundenen Leistung (Call oder Buchung), pro Leistung genau eine, editierbar innerhalb einer Frist. Bewertungen sind meldbar und moderierbar wie jeder andere Inhalt. Ohne Kaufbindung ist ein Bewertungssystem in kurzer Zeit wertlos (§11.2). **Gekaufte Bewertungen und das Entfernen negativer Bewertungen gegen Entgelt sind nach UWG unzulässig** — die Plattform darf Creatorn keinen Weg anbieten, schlechte Bewertungen verschwinden zu lassen.
 - **Teilen nach außen:** Geteilt werden darf nur, was öffentlich ist. Für Abo- oder PPV-Inhalte darf der Teilen-Vorgang **niemals** die Mediendatei oder eine signierte URL nach außen geben, sondern nur einen Landeplatz-Link, der beim Empfänger erneut die Zugangsprüfung durchläuft (§11.4). `ShareEvent` protokolliert Absicht und Ziel, nicht den Inhalt.
 - **Gruppen-Calls:** Zustimmung jedes Hinzugefügten vor Medienübertragung; Blockierungen wirken auch hier — wer jemanden blockiert hat, kann nicht mit ihm in denselben Raum gezogen werden. Aufzeichnung braucht die Einwilligung **aller** Anwesenden, nicht nur der beiden ursprünglichen.
+- **Sprachnachrichten:** Audio ist Inhalt wie jeder andere und geht durch dieselbe Moderationskette (`Media.moderation_status`). Zusätzlich gilt: Transkription darf nur laufen, wenn sie in der Datenschutzerklärung steht und einen Zweck hat (Moderation, Barrierefreiheit) — nicht „weil es geht". Die Wellenform wird serverseitig berechnet; ein Client, der sie mitliefern darf, kann eine Aufnahme als etwas anderes ausgeben, als sie ist. Aufbewahrung wie andere Nachrichteninhalte, Löschung zieht die Mediendatei mit.
 - **Impressum & AGB (DE-Pflicht):** Impressum (§ 5 DDG/TMG), AGB, Datenschutzerklärung, Widerrufsbelehrung (bzw. Hinweis auf Erlöschen des Widerrufsrechts bei digitalen Inhalten), Zahlungs-/Nutzungsbedingungen für Fans und Creator. Der Prototyp verlinkt bereits „AGB", „Datenschutz" und „Datenschutz & Impressum".
+
+### 7.1 Melden und Blocken
+
+Der Prototyp hat beides: ein ⋯-Menü auf Profil, Chat und Beitrag, dahinter „melden" und „blockieren", und eine Liste der blockierten Profile unter *Me → Sicherheit*. Das Verhalten dahinter ist bewusst festgelegt:
+
+**Melden**
+
+- **Sieben Gründe**, in der Reihenfolge ihrer Häufigkeit: Belästigung, Nacktheit/sexuelle Inhalte, Betrug/Geldforderung, Fake-Profil, Person wirkt minderjährig, Spam, Sonstiges. Freitext ist optional, der Grund ist Pflicht.
+- **Melden blockiert nicht automatisch.** Das ist eine Checkbox im selben Formular, kein Automatismus — wer einen Betrugsversuch meldet, will die Person oft trotzdem noch im Chat sehen können, bis die Prüfung läuft.
+- **Anonym gegenüber dem Gemeldeten.** Die Meldung ist gegenüber der Moderation natürlich zugeordnet (`reporter_id`), sonst wären Serienmelder nicht erkennbar.
+- **Zwei Gründe eskalieren sofort:** `minor` und `scam` gehen nicht in die normale Queue, sondern in die Eskalationsschlange. Bei Verdacht auf Minderjährige gelten die Melde- und Löschpflichten aus dem CSAM-Absatz oben.
+- **DSA-konforme Rückmeldung:** Der Meldende bekommt eine Eingangsbestätigung und eine Entscheidung mit Begründung; beides ist unter „Notice & Action" Pflicht, nicht Kür.
+
+**Blockieren**
+
+- **Eine Blockierung ist einseitig gesetzt, aber beidseitig wirksam.** Wer blockiert, sieht die andere Person nirgends mehr — Discover, Explore, Feed, Rangliste, Chatliste, Gästeauswahl im Call. Umgekehrt darf der Blockierte den Blockierenden ebenfalls nicht mehr erreichen. **Er darf aber nicht erfahren, dass er blockiert wurde** (Sicherheitsanforderung bei Stalking): das Profil verhält sich für ihn wie ein nicht mehr existierendes oder inaktives, nicht wie ein gesperrtes.
+- **Ein Filter, nicht viele.** Alle Listen laufen über dieselbe Sichtbarkeitsfunktion gegen `Block`. Jede Liste, die ihren eigenen Filter mitbringt, ist die Liste, die beim nächsten Feature vergessen wird.
+- **Wirkung auf Laufendes:** Ein laufender Call wird beendet, ein offenes Profil geschlossen, ein Gast aus der Teilnehmerliste entfernt. Ein neuer Anruf wird serverseitig abgewiesen, bevor es beim Empfänger klingelt.
+- **Was bleibt:** Bereits gezahltes Geld bleibt gezahlt. Ein laufendes Abo endet nicht automatisch durch eine Blockierung — das wäre eine stille Kündigung mit finanzieller Folge. Der Fan muss aktiv kündigen; die App weist beim Blockieren darauf hin, wenn ein Abo besteht.
+- **Entsperren** ist jederzeit möglich und stellt nur die Sichtbarkeit wieder her — es stellt keine gelöschten Inhalte wieder her und hebt keine Moderationsentscheidung auf.
 
 ---
 
@@ -383,11 +437,12 @@ Grobe Sequenzierung (keine fixen Daten); jeder Meilenstein liefert etwas Testbar
 | **M1** | **React/Vite-App + Design-System** | Vite+TS-Setup, Monorepo, `tokens.ts` (light/dark), Komponenten (Button/Chip/Avatar/Sheet/Tier/PostCard), Screens als Routen, Mock-Daten aus Prototyp portiert | M0 |
 | **M2** | **Auth + Profile + Feed** | Registrierung (inkl. Gender/Looking-for/Age/Foto/Start-Recording), Login, User/CreatorProfile, Discover-Swipe gegen API, Explore, Feed (ohne Zahlungen) | M1, Backend-Grundgerüst |
 | **M3** | **Wallet + Payments + Abos + PPV** | Postgres-Ledger, Stripe/PayPal-Top-up, Wallet-Screen, SubscriptionTier/Subscription, PostUnlock (PPV), Stripe Connect Payout-Grundlage | M2 |
-| **M4** | **Chat + Paid DMs** | Conversations, WebSocket-Chat, Presence/Typing, bezahlte DMs (`PaidMessageUnlock`), Tips (Profil/Post/Chat) | M3 |
-| **M5** | **WebRTC Paid Calls** | LiveKit + coturn, Signaling, server-autoritatives Per-Minute-Metering, Live-Ticker, Cutoff, Settlement, Receipt, Tips im Call | M3, M4 |
+| **M4** | **Chat + Paid DMs + Sprachnachrichten** | Conversations, WebSocket-Chat, Presence/Typing, bezahlte DMs (`PaidMessageUnlock`), Tips (Profil/Post/Chat), Sprachnachrichten (`VoiceMessage`: Upload, serverseitige Wellenform, Moderation) | M3 |
+| **M5** | **WebRTC Paid Calls** | LiveKit + coturn, Signaling, server-autoritatives Per-Minute-Metering inkl. Freiminuten-Fenster (`FreeMinuteGrant`), Live-Ticker, Cutoff, Settlement, Receipt, Tips im Call | M3, M4 |
 | **M5.5** | **Marktplatz-Ebene** | CreatorService, Verfügbarkeiten, Booking, Review mit Leistungsbindung + Moderation, CreatorStats-Job, Gift-Katalog + GiftTransaction, Rangliste, Teilen mit Zugangsprüfung, Gruppen-Calls inkl. Zustimmung und Abrechnungsmodell | M3, M5 |
+| **M5.6** | **Creator-Studio** | Einnahmen- und Auszahlungssicht (`CreatorEarning`, `Payout`), Top-Unterstützer (`CreatorSupporter`), kommende Buchungen aus Creator-Sicht, Editoren für Minutenpreis, Leistungspakete und Verfügbarkeiten inkl. der Regeln aus §11.7 | M3, M5.5 |
 | **M6** | **Livestream** | LivestreamSession, HLS/Egress, Live-Chat, Live-Tips, optionale VOD-Aufzeichnung | M5 |
-| **M7** | **Trust/Safety + Moderation + KYC** | Altersverifikation, Creator-KYC, Moderations-Queue, Reporting/Blocking, DSGVO/DSA-Flows, Impressum/AGB/Datenschutz | M2–M6 |
+| **M7** | **Trust/Safety + Moderation + KYC** | Altersverifikation, Creator-KYC, Moderations-Queue, Melden und Blocken nach §7.1 (inkl. Eskalationsschlange und DSA-Rückmeldung), Audio-Moderation, DSGVO/DSA-Flows, Impressum/AGB/Datenschutz | M2–M6 |
 | **M8** | **Native (Expo) + Store-Submission** | Expo/RN-App aus geteiltem Core, `react-native-webrtc`, Push, IAP-Prüfung, App-Store/Play-Store-Einreichung | M1–M7 |
 
 ---
@@ -468,3 +523,22 @@ Außerdem: `Booking.starts_at` gehört in UTC, angezeigt in der Zeitzone des Fan
 
 **Offen:** Im Prototyp sind diese Werte fest hinterlegt. In Produktion sind sie ausnahmslos **abgeleitet** und gehören in einen periodischen Job (`CreatorStats.computed_at`), nicht in ein editierbares Feld — sonst sind sie manipulierbar und damit wertlos. Zu definieren ist je Kennzahl das Zeitfenster (Antwortquote der letzten 30 Tage? aller Zeiten?) und die Mindestfallzahl, ab der sie überhaupt angezeigt wird. Ein Creator mit einem gelieferten Call und fünf Sternen darf nicht die Rangliste anführen.
 
+
+### 11.6 Freiminuten: wer bezahlt sie?
+
+Die ersten drei Minuten sind für den Fan gratis. Für den Creator sind sie **Arbeitszeit**, und die Frage, wer sie vergütet, ist noch offen:
+
+- **Plattform trägt sie** — sauberste Variante für die Creator-Akzeptanz, aber ein direkter Kostenblock, der mit jedem neuen Fan-Creator-Paar mitwächst. Bei 1,79 €/Min sind drei Minuten rund 5,40 € Bruttoumsatz, den jemand tragen muss.
+- **Creator trägt sie** — kostenlos für die Plattform, aber die guten Creator werden es merken und die Funktion ablehnen, sobald sie ausgelastet sind. Dann braucht es einen Schalter „Freiminuten anbieten: ja/nein" im Studio — und damit zwei Klassen von Profilen im Discover.
+- **Geteilt** — z. B. Plattform zahlt die Provision nicht und erstattet die Hälfte. Kompromiss, der beides halb löst.
+
+Solange die Entscheidung offen ist, wird der Freiminuten-Abschnitt als `Call.free_secs` mitgeschrieben und mit `gross=0` gebucht, damit die Kosten hinterher exakt beziffert und rückwirkend zugeordnet werden können. **Vor M5 zu entscheiden.**
+
+### 11.7 Studio-Änderungen und bestehende Buchungen
+
+Im Creator-Studio kann der Creator Minutenpreis, Leistungspakete und Verfügbarkeiten ändern. Der Prototyp lässt das ohne Rückfrage zu — produktiv geht das nicht:
+
+- **Preisänderung wirkt nie rückwirkend.** Eine bestehende `Booking` behält den Preis, zu dem sie gebucht wurde; `Booking.price` ist deshalb eine Kopie, kein Verweis auf `CreatorService.price`. (Im Datenmodell ist das schon so.)
+- **Ein gelöschtes Leistungspaket** darf eine bestehende Buchung nicht mitreißen. `CreatorService` wird deaktiviert (`active=false`), nicht gelöscht, solange noch Buchungen daran hängen.
+- **Eine zurückgenommene Verfügbarkeit** kollidiert womöglich mit einem bereits reservierten Termin. Die App muss das beim Speichern erkennen und die Wahl lassen: Termin behalten oder absagen — Absagen ist eine Nachricht an den Fan, kein stiller Vorgang.
+- **Preisänderung während eines laufenden Calls** gilt nicht mehr für diesen Call. `Call.rate_per_min` wird beim Start eingefroren; das ist im Datenmodell bereits so angelegt.

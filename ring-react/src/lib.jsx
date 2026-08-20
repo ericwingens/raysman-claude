@@ -82,7 +82,16 @@ const SVG = {
   more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18.5" cy="12" r="2"/></svg>',
   flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 5h11l-1.6 3.5L16 12H5"/></svg>',
   block: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.4" y="5" width="3.6" height="14" rx="1.2"/></svg>',
 };
+
+/* Voice-message waveform: bar heights in px. Random on purpose — a recording
+   that always looked the same would read as a placeholder. */
+export const voiceBars = (n = 26) => Array.from({ length: n }, () => 5 + Math.round(Math.random() * 17));
+
+// Playback/record position as m:ss.
+export const vtime = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
 // Renders an inline SVG icon. display:contents so the <svg> is the layout child.
 export function Ico({ name }) {

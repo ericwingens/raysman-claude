@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CREATORS, POSTS, byId, STATS, BADGES, levelLabel, rating, SERVICES, availability, dayLabel, REVIEWS, GIFTS, SHARE_TARGETS, REPORT_REASONS } from "../data.js";
-import { photoStyle, EUR, Ico, num } from "../lib.jsx";
+import { photoStyle, EUR, Ico, num, voiceBars, vtime } from "../lib.jsx";
 
 /* Delivery quality at a glance, plus the creator's level and earned badges.
    Reads as "can I trust this person with my money" before the call button. */
@@ -493,15 +493,31 @@ export function ProfileFull({ id, ctx }) {
 export function ChatFull({ id, ctx }) {
   const show = useShow();
   const c = byId(id);
-  const [msgs, setMsgs] = useState([
+  const [msgs, setMsgs] = useState(() => [
     { dir: "in", txt: "Hey! Schön dass du da bist 😊 Wie war dein Tag?" },
     { dir: "out", txt: "Ziemlich gut! Hab dein neues Workout gemacht 💪" },
+    { dir: "in", kind: "voice", secs: 8, bars: voiceBars() },
     { dir: "in", txt: "Oh stark! Dann hab ich was für dich 👀" },
   ]);
   const [dmLocked, setDmLocked] = useState(true);
   const [draft, setDraft] = useState("");
+  const [rec, setRec] = useState(null); // {t, bars} while recording
   const boxRef = useRef(null);
-  useEffect(() => { boxRef.current?.scrollTo(0, 1e6); }, [msgs, dmLocked]);
+  useEffect(() => { boxRef.current?.scrollTo(0, 1e6); }, [msgs, dmLocked, rec]);
+
+  // Recording clock: a tenth of a second per tick, a new bar every other tick.
+  useEffect(() => {
+    if (!rec) return;
+    const t = setInterval(() => setRec((r) => {
+      if (!r) return r;
+      const nt = +(r.t + 0.1).toFixed(1);
+      const bars = Math.round(nt * 10) % 2 === 0
+        ? [...r.bars, 5 + Math.round(Math.random() * 17)].slice(-26)
+        : r.bars;
+      return { t: nt, bars };
+    }), 100);
+    return () => clearInterval(t);
+  }, [!!rec]);
 
   const send = () => {
     const v = draft.trim();
@@ -509,6 +525,14 @@ export function ChatFull({ id, ctx }) {
     setMsgs((m) => [...m, { dir: "out", txt: v }]);
     setDraft("");
     setTimeout(() => setMsgs((m) => [...m, { dir: "in", txt: "😊👍" }]), 900);
+  };
+  const sendVoice = () => {
+    const r = rec;
+    if (!r || r.t < 1) { setRec(null); ctx.toast("Zu kurz — nimm mindestens eine Sekunde auf."); return; }
+    setRec(null);
+    setMsgs((m) => [...m, { dir: "out", kind: "voice", secs: r.t, bars: r.bars.length ? r.bars : voiceBars() }]);
+    ctx.toast("Sprachnachricht gesendet");
+    setTimeout(() => setMsgs((m) => [...m, { dir: "in", txt: "Hab ich gehört 😊 melde mich gleich!" }]), 1100);
   };
   const unlockDM = () => {
     if (ctx.spend(1.99, "Foto freigeschaltet · 1,99 €")) setDmLocked(false);
@@ -533,8 +557,10 @@ export function ChatFull({ id, ctx }) {
         </div>
 
         <div ref={boxRef} className="fscreen" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-          {msgs.map((m, i) => <Bubble key={i} dir={m.dir}>{m.txt}</Bubble>)}
-          <div className="post-media" style={{ maxWidth: 220, borderRadius: 16, overflow: "hidden", aspectRatio: "3/4", alignSelf: "flex-start" }}>
+          {msgs.map((m, i) => (m.kind === "voice"
+            ? <VoiceMsg key={i} m={m} />
+            : <Bubble key={i} dir={m.dir}>{m.txt}</Bubble>))}
+          <div className="post-media" style={{ width: 220, borderRadius: 16, overflow: "hidden", aspectRatio: "3/4", alignSelf: "flex-start", flex: "none" }}>
             <div style={{ position: "absolute", inset: 0, ...photoStyle(id + "dm"), filter: dmLocked ? "blur(3px)" : "none" }} />
             {dmLocked && (
               <div className="locked">
@@ -547,15 +573,57 @@ export function ChatFull({ id, ctx }) {
         </div>
 
         <div style={{ padding: "10px 12px calc(env(safe-area-inset-bottom,10px) + 12px)", borderTop: "1px solid var(--line)", display: "flex", gap: 8, alignItems: "center" }}>
-          <button className="iconbtn" style={{ flex: "none" }} onClick={() => ctx.push("tip", id)}><Ico name="gift" /></button>
-          <input className="field" style={{ margin: 0, flex: 1 }} placeholder="Nachricht schreiben…"
-            value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} />
-          <button className="iconbtn" style={{ flex: "none", background: "var(--brand-grad)", color: "#fff", border: "none" }} onClick={send}><Ico name="send" /></button>
+          {rec ? (
+            <>
+              <button className="iconbtn" style={{ flex: "none" }} aria-label="Aufnahme verwerfen"
+                onClick={() => { setRec(null); ctx.toast("Aufnahme verworfen"); }}><Ico name="x" /></button>
+              <div className="recbar">
+                <span className="rdot" />
+                <span className="rw">{rec.bars.map((h, i) => <i key={i} style={{ height: h }} />)}</span>
+                <span className="rt">{vtime(rec.t)}</span>
+              </div>
+              <button className="iconbtn" style={{ flex: "none", background: "var(--brand-grad)", color: "#fff", border: "none" }}
+                aria-label="Sprachnachricht senden" onClick={sendVoice}><Ico name="send" /></button>
+            </>
+          ) : (
+            <>
+              <button className="iconbtn" style={{ flex: "none" }} onClick={() => ctx.push("tip", id)}><Ico name="gift" /></button>
+              <button className="iconbtn" style={{ flex: "none" }} aria-label="Sprachnachricht aufnehmen"
+                onClick={() => setRec({ t: 0, bars: [] })}><Ico name="mic" /></button>
+              <input className="field" style={{ margin: 0, flex: 1 }} placeholder="Nachricht schreiben…"
+                value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} />
+              <button className="iconbtn" style={{ flex: "none", background: "var(--brand-grad)", color: "#fff", border: "none" }} onClick={send}><Ico name="send" /></button>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 }
+/* Voice bubble. Playback is simulated: the bars fill at the recorded speed. */
+function VoiceMsg({ m }) {
+  const [pos, setPos] = useState(0);
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    if (!on) return;
+    const t = setInterval(() => setPos((p) => {
+      const n = +(p + 0.1).toFixed(1);
+      if (n >= m.secs) { setOn(false); return 0; }
+      return n;
+    }), 100);
+    return () => clearInterval(t);
+  }, [on, m.secs]);
+  const active = on ? Math.round((pos / m.secs) * m.bars.length) : 0;
+  return (
+    <div className={`vmsg ${m.dir}`}>
+      <button className="vp" aria-label={on ? "Pause" : "Abspielen"}
+        onClick={() => { setOn(!on); if (on) setPos(0); }}><Ico name={on ? "pause" : "play"} /></button>
+      <span className="vb">{m.bars.map((h, i) => <i key={i} className={i < active ? "on" : ""} style={{ height: h }} />)}</span>
+      <span className="vd">{vtime(on ? pos : m.secs)}</span>
+    </div>
+  );
+}
+
 const Bubble = ({ dir, children }) => (
   <div style={{
     alignSelf: dir === "out" ? "flex-end" : "flex-start", maxWidth: "75%", padding: "11px 15px",

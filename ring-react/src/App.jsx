@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { CREATORS, byId, REVIEWS, FREE_SECS } from "./data.js";
+import { CREATORS, byId, REVIEWS, FREE_SECS, CREATOR_ME } from "./data.js";
 import { EUR, Ico } from "./lib.jsx";
 import Onboarding from "./screens/Onboarding.jsx";
 import EditProfile from "./overlays/EditProfile.jsx";
+import StudioFull from "./overlays/Studio.jsx";
 import Discover from "./screens/Discover.jsx";
 import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
@@ -27,6 +28,7 @@ export default function App() {
   const [guests, setGuests] = useState([]);          // extra participants in the running call
   const [freeUsed, setFreeUsed] = useState(() => new Set()); // creators whose free minutes are spent
   const [blocked, setBlocked] = useState(() => new Set());   // creators the user has blocked
+  const [creator, setCreator] = useState(() => ({ ...CREATOR_ME, services: CREATOR_ME.services.map((x) => ({ ...x })) }));
   const [moreFor, setMoreFor] = useState(null);   // {id, what} — the ⋯ action menu
   const [reportFor, setReportFor] = useState(null); // {id, what} — the report form
   const [addPeople, setAddPeople] = useState(false);
@@ -163,6 +165,7 @@ export default function App() {
     call, guests, setGuests, openAddPeople: () => setAddPeople(true),
     freeUsed,
     blocked, block, unblock,
+    creator, setCreator,
     openMore: (id, what) => setMoreFor({ id, what }),
     openReport: (id, what) => setReportFor({ id, what }),
     flyGift: (em) => { setFlying({ em, key: Date.now() }); setTimeout(() => setFlying(null), 1700); },
@@ -204,7 +207,7 @@ export default function App() {
       {/* overlay stack */}
       {overlays.length > 0 && <div className="sheet-scrim show" onClick={pop} />}
       {overlays.map((o) => {
-        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet, blocked: BlockedFull }[o.kind];
+        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet, blocked: BlockedFull, studio: StudioFull }[o.kind];
         return P ? <P key={o.key} id={o.id} ctx={ctx} /> : null;
       })}
 

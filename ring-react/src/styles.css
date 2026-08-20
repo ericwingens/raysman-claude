@@ -465,6 +465,38 @@ button{font-family:inherit;color:inherit}
 @keyframes recpulse{50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){.recbar .rdot{animation:none}}
 
+/* ---------- Creator studio ---------- */
+.earn{background:var(--brand-grad);border-radius:20px;padding:18px;color:#fff;box-shadow:var(--shadow-sm);margin:6px 0 14px}
+.earn .el{font-size:12.5px;opacity:.9;text-transform:uppercase;letter-spacing:.06em}
+.earn .ev{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:4px;letter-spacing:-.01em}
+.earn .er{display:flex;gap:12px;margin-top:14px;border-top:1px solid rgba(255,255,255,.28);padding-top:12px}
+.earn .er div{flex:1;min-width:0}
+.earn .er b{display:block;font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.earn .er span{font-size:11px;opacity:.85}
+.kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:2px 0 4px}
+.kpi div{background:var(--card-2);border:1px solid var(--line);border-radius:14px;padding:10px 3px;text-align:center}
+.kpi b{display:block;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi span{font-size:10.5px;color:var(--muted);font-weight:600}
+.sup{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.sup .sr{width:22px;flex:none;text-align:center;font-weight:800;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sup .sr.top{color:var(--gold)}
+.sup .sa{width:36px;height:36px;border-radius:50%;flex:none;background:var(--card-2);display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--muted)}
+.sup .sn{font-weight:700;font-size:14.5px}
+.sup .ss{font-size:12px;color:var(--muted);margin-top:2px}
+.sup .sv{margin-left:auto;flex:none;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+.pay{border:1.6px solid var(--line);background:var(--card);border-radius:18px;padding:16px;margin-bottom:10px}
+.pay .pv{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:4px}
+.pay .pm{font-size:12.5px;color:var(--muted);margin:4px 0 12px}
+.step{display:flex;align-items:center;gap:7px;margin-left:auto;flex:none}
+.step button{width:29px;height:29px;border-radius:50%;border:1.6px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:16px;cursor:pointer;line-height:1;display:grid;place-items:center;padding:0;flex:none}
+.step button.rm{border-color:color-mix(in srgb,var(--heart) 32%, var(--line));color:var(--heart)}
+.step button.rm svg{width:14px;height:14px}
+.step .sp{font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;min-width:58px;text-align:right}
+.dowrow{display:flex;gap:5px;margin:4px 0 8px}
+.dow{flex:1;border:1.6px solid var(--line);background:var(--card);border-radius:12px;padding:9px 0;text-align:center;font-weight:800;font-size:12.5px;cursor:pointer;color:var(--muted)}
+.dow.on{border-color:var(--orange);background:var(--brand-grad);color:#fff}
+.nb{white-space:nowrap}
+
 /* Active tab gets a short underline, matching the reference navigation. */
 .tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
 .tab.center .fab svg{width:26px;height:26px}

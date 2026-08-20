@@ -151,6 +151,52 @@ export function dayLabel(offset) {
   return { key: offset, dow: DAYS[d.getDay()], num: d.getDate(), today: offset === 0 };
 }
 
+/* ---------------------------------------------------------------------------
+ * Creator studio: the other side of the app. Everything below describes the
+ * signed-in user's own creator account, not a creator they browse.
+ * ------------------------------------------------------------------------- */
+
+// Ring keeps 20 %, the creator keeps the rest. Shown wherever a price is set.
+export const FEE = 0.2;
+
+export const RATE_STEPS = [0.99, 1.29, 1.79, 2.49, 2.99];
+export const STUDIO_SLOTS = SLOT_POOL;
+
+// Editable in the studio; the defaults below are what a new account starts with.
+export const CREATOR_ME = {
+  rate: 1.79,
+  services: [
+    { id: "m1", name: "Kennenlern-Call", mins: 15, price: 19, desc: "Locker quatschen, ohne festes Programm." },
+    { id: "m2", name: "Foto-Feedback", mins: 30, price: 35, desc: "Deine Bilder, ehrliche Meinung, konkrete Tipps." },
+  ],
+  days: [false, true, true, true, true, true, false], // So … Sa
+  slots: ["17:00", "19:00", "21:00"],
+  iban: "DE89 •••• •••• 4021",
+  nextPayout: "1. des Monats",
+};
+
+export const EARNINGS = { today: 84.2, week: 612.4, month: 2380.9, total: 18420.35, calls: 342, mins: 1184, gifts: 486.2, subs: 27 };
+
+export const SUPPORTERS = [
+  { name: "Tom",   amt: 249.9, since: "seit 4 Monaten", calls: 21 },
+  { name: "Sarah", amt: 188.4, since: "seit 7 Monaten", calls: 16 },
+  { name: "Kevin", amt: 132.1, since: "seit 2 Monaten", calls: 9 },
+  { name: "Nils",  amt: 96.5,  since: "seit 1 Monat",   calls: 7 },
+  { name: "Lisa",  amt: 74.0,  since: "seit 3 Wochen",  calls: 5 },
+];
+
+export const CREATOR_BOOKINGS = [
+  { who: "Tom",   svc: "Foto-Feedback",   when: "Heute",   time: "19:00", mins: 30, price: 35 },
+  { who: "Lisa",  svc: "Kennenlern-Call", when: "Morgen",  time: "17:00", mins: 15, price: 19 },
+  { who: "Sarah", svc: "Foto-Feedback",   when: "Do. 27.", time: "21:00", mins: 30, price: 35 },
+];
+
+export const PAYOUTS = [
+  { when: "01.08.2026", amt: 1840.2,  state: "ausgezahlt" },
+  { when: "01.07.2026", amt: 1512.75, state: "ausgezahlt" },
+  { when: "01.06.2026", amt: 1290.0,  state: "ausgezahlt" },
+];
+
 export const POSTS = [
   { id: "p1", cid: "mia", time: "vor 2 Std", cap: "Neues 20-Min Full-Body Workout ist online 🔥 Wer macht mit?", likes: 1240, ppv: false },
   { id: "p2", cid: "nadia", time: "vor 4 Std", cap: "Mein neuestes Cosplay-Set — exklusiv für dich 📸", likes: 3980, ppv: true, price: 4.99 },

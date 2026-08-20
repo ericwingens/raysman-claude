@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { byId, dayLabel } from "../data.js";
+import { byId, dayLabel, EARNINGS } from "../data.js";
 import { photoStyle, EUR, Ico, RingLockup } from "../lib.jsx";
 
 /*
@@ -62,7 +62,7 @@ export default function Me({ ctx }) {
       <div className="section-title">Konto</div>
       <Row icon="bolt" label="Wallet & Guthaben" right={EUR(ctx.balance)} onClick={() => ctx.push("wallet")} />
       <Row icon="star" label="Ring Premium" right="Upgrade" onClick={() => ctx.toast("Premium: unbegrenzte Likes, günstigere Calls & mehr")} />
-      <Row icon="video" label="Creator werden" right="" onClick={() => ctx.toast("Werde Creator: verdiene mit Abos, Calls & PPV")} />
+      <Row icon="video" label="Creator-Studio" right={EUR(EARNINGS.week)} onClick={() => ctx.push("studio")} />
 
       <div className="section-title">Meine Termine</div>
       {ctx.bookings.length === 0

@@ -501,6 +501,38 @@ button{font-family:inherit;color:inherit}
 @keyframes recpulse{50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){.recbar .rdot{animation:none}}
 
+/* ---------- Creator studio ---------- */
+.earn{background:var(--brand-grad);border-radius:20px;padding:18px;color:#fff;box-shadow:var(--shadow-sm);margin:6px 0 14px}
+.earn .el{font-size:12.5px;opacity:.9;text-transform:uppercase;letter-spacing:.06em}
+.earn .ev{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:4px;letter-spacing:-.01em}
+.earn .er{display:flex;gap:12px;margin-top:14px;border-top:1px solid rgba(255,255,255,.28);padding-top:12px}
+.earn .er div{flex:1;min-width:0}
+.earn .er b{display:block;font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.earn .er span{font-size:11px;opacity:.85}
+.kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:2px 0 4px}
+.kpi div{background:var(--card-2);border:1px solid var(--line);border-radius:14px;padding:10px 3px;text-align:center}
+.kpi b{display:block;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi span{font-size:10.5px;color:var(--muted);font-weight:600}
+.sup{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.sup .sr{width:22px;flex:none;text-align:center;font-weight:800;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sup .sr.top{color:var(--gold)}
+.sup .sa{width:36px;height:36px;border-radius:50%;flex:none;background:var(--card-2);display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--muted)}
+.sup .sn{font-weight:700;font-size:14.5px}
+.sup .ss{font-size:12px;color:var(--muted);margin-top:2px}
+.sup .sv{margin-left:auto;flex:none;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+.pay{border:1.6px solid var(--line);background:var(--card);border-radius:18px;padding:16px;margin-bottom:10px}
+.pay .pv{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:4px}
+.pay .pm{font-size:12.5px;color:var(--muted);margin:4px 0 12px}
+.step{display:flex;align-items:center;gap:7px;margin-left:auto;flex:none}
+.step button{width:29px;height:29px;border-radius:50%;border:1.6px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:16px;cursor:pointer;line-height:1;display:grid;place-items:center;padding:0;flex:none}
+.step button.rm{border-color:color-mix(in srgb,var(--heart) 32%, var(--line));color:var(--heart)}
+.step button.rm svg{width:14px;height:14px}
+.step .sp{font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;min-width:58px;text-align:right}
+.dowrow{display:flex;gap:5px;margin:4px 0 8px}
+.dow{flex:1;border:1.6px solid var(--line);background:var(--card);border-radius:12px;padding:9px 0;text-align:center;font-weight:800;font-size:12.5px;cursor:pointer;color:var(--muted)}
+.dow.on{border-color:var(--orange);background:var(--brand-grad);color:#fff}
+.nb{white-space:nowrap}
+
 /* Active tab gets a short underline, matching the reference navigation. */
 .tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
 .tab.center .fab svg{width:26px;height:26px}
@@ -705,6 +737,52 @@ function dayLabel(offset) {
   d.setDate(d.getDate() + offset);
   return { key: offset, dow: DAYS[d.getDay()], num: d.getDate(), today: offset === 0 };
 }
+
+/* ---------------------------------------------------------------------------
+ * Creator studio: the other side of the app. Everything below describes the
+ * signed-in user's own creator account, not a creator they browse.
+ * ------------------------------------------------------------------------- */
+
+// Ring keeps 20 %, the creator keeps the rest. Shown wherever a price is set.
+const FEE = 0.2;
+
+const RATE_STEPS = [0.99, 1.29, 1.79, 2.49, 2.99];
+const STUDIO_SLOTS = SLOT_POOL;
+
+// Editable in the studio; the defaults below are what a new account starts with.
+const CREATOR_ME = {
+  rate: 1.79,
+  services: [
+    { id: "m1", name: "Kennenlern-Call", mins: 15, price: 19, desc: "Locker quatschen, ohne festes Programm." },
+    { id: "m2", name: "Foto-Feedback", mins: 30, price: 35, desc: "Deine Bilder, ehrliche Meinung, konkrete Tipps." },
+  ],
+  days: [false, true, true, true, true, true, false], // So … Sa
+  slots: ["17:00", "19:00", "21:00"],
+  iban: "DE89 •••• •••• 4021",
+  nextPayout: "1. des Monats",
+};
+
+const EARNINGS = { today: 84.2, week: 612.4, month: 2380.9, total: 18420.35, calls: 342, mins: 1184, gifts: 486.2, subs: 27 };
+
+const SUPPORTERS = [
+  { name: "Tom",   amt: 249.9, since: "seit 4 Monaten", calls: 21 },
+  { name: "Sarah", amt: 188.4, since: "seit 7 Monaten", calls: 16 },
+  { name: "Kevin", amt: 132.1, since: "seit 2 Monaten", calls: 9 },
+  { name: "Nils",  amt: 96.5,  since: "seit 1 Monat",   calls: 7 },
+  { name: "Lisa",  amt: 74.0,  since: "seit 3 Wochen",  calls: 5 },
+];
+
+const CREATOR_BOOKINGS = [
+  { who: "Tom",   svc: "Foto-Feedback",   when: "Heute",   time: "19:00", mins: 30, price: 35 },
+  { who: "Lisa",  svc: "Kennenlern-Call", when: "Morgen",  time: "17:00", mins: 15, price: 19 },
+  { who: "Sarah", svc: "Foto-Feedback",   when: "Do. 27.", time: "21:00", mins: 30, price: 35 },
+];
+
+const PAYOUTS = [
+  { when: "01.08.2026", amt: 1840.2,  state: "ausgezahlt" },
+  { when: "01.07.2026", amt: 1512.75, state: "ausgezahlt" },
+  { when: "01.06.2026", amt: 1290.0,  state: "ausgezahlt" },
+];
 
 const POSTS=[
   {id:"p1",cid:"mia",time:"vor 2 Std",cap:"Neues 20-Min Full-Body Workout ist online 🔥 Wer macht mit?",likes:1240,ppv:false},
@@ -1068,7 +1146,7 @@ function renderMe(pad){
   <div class="section-title">Konto</div>
   ${row(I.bolt,"Wallet & Guthaben","openWallet()",EUR(state.balance))}
   ${row(I.star,"Ring Premium","toast('Premium: unbegrenzte Likes, kostenlose Calls & mehr')","Upgrade")}
-  ${row(I.video,"Creator werden","toast('Werde Creator: verdiene mit Abos, Calls & PPV')","")}
+  ${row(I.video,"Creator-Studio","openStudio()",EUR(EARNINGS.week))}
   <div class="section-title">Meine Termine</div>
   ${state.bookings.length===0
     ? '<p class="muted" style="font-size:13px">Noch keine Termine — buche eine Leistung im Creator-Profil.</p>'
@@ -1887,6 +1965,9 @@ function confirmBook(){
   closeOverlay();
   toast(`Termin bei ${c.name} reserviert · ${d.dow}. ${book.time} Uhr`);
   render();
+  // closeOverlay() takes the profile down with the booking sheet; React only
+  // pops the sheet, so put the profile back to keep the two in step.
+  setTimeout(()=>openProfile(book.cid),360);
 }
 
 /* =========================================================================
@@ -2153,6 +2234,120 @@ function openBlocked(){
   node.dataset.view="blocked";
 }
 
+/* =========================================================================
+   CREATOR STUDIO — the other side of the app. Reached from Me → Konto and
+   opened as a full-screen overlay, so the five fan tabs stay untouched.
+   Earnings, supporters, upcoming bookings and payout on top; the three things
+   a creator actually sets — minute price, packages, availability — below.
+   ========================================================================= */
+const STUDIO={...CREATOR_ME,services:CREATOR_ME.services.map(x=>({...x}))};
+const netOf=n=>n*(1-FEE);
+
+function openStudio(){
+  const node=overlay(`
+    <div class="ftop">
+      <button class="iconbtn" onclick="closeOverlay()">${I.arrow}</button>
+      <h3>Creator-Studio</h3>
+      <span style="width:42px"></span>
+    </div>
+    <div class="fscreen" id="studioBody" style="padding:4px 18px 34px">${drawStudio()}</div>`,"full");
+  node.dataset.view="studio";
+}
+function redrawStudio(){const b=document.getElementById("studioBody");if(b)b.innerHTML=drawStudio();}
+
+function drawStudio(){
+  const c=STUDIO,openDays=c.days.filter(Boolean).length;
+  return `
+    <div class="earn">
+      <div class="el">Einnahmen diese Woche</div>
+      <div class="ev">${EUR(EARNINGS.week)}</div>
+      <div class="er">
+        <div><b>${EUR(EARNINGS.today)}</b><span>heute</span></div>
+        <div><b>${EUR(EARNINGS.month)}</b><span>Monat</span></div>
+        <div><b>${EUR(EARNINGS.total)}</b><span>gesamt</span></div>
+      </div>
+    </div>
+
+    <div class="kpi">
+      <div><b>${EARNINGS.calls}</b><span>Calls</span></div>
+      <div><b>${EARNINGS.mins}</b><span>Minuten</span></div>
+      <div><b>${EUR(EARNINGS.gifts)}</b><span>Geschenke</span></div>
+      <div><b>${EARNINGS.subs}</b><span>Abos</span></div>
+    </div>
+
+    <div class="section-title">Nächste Termine <span class="muted" style="font-weight:600;font-size:12px">${CREATOR_BOOKINGS.length}</span></div>
+    ${CREATOR_BOOKINGS.map((b,i)=>`
+      <div class="bk-row" onclick="toast('${b.who} · ${b.svc} · ${b.when} ${b.time} Uhr')">
+        <span class="avatar" style="width:38px;height:38px;${photoStyle('fan'+i)}"></span>
+        <div style="min-width:0">
+          <div style="font-weight:700;font-size:14.5px">${b.who}</div>
+          <div class="muted" style="font-size:12.5px">${b.svc} · ${b.mins} Min · ${EUR(b.price)}</div></div>
+        <div class="bk-when"><b>${b.when}</b>${b.time} Uhr</div>
+      </div>`).join("")}
+
+    <div class="section-title">Top-Unterstützer</div>
+    ${SUPPORTERS.map((s,i)=>`
+      <div class="sup">
+        <div class="sr ${i<3?'top':''}">${i+1}</div>
+        <div class="sa">${s.name.slice(0,1)}</div>
+        <div style="min-width:0"><div class="sn">${s.name}</div><div class="ss">${s.calls} Calls · ${s.since}</div></div>
+        <div class="sv">${EUR(s.amt)}</div>
+      </div>`).join("")}
+
+    <div class="section-title">Auszahlung</div>
+    <div class="pay">
+      <div class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;font-weight:700">Auszahlbar</div>
+      <div class="pv">${EUR(EARNINGS.week)}</div>
+      <div class="pm">Nächste Auszahlung: ${c.nextPayout} · <span class="nb">${c.iban}</span></div>
+      <button class="btn btn-primary btn-sm" onclick="toast('Auszahlung beauftragt — in 1–2 Bankarbeitstagen da')">${I.bolt}Jetzt auszahlen</button>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="toast('Bankverbindung ändern (Demo)')">Bankverbindung ändern</button>
+    </div>
+    ${PAYOUTS.map(pp=>`<div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px">
+      <span>${pp.when} · <span class="muted">${pp.state}</span></span>
+      <span class="money tnum" style="color:var(--live)">${EUR(pp.amt)}</span></div>`).join("")}
+
+    <div class="section-title">Dein Minutenpreis</div>
+    <div class="amt-row">${RATE_STEPS.map(r=>`
+      <button class="amt ${c.rate===r?'on':''}" onclick="setStudioRate(${r})">${EUR(r)}</button>`).join("")}</div>
+    <p class="muted" style="font-size:12.5px;margin-top:-4px">Bei ${EUR(c.rate)}/Min bleiben dir ${EUR(netOf(c.rate))} — Ring behält ${Math.round(FEE*100)} %.</p>
+
+    <div class="section-title">Deine Leistungen <a onclick="addStudioSvc()">Hinzufügen</a></div>
+    ${c.services.length?"":'<p class="muted" style="font-size:13px">Noch keine Leistungen — leg eine an, damit Fans buchen können.</p>'}
+    ${c.services.map(sv=>`
+      <div class="svc" style="cursor:default">
+        <div style="min-width:0">
+          <div class="sv-n">${sv.name}</div>
+          <div class="sv-d">${sv.desc} · <span class="nb">${sv.mins} Min</span> · <span class="nb">du bekommst ${EUR(netOf(sv.price))}</span></div></div>
+        <div class="step">
+          <button aria-label="Günstiger" onclick="bumpStudioSvc('${sv.id}',-5)">−</button>
+          <span class="sp">${EUR(sv.price)}</span>
+          <button aria-label="Teurer" onclick="bumpStudioSvc('${sv.id}',5)">+</button>
+          <button aria-label="Entfernen" class="rm" onclick="dropStudioSvc('${sv.id}')">${I.x}</button>
+        </div>
+      </div>`).join("")}
+
+    <div class="section-title">Deine Verfügbarkeit <span class="muted" style="font-weight:600;font-size:12px">${openDays} Tage · ${c.slots.length} Zeiten</span></div>
+    <div class="dowrow">${DAYS.map((d,i)=>`<div class="dow ${c.days[i]?'on':''}" onclick="toggleStudioDay(${i})">${d}</div>`).join("")}</div>
+    <div class="slots">${STUDIO_SLOTS.map(t=>`<span class="slot ${c.slots.includes(t)?'on':''}" onclick="toggleStudioSlot('${t}')">${t}</span>`).join("")}</div>
+    <p class="muted" style="font-size:12.5px">${openDays===0||c.slots.length===0
+      ? "Ohne Tage oder Zeiten kann dich niemand buchen."
+      : `Fans können dich an ${openDays} Tagen zu ${c.slots.length} Zeiten buchen.`}</p>
+
+    <button class="btn btn-primary" style="margin-top:14px" onclick="closeOverlay();toast('Creator-Profil gespeichert ✓')">Speichern</button>`;
+}
+
+function setStudioRate(r){STUDIO.rate=r;redrawStudio();toast(`Minutenpreis auf ${EUR(r)} gesetzt`);}
+function bumpStudioSvc(id,d){const sv=STUDIO.services.find(x=>x.id===id);if(!sv)return;
+  sv.price=Math.max(5,sv.price+d);redrawStudio();}
+function dropStudioSvc(id){STUDIO.services=STUDIO.services.filter(x=>x.id!==id);redrawStudio();toast("Leistung entfernt");}
+function addStudioSvc(){
+  STUDIO.services.push({id:"m"+Date.now(),name:`Neue Leistung ${STUDIO.services.length+1}`,mins:30,price:29,desc:"Beschreibung ergänzen."});
+  redrawStudio();toast("Leistung angelegt — Beschreibung noch ergänzen");}
+function toggleStudioDay(i){STUDIO.days[i]=!STUDIO.days[i];redrawStudio();}
+function toggleStudioSlot(t){
+  STUDIO.slots=STUDIO.slots.includes(t)?STUDIO.slots.filter(x=>x!==t):[...STUDIO.slots,t].sort();
+  redrawStudio();}
+
 /* ---- boot ---- */
 render();
 onboarding();
@@ -2163,6 +2358,7 @@ window.likePost=likePost;window.unlockPost=unlockPost;window.unlockDM=unlockDM;w
 window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverlay;window.openEditProfile=openEditProfile;window.openEditField=openEditField;window.openPhotos=openPhotos;window.saveProfile=saveProfile;window.toggleVis=toggleVis;window.markDirty=markDirty;window.pickOpt=pickOpt;window.toggleInt=toggleInt;window.toggleRec=toggleRec;window.removePhoto=removePhoto;window.addPhoto=addPhoto;window.ME=ME;
 window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;
 window.startRegister=startRegister;window.regBack=regBack;window.regNext=regNext;window.regPick=regPick;window.regAge=regAge;window.toggleRegRec=toggleRegRec;window.reg=reg;window.drawRegister=drawRegister;
+window.openStudio=openStudio;window.setStudioRate=setStudioRate;window.bumpStudioSvc=bumpStudioSvc;window.dropStudioSvc=dropStudioSvc;window.addStudioSvc=addStudioSvc;window.toggleStudioDay=toggleStudioDay;window.toggleStudioSlot=toggleStudioSlot;
 window.startVoiceRec=startVoiceRec;window.cancelVoiceRec=cancelVoiceRec;window.sendVoiceRec=sendVoiceRec;window.playVoice=playVoice;
 window.openMore=openMore;window.openReport=openReport;window.pickReason=pickReason;window.toggleReportBlock=toggleReportBlock;window.submitReport=submitReport;window.blockUser=blockUser;window.unblockUser=unblockUser;window.openBlocked=openBlocked;window.report=report;
 window.openLegal=openLegal;window.modal=modal;window.closeModal=closeModal;window.askDelete=askDelete;window.askImage=askImage;

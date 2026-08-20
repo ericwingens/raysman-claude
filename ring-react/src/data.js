@@ -197,6 +197,113 @@ export const PAYOUTS = [
   { when: "01.06.2026", amt: 1290.0,  state: "ausgezahlt" },
 ];
 
+/* ---------------------------------------------------------------------------
+ * Creator statistics. The numbers are generated, but *deterministically* — the
+ * same seed gives the same series in both versions of the app, so the React
+ * screen and the single-file prototype always show identical charts.
+ * ------------------------------------------------------------------------- */
+
+export const RANGES = [
+  { id: "7", label: "7 Tage" },
+  { id: "30", label: "30 Tage" },
+  { id: "12m", label: "12 Monate" },
+];
+
+export const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+
+// Weekend evenings are the busy time on a calling app; So … Sa.
+const WD_FACTOR = [0.78, 0.86, 0.92, 0.97, 1.12, 1.38, 1.24];
+// Twelve two-hour buckets, 00 … 22. Night is dead, 20–22 Uhr is the peak.
+const HOUR_FACTOR = [0.18, 0.08, 0.05, 0.07, 0.22, 0.44, 0.61, 0.55, 0.72, 0.94, 1.0, 0.66];
+
+export const SOURCES = [
+  { key: "call",  label: "Calls",      share: 0.62, color: "#F5761A" },
+  { key: "gift",  label: "Geschenke",  share: 0.17, color: "#FDB43C" },
+  { key: "tip",   label: "Tips",       share: 0.09, color: "#F5471F" },
+  { key: "sub",   label: "Abos",       share: 0.09, color: "#25C26E" },
+  { key: "ppv",   label: "PPV",        share: 0.03, color: "#8B8680" },
+];
+
+// Star distribution over all rated calls, 5★ first.
+export const RATING_DIST = [201, 52, 11, 3, 2];
+
+// FNV-1a over the seed → a repeatable number in [0,1).
+function srand(seed) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+  h ^= h >>> 15;
+  return ((h >>> 0) % 100000) / 100000;
+}
+
+const AVG_CALL_VALUE = 7.4; // € per delivered call — ties revenue and call count together
+
+/* One window of `n` buckets, `shift` windows back from today. shift=1 gives the
+   previous period, which is what the change indicators compare against. */
+function window_(range, shift) {
+  const monthly = range === "12m";
+  const n = monthly ? 12 : range === "30" ? 30 : 7;
+  const o = { labels: [], revenue: [], calls: [], mins: [], newFans: [], returning: [] };
+
+  for (let i = n - 1; i >= 0; i--) {
+    const back = i + shift * n;
+    let rev, label, wd;
+    if (monthly) {
+      const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - back);
+      label = MONTHS[d.getMonth()];
+      wd = 3;
+      const trend = 0.60 + (n - 1 - back) * 0.034;      // the account grows over the year
+      rev = 2380.9 * Math.max(0.35, trend) * (0.84 + srand("m" + d.getMonth() + d.getFullYear()) * 0.36);
+    } else {
+      const d = new Date(); d.setDate(d.getDate() - back);
+      label = range === "30" ? String(d.getDate()) : DAYS[d.getDay()];
+      wd = d.getDay();
+      rev = 84.2 * WD_FACTOR[wd] * (0.66 + srand("d" + back + range) * 0.72);
+    }
+    const calls = Math.max(1, Math.round(rev / AVG_CALL_VALUE));
+    const mins = Math.round(calls * (3.1 + srand("t" + back + range) * 0.9));
+    const nf = Math.round(calls * (0.13 + srand("n" + back + range) * 0.17));
+    o.labels.push(label);
+    o.revenue.push(+rev.toFixed(2));
+    o.calls.push(calls);
+    o.mins.push(mins);
+    o.newFans.push(nf);
+    o.returning.push(Math.max(0, calls - nf));
+  }
+  return o;
+}
+
+const sum = (a) => a.reduce((x, y) => x + y, 0);
+const pct = (cur, prev) => (prev > 0 ? ((cur - prev) / prev) * 100 : 0);
+
+export function statsFor(range) {
+  const cur = window_(range, 0);
+  const prev = window_(range, 1);
+
+  const revenue = sum(cur.revenue);
+  const totals = { revenue, calls: sum(cur.calls), mins: sum(cur.mins), fans: sum(cur.newFans) };
+  const change = {
+    revenue: pct(revenue, sum(prev.revenue)),
+    calls: pct(totals.calls, sum(prev.calls)),
+    mins: pct(totals.mins, sum(prev.mins)),
+    fans: pct(totals.fans, sum(prev.newFans)),
+  };
+
+  // Revenue split by source, and the two distributions that don't depend on the
+  // selected range but do scale with it.
+  const bySource = SOURCES.map((s) => ({ ...s, amt: +(revenue * s.share).toFixed(2) }));
+
+  const byWeekday = DAYS.map((_, i) =>
+    +(84.2 * WD_FACTOR[i] * (0.86 + srand("wd" + i) * 0.3) * 4).toFixed(2));
+
+  const byHour = HOUR_FACTOR.map((f, i) =>
+    Math.round(totals.calls * f * (0.86 + srand("h" + i) * 0.28) / 5));
+
+  return { ...cur, prev, totals, change, bySource, byWeekday, byHour, ratings: RATING_DIST };
+}
+
+// Two-hour buckets as labels for the hour chart.
+export const HOUR_LABELS = ["0", "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22"];
+
 export const POSTS = [
   { id: "p1", cid: "mia", time: "vor 2 Std", cap: "Neues 20-Min Full-Body Workout ist online 🔥 Wer macht mit?", likes: 1240, ppv: false },
   { id: "p2", cid: "nadia", time: "vor 4 Std", cap: "Mein neuestes Cosplay-Set — exklusiv für dich 📸", likes: 3980, ppv: true, price: 4.99 },

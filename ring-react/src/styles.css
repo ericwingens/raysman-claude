@@ -497,6 +497,53 @@ button{font-family:inherit;color:inherit}
 .dow.on{border-color:var(--orange);background:var(--brand-grad);color:#fff}
 .nb{white-space:nowrap}
 
+/* ---------- Statistics: charts drawn with plain CSS and SVG ---------- */
+.statkpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 6px}
+.statkpi>div{background:var(--card-2);border:1px solid var(--line);border-radius:16px;padding:12px 13px}
+.statkpi .k{font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.statkpi b{display:block;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:3px;line-height:1.15}
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+.delta.up{color:var(--live)}
+.delta.down{color:var(--heart)}
+.chartbox{border:1.6px solid var(--line);background:var(--card);border-radius:18px;padding:14px 14px 12px;margin-bottom:12px}
+.chartbox .ch-t{font-weight:800;font-size:14.5px}
+.chartbox .ch-s{font-size:12px;color:var(--muted);margin:2px 0 14px;line-height:1.4}
+.bars{display:flex;align-items:flex-end;gap:3px;height:130px}
+.bars .b{flex:1;min-width:0;border:none;padding:0;cursor:pointer;background:var(--brand-grad);border-radius:5px 5px 2px 2px;position:relative;min-height:2px}
+.bars .b.on{background:var(--ink)}
+.bars .b .bv{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:7px;white-space:nowrap;font-variant-numeric:tabular-nums;pointer-events:none;z-index:2}
+.bars .sb{flex:1;min-width:0;display:flex;flex-direction:column;border-radius:5px 5px 2px 2px;overflow:hidden;min-height:2px}
+.bars .sb i{display:block;min-height:0}
+.bars .sb .s1{background:var(--brand-grad)}
+.bars .sb .s2{background:color-mix(in srgb,var(--orange) 26%, var(--card-2))}
+.xlab{display:flex;gap:3px;margin-top:7px;font-size:9.5px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.xlab span{flex:1;min-width:0;text-align:center;white-space:nowrap}
+/* A thinned axis label is wider than its own slot; the empty neighbours
+   give it the room, so it must not be clipped to the slot. */
+.xlab span{overflow:visible}
+.area{width:100%;height:120px;display:block}
+.area polygon{fill:color-mix(in srgb,var(--orange) 16%, transparent)}
+.area polyline{fill:none;stroke:var(--orange);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.donutwrap{display:flex;align-items:center;gap:16px}
+.donut{width:112px;height:112px;flex:none;transform:rotate(-90deg)}
+.donut circle{fill:none;stroke-width:13}
+.donut .dtrack{stroke:var(--card-2)}
+.dlegend{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.dl{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;min-width:0}
+.dl .sw{width:10px;height:10px;border-radius:3px;flex:none}
+.dl .dv{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.heat{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px}
+.heat i{display:block;aspect-ratio:1;border-radius:4px;background:var(--orange)}
+.rdist{display:flex;flex-direction:column;gap:9px}
+.rdist .rr{display:flex;align-items:center;gap:9px}
+.rdist .rs{width:30px;flex:none;font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rdist .bar{flex:1;height:9px;border-radius:999px;background:var(--card-2);border:1px solid var(--line);overflow:hidden}
+.rdist .bar i{display:block;height:100%;border-radius:999px;background:var(--brand-grad)}
+.rdist .rc{width:38px;flex:none;text-align:right;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
+.leg{display:flex;gap:16px;margin-top:12px;font-size:11.5px;font-weight:700;color:var(--ink-2)}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.leg i{width:10px;height:10px;border-radius:3px;display:block;flex:none}
+
 /* Active tab gets a short underline, matching the reference navigation. */
 .tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
 .tab.center .fab svg{width:26px;height:26px}

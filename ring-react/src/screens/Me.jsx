@@ -63,6 +63,7 @@ export default function Me({ ctx }) {
       <Row icon="bolt" label="Wallet & Guthaben" right={EUR(ctx.balance)} onClick={() => ctx.push("wallet")} />
       <Row icon="star" label="Ring Premium" right="Upgrade" onClick={() => ctx.toast("Premium: unbegrenzte Likes, günstigere Calls & mehr")} />
       <Row icon="video" label="Creator-Studio" right={EUR(EARNINGS.week)} onClick={() => ctx.push("studio")} />
+      <Row icon="chart" label="Meine Statistiken" right="" onClick={() => ctx.push("stats")} />
 
       <div className="section-title">Meine Termine</div>
       {ctx.bookings.length === 0

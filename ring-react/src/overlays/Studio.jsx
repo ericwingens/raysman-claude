@@ -55,6 +55,9 @@ export default function StudioFull({ ctx }) {
           <div><b>{EUR(EARNINGS.gifts)}</b><span>Geschenke</span></div>
           <div><b>{EARNINGS.subs}</b><span>Abos</span></div>
         </div>
+        <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => ctx.push("stats")}>
+          <Ico name="chart" />Meine Statistiken ansehen
+        </button>
 
         <div className="section-title">Nächste Termine <span className="muted" style={{ fontWeight: 600, fontSize: 12 }}>{CREATOR_BOOKINGS.length}</span></div>
         {CREATOR_BOOKINGS.map((b, i) => (

@@ -533,6 +533,53 @@ button{font-family:inherit;color:inherit}
 .dow.on{border-color:var(--orange);background:var(--brand-grad);color:#fff}
 .nb{white-space:nowrap}
 
+/* ---------- Statistics: charts drawn with plain CSS and SVG ---------- */
+.statkpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 6px}
+.statkpi>div{background:var(--card-2);border:1px solid var(--line);border-radius:16px;padding:12px 13px}
+.statkpi .k{font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.statkpi b{display:block;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:3px;line-height:1.15}
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+.delta.up{color:var(--live)}
+.delta.down{color:var(--heart)}
+.chartbox{border:1.6px solid var(--line);background:var(--card);border-radius:18px;padding:14px 14px 12px;margin-bottom:12px}
+.chartbox .ch-t{font-weight:800;font-size:14.5px}
+.chartbox .ch-s{font-size:12px;color:var(--muted);margin:2px 0 14px;line-height:1.4}
+.bars{display:flex;align-items:flex-end;gap:3px;height:130px}
+.bars .b{flex:1;min-width:0;border:none;padding:0;cursor:pointer;background:var(--brand-grad);border-radius:5px 5px 2px 2px;position:relative;min-height:2px}
+.bars .b.on{background:var(--ink)}
+.bars .b .bv{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:7px;white-space:nowrap;font-variant-numeric:tabular-nums;pointer-events:none;z-index:2}
+.bars .sb{flex:1;min-width:0;display:flex;flex-direction:column;border-radius:5px 5px 2px 2px;overflow:hidden;min-height:2px}
+.bars .sb i{display:block;min-height:0}
+.bars .sb .s1{background:var(--brand-grad)}
+.bars .sb .s2{background:color-mix(in srgb,var(--orange) 26%, var(--card-2))}
+.xlab{display:flex;gap:3px;margin-top:7px;font-size:9.5px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.xlab span{flex:1;min-width:0;text-align:center;white-space:nowrap}
+/* A thinned axis label is wider than its own slot; the empty neighbours
+   give it the room, so it must not be clipped to the slot. */
+.xlab span{overflow:visible}
+.area{width:100%;height:120px;display:block}
+.area polygon{fill:color-mix(in srgb,var(--orange) 16%, transparent)}
+.area polyline{fill:none;stroke:var(--orange);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.donutwrap{display:flex;align-items:center;gap:16px}
+.donut{width:112px;height:112px;flex:none;transform:rotate(-90deg)}
+.donut circle{fill:none;stroke-width:13}
+.donut .dtrack{stroke:var(--card-2)}
+.dlegend{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.dl{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;min-width:0}
+.dl .sw{width:10px;height:10px;border-radius:3px;flex:none}
+.dl .dv{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.heat{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px}
+.heat i{display:block;aspect-ratio:1;border-radius:4px;background:var(--orange)}
+.rdist{display:flex;flex-direction:column;gap:9px}
+.rdist .rr{display:flex;align-items:center;gap:9px}
+.rdist .rs{width:30px;flex:none;font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rdist .bar{flex:1;height:9px;border-radius:999px;background:var(--card-2);border:1px solid var(--line);overflow:hidden}
+.rdist .bar i{display:block;height:100%;border-radius:999px;background:var(--brand-grad)}
+.rdist .rc{width:38px;flex:none;text-align:right;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
+.leg{display:flex;gap:16px;margin-top:12px;font-size:11.5px;font-weight:700;color:var(--ink-2)}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.leg i{width:10px;height:10px;border-radius:3px;display:block;flex:none}
+
 /* Active tab gets a short underline, matching the reference navigation. */
 .tab.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:20px;height:2.5px;border-radius:2px;background:var(--orange)}
 .tab.center .fab svg{width:26px;height:26px}
@@ -784,6 +831,111 @@ const PAYOUTS = [
   { when: "01.06.2026", amt: 1290.0,  state: "ausgezahlt" },
 ];
 
+/* ---------------------------------------------------------------------------
+ * Creator statistics. The numbers are generated, but *deterministically* — the
+ * same seed gives the same series in both versions of the app, so the React
+ * screen and the single-file prototype always show identical charts.
+ * ------------------------------------------------------------------------- */
+
+const RANGES = [
+  { id: "7", label: "7 Tage" },
+  { id: "30", label: "30 Tage" },
+  { id: "12m", label: "12 Monate" },
+];
+
+const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+
+// Weekend evenings are the busy time on a calling app; So … Sa.
+const WD_FACTOR = [0.78, 0.86, 0.92, 0.97, 1.12, 1.38, 1.24];
+// Twelve two-hour buckets, 00 … 22. Night is dead, 20–22 Uhr is the peak.
+const HOUR_FACTOR = [0.18, 0.08, 0.05, 0.07, 0.22, 0.44, 0.61, 0.55, 0.72, 0.94, 1.0, 0.66];
+
+const SOURCES = [
+  { key: "call",  label: "Calls",      share: 0.62, color: "#F5761A" },
+  { key: "gift",  label: "Geschenke",  share: 0.17, color: "#FDB43C" },
+  { key: "tip",   label: "Tips",       share: 0.09, color: "#F5471F" },
+  { key: "sub",   label: "Abos",       share: 0.09, color: "#25C26E" },
+  { key: "ppv",   label: "PPV",        share: 0.03, color: "#8B8680" },
+];
+
+// Star distribution over all rated calls, 5★ first.
+const RATING_DIST = [201, 52, 11, 3, 2];
+
+// FNV-1a over the seed → a repeatable number in [0,1).
+function srand(seed) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+  h ^= h >>> 15;
+  return ((h >>> 0) % 100000) / 100000;
+}
+
+const AVG_CALL_VALUE = 7.4; // € per delivered call — ties revenue and call count together
+
+/* One window of `n` buckets, `shift` windows back from today. shift=1 gives the
+   previous period, which is what the change indicators compare against. */
+function statWindow(range, shift) {
+  const monthly = range === "12m";
+  const n = monthly ? 12 : range === "30" ? 30 : 7;
+  const o = { labels: [], revenue: [], calls: [], mins: [], newFans: [], returning: [] };
+
+  for (let i = n - 1; i >= 0; i--) {
+    const back = i + shift * n;
+    let rev, label, wd;
+    if (monthly) {
+      const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - back);
+      label = MONTHS[d.getMonth()];
+      wd = 3;
+      const trend = 0.60 + (n - 1 - back) * 0.034;      // the account grows over the year
+      rev = 2380.9 * Math.max(0.35, trend) * (0.84 + srand("m" + d.getMonth() + d.getFullYear()) * 0.36);
+    } else {
+      const d = new Date(); d.setDate(d.getDate() - back);
+      label = range === "30" ? String(d.getDate()) : DAYS[d.getDay()];
+      wd = d.getDay();
+      rev = 84.2 * WD_FACTOR[wd] * (0.66 + srand("d" + back + range) * 0.72);
+    }
+    const calls = Math.max(1, Math.round(rev / AVG_CALL_VALUE));
+    const mins = Math.round(calls * (3.1 + srand("t" + back + range) * 0.9));
+    const nf = Math.round(calls * (0.13 + srand("n" + back + range) * 0.17));
+    o.labels.push(label);
+    o.revenue.push(+rev.toFixed(2));
+    o.calls.push(calls);
+    o.mins.push(mins);
+    o.newFans.push(nf);
+    o.returning.push(Math.max(0, calls - nf));
+  }
+  return o;
+}
+
+const statSum = a => a.reduce((x, y) => x + y, 0);
+const statPct = (cur, prev) => (prev > 0 ? ((cur - prev) / prev) * 100 : 0);
+
+function statsFor(range) {
+  const cur = statWindow(range, 0);
+  const prev = statWindow(range, 1);
+
+  const revenue = statSum(cur.revenue);
+  const totals = { revenue, calls: statSum(cur.calls), mins: statSum(cur.mins), fans: statSum(cur.newFans) };
+  const change = {
+    revenue: statPct(revenue, statSum(prev.revenue)),
+    calls: statPct(totals.calls, statSum(prev.calls)),
+    mins: statPct(totals.mins, statSum(prev.mins)),
+    fans: statPct(totals.fans, statSum(prev.newFans)),
+  };
+
+  const bySource = SOURCES.map(x => Object.assign({}, x, { amt: +(revenue * x.share).toFixed(2) }));
+
+  const byWeekday = DAYS.map((_, i) =>
+    +(84.2 * WD_FACTOR[i] * (0.86 + srand("wd" + i) * 0.3) * 4).toFixed(2));
+
+  const byHour = HOUR_FACTOR.map((f, i) =>
+    Math.round(totals.calls * f * (0.86 + srand("h" + i) * 0.28) / 5));
+
+  return Object.assign({}, cur, { prev, totals, change, bySource, byWeekday, byHour, ratings: RATING_DIST });
+}
+
+// Two-hour buckets as labels for the hour chart.
+const HOUR_LABELS = ["0", "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22"];
+
 const POSTS=[
   {id:"p1",cid:"mia",time:"vor 2 Std",cap:"Neues 20-Min Full-Body Workout ist online 🔥 Wer macht mit?",likes:1240,ppv:false},
   {id:"p2",cid:"nadia",time:"vor 4 Std",cap:"Mein neuestes Cosplay-Set — exklusiv für dich 📸",likes:3980,ppv:true,price:4.99},
@@ -853,6 +1005,7 @@ const I={
   block:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
   play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
   pause:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.4" y="5" width="3.6" height="14" rx="1.2"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16"/><rect x="7.5" y="12" width="3" height="5" rx="1" fill="currentColor" stroke="none"/><rect x="12.5" y="8.5" width="3" height="8.5" rx="1" fill="currentColor" stroke="none"/><rect x="17.5" y="5.5" width="3" height="11.5" rx="1" fill="currentColor" stroke="none"/></svg>',
   tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82a4.83 4.83 0 0 1-1.03-.9 4.96 4.96 0 0 1-1.1-2.42h-3.3v13.2a2.9 2.9 0 0 1-2.9 2.7 2.9 2.9 0 1 1 .8-5.68v-3.32a6.2 6.2 0 0 0-.8-.05A6.2 6.2 0 1 0 14.5 15V8.42a8.2 8.2 0 0 0 4.8 1.53V6.62a4.8 4.8 0 0 1-2.7-.8Z"/></svg>',
   instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.6"/><circle cx="12" cy="12" r="4.4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
   snapchat: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2c2.9 0 4.87 2.15 4.87 5.06 0 1.05-.08 1.93-.18 2.53.5.28 1.15.2 1.63.02.4-.14.8.06.92.45.12.39-.09.8-.48.98-.58.28-1.35.58-1.74.96.29 1.27 1.56 2.53 3 2.92.39.1.6.5.48.88-.2.6-1.26.9-2.32 1.07-.1.3-.19.68-.29.97-.1.3-.4.48-.7.4-.48-.1-1.06-.2-1.73-.1-.68.1-1.16.48-1.74.86-.58.39-1.16.77-1.93.77s-1.35-.38-1.93-.77c-.58-.38-1.06-.76-1.74-.86-.67-.1-1.25 0-1.73.1-.3.08-.6-.1-.7-.4-.1-.29-.19-.67-.29-.97-1.06-.17-2.12-.47-2.32-1.07-.12-.38.09-.78.48-.88 1.44-.39 2.71-1.65 3-2.92-.39-.38-1.16-.68-1.74-.96-.39-.18-.6-.59-.48-.98.12-.39.52-.59.92-.45.48.18 1.13.26 1.63-.02-.1-.6-.18-1.48-.18-2.53C7.13 4.35 9.1 2.2 12 2.2Z"/></svg>',
@@ -1147,6 +1300,7 @@ function renderMe(pad){
   ${row(I.bolt,"Wallet & Guthaben","openWallet()",EUR(state.balance))}
   ${row(I.star,"Ring Premium","toast('Premium: unbegrenzte Likes, kostenlose Calls & mehr')","Upgrade")}
   ${row(I.video,"Creator-Studio","openStudio()",EUR(EARNINGS.week))}
+  ${row(I.chart,"Meine Statistiken","openStats()","")}
   <div class="section-title">Meine Termine</div>
   ${state.bookings.length===0
     ? '<p class="muted" style="font-size:13px">Noch keine Termine — buche eine Leistung im Creator-Profil.</p>'
@@ -2274,6 +2428,7 @@ function drawStudio(){
       <div><b>${EUR(EARNINGS.gifts)}</b><span>Geschenke</span></div>
       <div><b>${EARNINGS.subs}</b><span>Abos</span></div>
     </div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="openStats()">${I.chart}Meine Statistiken ansehen</button>
 
     <div class="section-title">Nächste Termine <span class="muted" style="font-weight:600;font-size:12px">${CREATOR_BOOKINGS.length}</span></div>
     ${CREATOR_BOOKINGS.map((b,i)=>`
@@ -2348,6 +2503,135 @@ function toggleStudioSlot(t){
   STUDIO.slots=STUDIO.slots.includes(t)?STUDIO.slots.filter(x=>x!==t):[...STUDIO.slots,t].sort();
   redrawStudio();}
 
+/* =========================================================================
+   MEINE STATISTIKEN — the creator's own numbers as charts. Reached from
+   Me → Konto and from the studio. Everything is drawn with plain SVG and CSS;
+   no chart library, so it survives being inlined into a single HTML file.
+   ========================================================================= */
+const statUi={range:"30",sel:null};
+
+function openStats(){
+  statUi.range="30";statUi.sel=null;
+  const node=overlay(`
+    <div class="ftop">
+      <button class="iconbtn" onclick="closeOverlay()">${I.arrow}</button>
+      <h3>Meine Statistiken</h3>
+      <span style="width:42px"></span>
+    </div>
+    <div class="fscreen" id="statsBody" style="padding:10px 18px 34px">${drawStats()}</div>`,"full");
+  node.dataset.view="stats";
+}
+function redrawStats(){const b=document.getElementById("statsBody");if(b)b.innerHTML=drawStats();}
+function setStatRange(r){statUi.range=r;statUi.sel=null;redrawStats();}
+function pickBar(i){statUi.sel=statUi.sel===i?null:i;redrawStats();}
+
+function statDelta(v){
+  const up=v>=0;
+  return `<span class="delta ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(v).toFixed(1).replace('.',',')} %</span>`;
+}
+function statKpi(label,value,change){
+  return `<div><div class="k">${label}</div><b>${value}</b>${statDelta(change)}</div>`;
+}
+function chartBox(title,sub,body){
+  return `<div class="chartbox"><div class="ch-t">${title}</div><div class="ch-s">${sub}</div>${body}</div>`;
+}
+function xlab(labels,every){
+  return `<div class="xlab">${labels.map((l,i)=>`<span>${i%every===0?l:''}</span>`).join("")}</div>`;
+}
+/* Tap a bar to read its value — a hover tooltip is useless on a phone. */
+function barChart(values,labels,every,fmt,pickable){
+  const max=Math.max.apply(null,values.concat([1]));
+  return `<div class="bars">${values.map((v,i)=>`
+    <button class="b ${pickable&&statUi.sel===i?'on':''}" style="height:${Math.max(2,(v/max)*100)}%"
+      aria-label="${labels[i]}: ${fmt(v)}" ${pickable?`onclick="pickBar(${i})"`:''}>
+      ${pickable&&statUi.sel===i?`<span class="bv">${fmt(v)}</span>`:''}</button>`).join("")}</div>`
+    + xlab(labels,every);
+}
+function stackChart(a,b,labels,every){
+  const max=Math.max.apply(null,a.map((v,i)=>v+b[i]).concat([1]));
+  return `<div class="bars">${a.map((v,i)=>`
+    <div class="sb" style="height:${Math.max(2,((v+b[i])/max)*100)}%">
+      <i class="s2" style="flex-grow:${b[i]}"></i><i class="s1" style="flex-grow:${v}"></i></div>`).join("")}</div>`
+    + xlab(labels,every);
+}
+function donutChart(parts){
+  const total=parts.reduce((x,p)=>x+p.amt,0)||1;
+  const R=43,C=2*Math.PI*R;
+  let acc=0;
+  const segs=parts.map(p=>{
+    const len=(p.amt/total)*C;
+    const seg=`<circle cx="50" cy="50" r="${R}" stroke="${p.color}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-acc}"></circle>`;
+    acc+=len;return seg;
+  }).join("");
+  return `<div class="donutwrap">
+    <svg class="donut" viewBox="0 0 100 100" role="img" aria-label="Einnahmen nach Quelle">
+      <circle class="dtrack" cx="50" cy="50" r="${R}"></circle>${segs}</svg>
+    <div class="dlegend">${parts.map(p=>`
+      <div class="dl"><span class="sw" style="background:${p.color}"></span><span>${p.label}</span>
+        <span class="dv">${EUR(p.amt)}</span></div>`).join("")}</div></div>`;
+}
+function areaChart(values,labels,every){
+  const max=Math.max.apply(null,values.concat([1])),n=values.length;
+  const pts=values.map((v,i)=>`${(i/(n-1))*100},${(38-(v/max)*34).toFixed(2)}`).join(" ");
+  return `<svg class="area" viewBox="0 0 100 40" preserveAspectRatio="none" role="img" aria-label="Calls im Zeitverlauf">
+      <polygon points="0,40 ${pts} 100,40"></polygon>
+      <polyline points="${pts}" vector-effect="non-scaling-stroke"></polyline></svg>` + xlab(labels,every);
+}
+function heatChart(values,labels){
+  const max=Math.max.apply(null,values.concat([1]));
+  return `<div class="heat">${values.map((v,i)=>`
+    <i style="opacity:${0.12+(v/max)*0.88}" title="${labels[i]}–${(+labels[i]+2)%24} Uhr: ${v} Calls"></i>`).join("")}</div>`
+    + xlab(labels,1);
+}
+function ratingDist(counts){
+  const total=counts.reduce((a,b)=>a+b,0)||1;
+  return `<div class="rdist">${counts.map((c,i)=>`
+    <div class="rr"><span class="rs">${5-i} ★</span>
+      <span class="bar"><i style="width:${(c/total)*100}%"></i></span>
+      <span class="rc">${num(c)}</span></div>`).join("")}</div>`;
+}
+
+function drawStats(){
+  const s=statsFor(statUi.range);
+  const every=statUi.range==="30"?5:1;
+  const per=statUi.range==="12m"?"Monat":"Tag";
+  const plain=v=>num(v);
+  return `
+    <div class="seg">${RANGES.map(r=>`
+      <button class="${statUi.range===r.id?'on':''}" onclick="setStatRange('${r.id}')">${r.label}</button>`).join("")}</div>
+
+    <div class="statkpi">
+      ${statKpi("Einnahmen",EUR(s.totals.revenue),s.change.revenue)}
+      ${statKpi("Calls",num(s.totals.calls),s.change.calls)}
+      ${statKpi("Gesprächsminuten",num(s.totals.mins),s.change.mins)}
+      ${statKpi("Neue Fans",num(s.totals.fans),s.change.fans)}
+    </div>
+    <p class="muted" style="font-size:11.5px;margin:0 2px 16px">Veränderung gegenüber dem vorherigen Zeitraum gleicher Länge.</p>
+
+    ${chartBox("Einnahmen",`Pro ${per}, in Euro — tippe einen Balken für den Wert`,
+      barChart(s.revenue,s.labels,every,EUR,true))}
+
+    ${chartBox("Woher das Geld kommt",`Aufteilung der ${EUR(s.totals.revenue)} im gewählten Zeitraum`,
+      donutChart(s.bySource))}
+
+    ${chartBox("Calls",`Gelieferte Calls pro ${per}`,areaChart(s.calls,s.labels,every))}
+
+    ${chartBox("Starke Wochentage","Durchschnittliche Einnahmen je Wochentag",
+      barChart(s.byWeekday,DAYS,1,EUR,false))}
+
+    ${chartBox("Beste Uhrzeiten","Calls je Zwei-Stunden-Fenster — je kräftiger, desto mehr",
+      heatChart(s.byHour,HOUR_LABELS))}
+
+    ${chartBox("Neue und wiederkehrende Fans",`Anteil je ${per}`,
+      stackChart(s.newFans,s.returning,s.labels,every)
+      + `<div class="leg"><span><i style="background:var(--brand-grad)"></i>Neu</span>`
+      + `<span><i style="background:color-mix(in srgb,var(--orange) 26%, var(--card-2))"></i>Wiederkehrend</span></div>`)}
+
+    ${chartBox("Bewertungen",`${num(s.ratings.reduce((a,b)=>a+b,0))} Bewertungen insgesamt`,ratingDist(s.ratings))}
+
+    <p class="center muted" style="font-size:11px;margin-top:4px">Zahlen aus dem Hauptbuch — dieselbe Quelle wie die Auszahlung im Creator-Studio.</p>`;
+}
+
 /* ---- boot ---- */
 render();
 onboarding();
@@ -2358,6 +2642,7 @@ window.likePost=likePost;window.unlockPost=unlockPost;window.unlockDM=unlockDM;w
 window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverlay;window.openEditProfile=openEditProfile;window.openEditField=openEditField;window.openPhotos=openPhotos;window.saveProfile=saveProfile;window.toggleVis=toggleVis;window.markDirty=markDirty;window.pickOpt=pickOpt;window.toggleInt=toggleInt;window.toggleRec=toggleRec;window.removePhoto=removePhoto;window.addPhoto=addPhoto;window.ME=ME;
 window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;
 window.startRegister=startRegister;window.regBack=regBack;window.regNext=regNext;window.regPick=regPick;window.regAge=regAge;window.toggleRegRec=toggleRegRec;window.reg=reg;window.drawRegister=drawRegister;
+window.openStats=openStats;window.setStatRange=setStatRange;window.pickBar=pickBar;
 window.openStudio=openStudio;window.setStudioRate=setStudioRate;window.bumpStudioSvc=bumpStudioSvc;window.dropStudioSvc=dropStudioSvc;window.addStudioSvc=addStudioSvc;window.toggleStudioDay=toggleStudioDay;window.toggleStudioSlot=toggleStudioSlot;
 window.startVoiceRec=startVoiceRec;window.cancelVoiceRec=cancelVoiceRec;window.sendVoiceRec=sendVoiceRec;window.playVoice=playVoice;
 window.openMore=openMore;window.openReport=openReport;window.pickReason=pickReason;window.toggleReportBlock=toggleReportBlock;window.submitReport=submitReport;window.blockUser=blockUser;window.unblockUser=unblockUser;window.openBlocked=openBlocked;window.report=report;

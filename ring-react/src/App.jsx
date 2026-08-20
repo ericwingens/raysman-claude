@@ -4,6 +4,7 @@ import { EUR, Ico } from "./lib.jsx";
 import Onboarding from "./screens/Onboarding.jsx";
 import EditProfile from "./overlays/EditProfile.jsx";
 import StudioFull from "./overlays/Studio.jsx";
+import StatsFull from "./overlays/Stats.jsx";
 import Discover from "./screens/Discover.jsx";
 import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
@@ -207,7 +208,7 @@ export default function App() {
       {/* overlay stack */}
       {overlays.length > 0 && <div className="sheet-scrim show" onClick={pop} />}
       {overlays.map((o) => {
-        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet, blocked: BlockedFull, studio: StudioFull }[o.kind];
+        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet, blocked: BlockedFull, studio: StudioFull, stats: StatsFull }[o.kind];
         return P ? <P key={o.key} id={o.id} ctx={ctx} /> : null;
       })}
 

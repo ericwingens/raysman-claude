@@ -64,6 +64,9 @@ export default function Me({ ctx }) {
       <Row icon="star" label="Ring Premium" right="Upgrade" onClick={() => ctx.toast("Premium: unbegrenzte Likes, günstigere Calls & mehr")} />
       <Row icon="video" label="Creator-Studio" right={EUR(EARNINGS.week)} onClick={() => ctx.push("studio")} />
       <Row icon="chart" label="Meine Statistiken" right="" onClick={() => ctx.push("stats")} />
+      <Row icon="users" label="Freunde finden"
+        right={ctx.contactsAdded.size ? `${ctx.contactsAdded.size} hinzugefügt` : "Kontakte"}
+        onClick={() => ctx.push("contacts")} />
 
       <div className="section-title">Meine Termine</div>
       {ctx.bookings.length === 0

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { CREATORS, byId, REVIEWS, FREE_SECS, CREATOR_ME } from "./data.js";
+import { CREATORS, byId, REVIEWS, FREE_SECS, CREATOR_ME, PHONE_CONTACTS, onRing } from "./data.js";
 import { EUR, Ico } from "./lib.jsx";
 import Onboarding from "./screens/Onboarding.jsx";
 import EditProfile from "./overlays/EditProfile.jsx";
 import StudioFull from "./overlays/Studio.jsx";
 import StatsFull from "./overlays/Stats.jsx";
+import ContactsFull from "./overlays/Contacts.jsx";
 import Discover from "./screens/Discover.jsx";
 import Explore from "./screens/Explore.jsx";
 import Feed from "./screens/Feed.jsx";
@@ -30,6 +31,10 @@ export default function App() {
   const [freeUsed, setFreeUsed] = useState(() => new Set()); // creators whose free minutes are spent
   const [blocked, setBlocked] = useState(() => new Set());   // creators the user has blocked
   const [creator, setCreator] = useState(() => ({ ...CREATOR_ME, services: CREATOR_ME.services.map((x) => ({ ...x })) }));
+  // Contact import — shared by the registration step and the Me screen.
+  const [contactsScan, setContactsScan] = useState(null);            // null | "scan" | "done"
+  const [contactsAdded, setContactsAdded] = useState(() => new Set());
+  const [contactsInvited, setContactsInvited] = useState(() => new Set());
   const [moreFor, setMoreFor] = useState(null);   // {id, what} — the ⋯ action menu
   const [reportFor, setReportFor] = useState(null); // {id, what} — the report form
   const [addPeople, setAddPeople] = useState(false);
@@ -124,6 +129,28 @@ export default function App() {
     toast(`${byId(id).name} entsperrt.`);
   };
 
+  // Adding a contact takes effect straight away — they become one of the
+  // user's people, which is what Matches and the chat list read.
+  const addContact = (id) => {
+    const c = PHONE_CONTACTS.find((x) => x.id === id);
+    if (!c || !c.ring) return;
+    setContactsAdded((a) => new Set(a).add(id));
+    setLikedPeople((s) => new Set(s).add(c.ring));
+    toast(`${c.name} zu deinen Kontakten hinzugefügt`);
+  };
+  const addAllContacts = () => {
+    const fresh = onRing.filter((c) => !contactsAdded.has(c.id));
+    if (!fresh.length) return;
+    setContactsAdded(new Set(onRing.map((c) => c.id)));
+    setLikedPeople((s) => { const n = new Set(s); onRing.forEach((c) => n.add(c.ring)); return n; });
+    toast(`${fresh.length} Kontakte hinzugefügt`);
+  };
+  const inviteContact = (id) => {
+    const c = PHONE_CONTACTS.find((x) => x.id === id);
+    setContactsInvited((a) => new Set(a).add(id));
+    if (c) toast(`Einladung an ${c.name} gesendet`);
+  };
+
   const startCall = (id) => {
     if (blockedRef.current.has(id)) { toast(`${byId(id).name} ist blockiert — erst entsperren.`); return; }
     popAll();
@@ -167,6 +194,8 @@ export default function App() {
     freeUsed,
     blocked, block, unblock,
     creator, setCreator,
+    contactsScan, setContactsScan, contactsAdded, contactsInvited,
+    addContact, addAllContacts, inviteContact,
     openMore: (id, what) => setMoreFor({ id, what }),
     openReport: (id, what) => setReportFor({ id, what }),
     flyGift: (em) => { setFlying({ em, key: Date.now() }); setTimeout(() => setFlying(null), 1700); },
@@ -208,7 +237,7 @@ export default function App() {
       {/* overlay stack */}
       {overlays.length > 0 && <div className="sheet-scrim show" onClick={pop} />}
       {overlays.map((o) => {
-        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet, blocked: BlockedFull, studio: StudioFull, stats: StatsFull }[o.kind];
+        const P = { profile: ProfileFull, chat: ChatFull, tip: TipSheet, wallet: WalletSheet, legal: LegalFull, edit: EditProfile, book: BookSheet, blocked: BlockedFull, studio: StudioFull, stats: StatsFull, contacts: ContactsFull }[o.kind];
         return P ? <P key={o.key} id={o.id} ctx={ctx} /> : null;
       })}
 
@@ -223,13 +252,7 @@ export default function App() {
       {reportFor && <ReportSheet {...reportFor} ctx={ctx} close={() => setReportFor(null)} />}
       {flying && <div key={flying.key} className="giftfly">{flying.em}</div>}
 
-      {phase === "welcome" && (
-        <Onboarding ctx={ctx} done={() => setPhase("main")}
-          onContacts={(ids) => {
-            setLikedPeople((s) => { const n = new Set(s); ids.forEach((i) => n.add(i)); return n; });
-            toast(`${ids.length} Kontakte zu ring meApp hinzugefügt`);
-          }} />
-      )}
+      {phase === "welcome" && <Onboarding ctx={ctx} done={() => setPhase("main")} />}
 
       {toastMsg && <div className="toast show">{toastMsg}</div>}
     </div>

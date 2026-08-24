@@ -1345,6 +1345,7 @@ function renderMe(pad){
   ${row(I.star,"Ring Premium","toast('Premium: unbegrenzte Likes, kostenlose Calls & mehr')","Upgrade")}
   ${row(I.video,"Creator-Studio","openStudio()",EUR(EARNINGS.week))}
   ${row(I.chart,"Meine Statistiken","openStats()","")}
+  ${row(I.users,"Freunde finden","openContacts()",kontakte.added.size?`${kontakte.added.size} hinzugefügt`:"Kontakte")}
   <div class="section-title">Meine Termine</div>
   ${state.bookings.length===0
     ? '<p class="muted" style="font-size:13px">Noch keine Termine — buche eine Leistung im Creator-Profil.</p>'
@@ -1947,12 +1948,10 @@ function finishOnboarding(){const onb=document.querySelector(".onb");if(!onb)ret
    ========================================================================= */
 const REG_STEPS=7;
 const reg={step:0,gender:null,looking:null,age:24,recOn:false,recT:0,recTimer:null,
-  scan:null,prog:0,scanTimer:null,added:new Set(),invited:new Set(),
   bars:Array.from({length:46},()=>6+Math.random()*40)};
 
 function startRegister(){
   reg.step=0;reg.gender=null;reg.looking=null;reg.age=24;stopRec();reg.recT=0;
-  stopScan();reg.scan=null;reg.prog=0;reg.added=new Set();reg.invited=new Set();
   const onb=document.querySelector(".onb");if(onb)onb.style.display="none";
   const el=document.createElement("div");el.className="reg";el.id="reg";
   document.getElementById("phone").appendChild(el);
@@ -1966,13 +1965,9 @@ function regBack(){
 function regNext(){
   if(reg.step>=REG_STEPS-1){
     stopRec();stopScan();
-    // Imported contacts become the user's own — the same set the Matches tab reads.
-    const ids=PHONE_CONTACTS.filter(c=>reg.added.has(c.id)).map(c=>c.ring);
-    ids.forEach(id=>state.liked.add(id));
     document.getElementById("reg").remove();
     const onb=document.querySelector(".onb");if(onb)onb.remove();
     render();
-    if(ids.length)toast(`${ids.length} Kontakte zu ring meApp hinzugefügt`);
     return;
   }
   reg.step++;drawRegister();
@@ -2011,7 +2006,7 @@ function drawRegister(){
     <button class="btn btn-ghost" style="margin-bottom:10px" onclick="toast('Galerie geöffnet (Demo)')">📁 Aus Galerie wählen</button>
     <button class="btn btn-ghost" onclick="toast('Kamera geöffnet (Demo)')">📷 Foto aufnehmen</button>`;
   else if(s===5)body=voiceStep();
-  else body=contactsStep();
+  else body=contactsPanel();
 
   const label=s===0?"Jetzt registrieren":s===REG_STEPS-1?"Speichern & loslegen":"Weiter";
   document.getElementById("reg").innerHTML=`
@@ -2032,22 +2027,69 @@ function drawRegister(){
  * rest can be invited. Simulated end to end — see the privacy note, which is
  * what the real implementation has to deliver.
  * ------------------------------------------------------------------------- */
+/* The same panel serves two places: the last step of registration and its own
+   screen under Me. State lives here, so both show the same thing. */
+const kontakte={scan:null,prog:0,timer:null,added:new Set(),invited:new Set()};
+
+/* Both containers are rebuilt from a template string, which drops the scroll
+   position — annoying when you add the sixth contact far down the list. */
+function redrawContacts(){
+  const box=document.getElementById("contactsBody");
+  if(box){const y=box.scrollTop;box.innerHTML=contactsPanel();box.scrollTop=y;render();return;}
+  const r=document.getElementById("reg");
+  if(r){
+    const y=(r.querySelector(".rbody")||{}).scrollTop||0;
+    drawRegister();
+    const nb=document.querySelector("#reg .rbody");if(nb)nb.scrollTop=y;
+  }
+}
 function startScan(){
-  reg.scan="scan";reg.prog=0;drawRegister();
-  reg.scanTimer=setInterval(()=>{
-    reg.prog=Math.min(100,reg.prog+8);
+  kontakte.scan="scan";kontakte.prog=0;redrawContacts();
+  kontakte.timer=setInterval(()=>{
+    kontakte.prog=Math.min(100,kontakte.prog+8);
     const b=document.getElementById("scanBar");
-    if(b)b.style.width=reg.prog+"%";
-    if(reg.prog>=100){stopScan();reg.scan="done";drawRegister();}
+    if(b)b.style.width=kontakte.prog+"%";
+    if(kontakte.prog>=100){stopScan();kontakte.scan="done";redrawContacts();}
   },90);
 }
-function stopScan(){clearInterval(reg.scanTimer);reg.scanTimer=null;}
-function addContact(id){reg.added.add(id);drawRegister();}
-function addAllContacts(){onRing.forEach(c=>reg.added.add(c.id));drawRegister();}
-function inviteContact(id){reg.invited.add(id);drawRegister();}
+function stopScan(){clearInterval(kontakte.timer);kontakte.timer=null;}
 
-function contactsStep(){
-  if(reg.scan===null)return `
+/* Adding takes effect straight away — the contact becomes one of the user's
+   people, which is what the Matches tab and the chat list read. */
+function addContact(id){
+  const c=PHONE_CONTACTS.find(x=>x.id===id);
+  if(!c||!c.ring)return;
+  kontakte.added.add(id);state.liked.add(c.ring);
+  redrawContacts();toast(`${c.name} zu deinen Kontakten hinzugefügt`);
+}
+function addAllContacts(){
+  const fresh=onRing.filter(c=>!kontakte.added.has(c.id));
+  if(!fresh.length)return;
+  onRing.forEach(c=>{kontakte.added.add(c.id);state.liked.add(c.ring);});
+  redrawContacts();toast(`${fresh.length} Kontakte hinzugefügt`);
+}
+function inviteContact(id){
+  const c=PHONE_CONTACTS.find(x=>x.id===id);
+  kontakte.invited.add(id);
+  redrawContacts();if(c)toast(`Einladung an ${c.name} gesendet`);
+}
+
+/* Reached from Me — for everyone who skipped the step during registration, or
+   whose friends joined later. */
+function openContacts(){
+  const node=overlay(`
+    <div class="ftop">
+      <button class="iconbtn" onclick="closeOverlay()">${I.arrow}</button>
+      <h3>Freunde finden</h3>
+      <span style="width:42px"></span>
+    </div>
+    <div class="fscreen" id="contactsBody" style="padding:6px 18px 20px">${contactsPanel()}</div>
+    <div class="rfoot"><button class="btn btn-primary" onclick="closeOverlay()">Fertig</button></div>`,"full");
+  node.dataset.view="contacts";
+}
+
+function contactsPanel(){
+  if(kontakte.scan===null)return `
     <h2>Finde deine Freunde</h2>
     <p class="muted" style="font-size:13.5px">Wir gleichen dein Telefonbuch mit ring meApp ab und zeigen dir, wer schon dabei ist.</p>
     <div class="kscan"><div class="ki">${I.users}</div></div>
@@ -2055,13 +2097,13 @@ function contactsStep(){
     <div class="warnbox"><b>Was dabei passiert:</b> Deine Nummern verlassen dein Gerät nur als unlesbarer Prüfwert, nie im Klartext. Nummern ohne Treffer werden sofort verworfen und nicht gespeichert.</div>
     <p class="center muted" style="font-size:12px">Du kannst diesen Schritt überspringen.</p>`;
 
-  if(reg.scan==="scan")return `
+  if(kontakte.scan==="scan")return `
     <h2>Gleiche ab …</h2>
     <p class="muted" style="font-size:13.5px">${PHONE_CONTACTS.length} Kontakte werden geprüft.</p>
     <div class="kscan"><div class="ki">${I.users}</div></div>
-    <div class="cbar"><i id="scanBar" style="width:${reg.prog}%;transition:width .09s linear"></i></div>`;
+    <div class="cbar"><i id="scanBar" style="width:${kontakte.prog}%;transition:width .09s linear"></i></div>`;
 
-  const allAdded=onRing.every(c=>reg.added.has(c.id));
+  const allAdded=onRing.every(c=>kontakte.added.has(c.id));
   return `
     <h2>${onRing.length} von ${PHONE_CONTACTS.length} sind schon dabei</h2>
     <p class="muted" style="font-size:13.5px;margin-top:0">Füg sie direkt zu deinen Kontakten hinzu — den Rest kannst du einladen.</p>
@@ -2074,7 +2116,7 @@ function contactsStep(){
         <div style="min-width:0">
           <div class="kn">${c.name}<span class="kchip">auf ring meApp</span></div>
           <div class="kp">${c.phone}</div></div>
-        ${reg.added.has(c.id)
+        ${kontakte.added.has(c.id)
           ? `<span class="kdone">${I.check}Hinzugefügt</span>`
           : `<button class="btn btn-primary btn-sm kb" style="width:auto" onclick="addContact('${c.id}')">Hinzufügen</button>`}
       </div>`).join("")}
@@ -2086,7 +2128,7 @@ function contactsStep(){
         <div style="min-width:0">
           <div class="kn">${c.name}</div>
           <div class="kp">${c.phone}</div></div>
-        ${reg.invited.has(c.id)
+        ${kontakte.invited.has(c.id)
           ? `<span class="kdone" style="color:var(--muted)">${I.check}Eingeladen</span>`
           : `<button class="btn btn-ghost btn-sm kb" style="width:auto" onclick="inviteContact('${c.id}')">Einladen</button>`}
       </div>`).join("")}`;
@@ -2764,7 +2806,7 @@ window.likePost=likePost;window.unlockPost=unlockPost;window.unlockDM=unlockDM;w
 window.startCall=startCall;window.endCall=endCall;window.closeOverlay=closeOverlay;window.openEditProfile=openEditProfile;window.openEditField=openEditField;window.openPhotos=openPhotos;window.saveProfile=saveProfile;window.toggleVis=toggleVis;window.markDirty=markDirty;window.pickOpt=pickOpt;window.toggleInt=toggleInt;window.toggleRec=toggleRec;window.removePhoto=removePhoto;window.addPhoto=addPhoto;window.ME=ME;
 window.startLiveView=startLiveView;window.finishOnboarding=finishOnboarding;
 window.startRegister=startRegister;window.regBack=regBack;window.regNext=regNext;window.regPick=regPick;window.regAge=regAge;window.toggleRegRec=toggleRegRec;window.reg=reg;window.drawRegister=drawRegister;
-window.startScan=startScan;window.addContact=addContact;window.addAllContacts=addAllContacts;window.inviteContact=inviteContact;
+window.openContacts=openContacts;window.startScan=startScan;window.addContact=addContact;window.addAllContacts=addAllContacts;window.inviteContact=inviteContact;
 window.openStats=openStats;window.setStatRange=setStatRange;window.pickBar=pickBar;
 window.openStudio=openStudio;window.setStudioRate=setStudioRate;window.bumpStudioSvc=bumpStudioSvc;window.dropStudioSvc=dropStudioSvc;window.addStudioSvc=addStudioSvc;window.toggleStudioDay=toggleStudioDay;window.toggleStudioSlot=toggleStudioSlot;
 window.startVoiceRec=startVoiceRec;window.cancelVoiceRec=cancelVoiceRec;window.sendVoiceRec=sendVoiceRec;window.playVoice=playVoice;

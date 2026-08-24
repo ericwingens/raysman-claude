@@ -49,6 +49,8 @@ Dazu kommt **„Meine Statistiken"** als eigener Punkt: Zeitraumwahl über 7 Tag
 
 ### Schutz- und Kommunikationsebene (neu)
 
+Beim Start hilft der **Kontakte-Import in der Registrierung**: Das Telefonbuch wird gegen die Mitglieder abgeglichen, Treffer werden hervorgehoben und lassen sich einzeln oder gesammelt zu den eigenen Kontakten hinzufügen, der Rest kann eingeladen werden. Wie das datenschutzkonform aussieht — Digest statt Klartext, Verwerfen statt Speichern, Auffindbarkeit als Opt-in — steht in §7.2.
+
 **Melden und Blocken** ist keine Zusatzfunktion, sondern Betriebsvoraussetzung — ohne sie ist die App weder DSA-konform noch für Creator zumutbar. Die Semantik (was ein Block sieht, was er nicht verrät, was mit laufenden Calls und Abos passiert) steht in §7.1. Dazu kommen **Sprachnachrichten im Chat** als asynchrones Gegenstück zum bezahlten Call: dieselbe Aufnahme- und Wellenform-Mechanik wie das Voice-Intro der Registrierung, aber als Nachricht im Verlauf.
 
 ---
@@ -170,6 +172,8 @@ Kern-Entities (Postgres). PKs `id` (UUID/ULID), Timestamps `created_at`/`updated
 | **GiftTransaction** | `sender_id`, `recipient_id`, `gift_id`, `price_paid`, `context` (`call`/`live`/`profile`), `context_id`, `ledger_tx_id` | Wie Tip, aber mit Artikelbezug für Auswertung und Bestenlisten |
 | **CallParticipant** | `call_id`, `user_id`, `role` (`host`/`callee`/`guest`), `joined_at`, `left_at`, `billed_share` | Gruppen-Calls; `billed_share` offen bis §11.1 entschieden ist |
 | **ShareEvent** | `user_id`, `subject_type` (`post`/`profile`), `subject_id`, `target` (`tiktok`/`instagram`/…/`copy_link`), `created_at` | Nur Absicht und Ziel protokollieren, keine Inhalte |
+| **ContactDigest** | `user_id`, `digest` (bytea, HMAC über die E.164-Nummer), `label_enc` (der Anzeigename, clientseitig verschlüsselt), `created_at` | Nur für Nummern **mit Treffer**. Klartextnummern werden nie gespeichert, der Schlüssel für das HMAC liegt serverseitig und wird rotiert (§7.2) |
+| **ContactInvite** | `inviter_id`, `digest`, `channel` (`sms`/`share`), `sent_at`, `accepted_user_id?` | Einladung an eine Nummer ohne Treffer. Nur der Digest, nicht die Nummer; genau eine Einladung je Paar, keine Wiedervorlage |
 | **Block** | `blocker_id`, `blocked_id`, `created_at`, `source` (`profile`/`chat`/`post`/`report`) | Unique(blocker, blocked). Wirkt in **beide** Richtungen sichtbar (§7.1) und ist die einzige Quelle für alle Sichtbarkeitsfilter |
 | **FreeMinuteGrant** | `fan_id`, `creator_id`, `seconds_granted`, `seconds_used`, `granted_at`, `first_call_id` | Unique(fan, creator) — die Freiminuten gibt es **einmal je Paar**, nicht je Call (§4.8). Wird beim Wählen angelegt, nicht beim Verbinden |
 | **VoiceMessage** | `message_id`, `media_id`, `duration_ms`, `waveform` (int[], normalisiert), `transcript?`, `moderation_status` | 1:1 zu `Message` mit `kind=voice`; `Media.type` bekommt dafür den Wert `audio`. `waveform` wird serverseitig aus der Datei berechnet, nicht vom Client übernommen |
@@ -386,6 +390,18 @@ Der Prototyp hat beides: ein ⋯-Menü auf Profil, Chat und Beitrag, dahinter �
 - **Was bleibt:** Bereits gezahltes Geld bleibt gezahlt. Ein laufendes Abo endet nicht automatisch durch eine Blockierung — das wäre eine stille Kündigung mit finanzieller Folge. Der Fan muss aktiv kündigen; die App weist beim Blockieren darauf hin, wenn ein Abo besteht.
 - **Entsperren** ist jederzeit möglich und stellt nur die Sichtbarkeit wieder her — es stellt keine gelöschten Inhalte wieder her und hebt keine Moderationsentscheidung auf.
 
+### 7.2 Kontakte-Abgleich
+
+Der Import des Telefonbuchs in der Registrierung ist die datenschutzkritischste Einzelfunktion der App: Er verarbeitet Daten **dritter Personen**, die der App nie zugestimmt haben. Die Umsetzung ist deshalb festgelegt und nicht verhandelbar:
+
+- **Kein Adressbuch-Upload im Klartext.** Der Client normalisiert jede Nummer auf E.164 und schickt nur einen **HMAC-Digest** (serverseitiger Schlüssel, rotierbar). Ein reiner Hash ohne Schlüssel wäre wertlos — der Nummernraum ist klein genug, um ihn vollständig durchzurechnen.
+- **Treffer ja, Rest weg.** Der Server antwortet nur mit den Digests, die ein Konto haben. **Alle übrigen Digests werden sofort verworfen** und nicht gespeichert — auch nicht „für die spätere Einladung". Das ist genau die Praxis, für die in der Vergangenheit mehrere Messenger abgemahnt wurden.
+- **Namen bleiben lokal.** Der Anzeigename aus dem Adressbuch gehört dem Kontakt, nicht der Plattform. Er wird nur lokal angezeigt; wenn er wirklich serverseitig gebraucht wird (Wiedererkennung nach Gerätewechsel), dann clientseitig verschlüsselt (`label_enc`), sodass der Server ihn nicht lesen kann.
+- **Sichtbarkeit ist eine eigene Entscheidung.** Gefunden zu werden ist ein **Opt-in** im Profil, nicht die Voreinstellung. Wer nicht über die eigene Nummer auffindbar sein will, taucht in keinem Abgleich auf — für Creator, die unter Klarnamen erreichbar sind, ist das eine Sicherheitsfrage, keine Komfortfrage.
+- **Einladungen sind nicht unbegrenzt.** Eine Einladung je Nummer, kein automatischer Versand, keine Wiedervorlage, kein Kontaktimport ohne ausdrückliche Betätigung des Buttons. Massenversand über importierte Adressbücher ist nach UWG unzulässig und der schnellste Weg auf eine Spam-Blockliste.
+- **Widerruf.** Der Nutzer kann den Import jederzeit zurücknehmen; dann werden `ContactDigest` und offene `ContactInvite` gelöscht. Die bereits hinzugefügten Kontakte bleiben — das sind ab dann normale Verbindungen in der App, keine Adressbuchdaten mehr.
+- **Der Schritt ist überspringbar.** Ohne Import muss die Registrierung vollständig durchlaufen können; ein erzwungener Adressbuchzugriff wäre nach DSGVO ein Kopplungsverbot-Problem.
+
 ---
 
 ## 8. Auszubauende Figma-Screens (Ring Mockup — 1:1)
@@ -396,11 +412,12 @@ Vollständiges Screen-Inventar aus dem Mockup „Ring – Mockup – v6", das pi
 |---|---|---|---|
 | 1 | **Welcome** | teils (Onboarding-Cluster) | Ring-Branding, Avatar-Cluster, „Los geht's" / Anmelden |
 | 2 | **Login** | offen | Anmeldung |
-| 3 | **Register** | ✅ | 6-stufiger Flow mit Fortschrittsbalken |
+| 3 | **Register** | ✅ | 7-stufiger Flow mit Fortschrittsbalken |
 | 3a | Register · **Gender** | ✅ | `gender`, Weiter erst nach Auswahl |
 | 3b | Register · **Looking for** | ✅ | `looking_for` |
 | 3c | Register · **Age** | ✅ | Schieberegler ab 18 |
 | 3d | Register · **Profile picture** | ✅ | Avatar-Auswahl (Demo) |
+| 3e | Register · **Kontakte importieren** | ✅ | Abgleich des Telefonbuchs, Treffer hervorgehoben, einzeln oder gesammelt hinzufügen, Rest einladen (§7.2) |
 | 4 | **Start Recording** (Voice-Intro) | ✅ | Wellenform + Timer, simuliert |
 | 5 | **Home / Discover** | ✅ Swipe-Deck | Like/Pass/Super-Ring/Call, Badges, €/Min |
 | 6 | **Explore** | ✅ | Live-Stories, Creator-Grid |
@@ -438,7 +455,7 @@ Grobe Sequenzierung (keine fixen Daten); jeder Meilenstein liefert etwas Testbar
 |---|---|---|---|
 | **M0** | **Prototyp** ✅ | Zwei gepflegte Fassungen (Single-File + React): Onboarding inkl. 6-stufiger Registrierung, Discover, Explore mit Matches, Feed mit Teilen, Chats, Profil mit Kennzahlen/Leistungen/Bewertungen, Call mit Geschenken und Gästen, Buchung, Wallet, Me, Rechtsseiten | — |
 | **M1** | **React/Vite-App + Design-System** | Vite+TS-Setup, Monorepo, `tokens.ts` (light/dark), Komponenten (Button/Chip/Avatar/Sheet/Tier/PostCard), Screens als Routen, Mock-Daten aus Prototyp portiert | M0 |
-| **M2** | **Auth + Profile + Feed** | Registrierung (inkl. Gender/Looking-for/Age/Foto/Start-Recording), Login, User/CreatorProfile, Discover-Swipe gegen API, Explore, Feed (ohne Zahlungen) | M1, Backend-Grundgerüst |
+| **M2** | **Auth + Profile + Feed** | Registrierung (inkl. Gender/Looking-for/Age/Foto/Start-Recording/**Kontakte-Import**), Login, User/CreatorProfile, Discover-Swipe gegen API, Explore, Feed (ohne Zahlungen). Der Kontakte-Abgleich braucht `ContactDigest`, den HMAC-Endpunkt und das Auffindbarkeits-Opt-in nach §7.2 | M1, Backend-Grundgerüst |
 | **M3** | **Wallet + Payments + Abos + PPV** | Postgres-Ledger, Stripe/PayPal-Top-up, Wallet-Screen, SubscriptionTier/Subscription, PostUnlock (PPV), Stripe Connect Payout-Grundlage | M2 |
 | **M4** | **Chat + Paid DMs + Sprachnachrichten** | Conversations, WebSocket-Chat, Presence/Typing, bezahlte DMs (`PaidMessageUnlock`), Tips (Profil/Post/Chat), Sprachnachrichten (`VoiceMessage`: Upload, serverseitige Wellenform, Moderation) | M3 |
 | **M5** | **WebRTC Paid Calls** | LiveKit + coturn, Signaling, server-autoritatives Per-Minute-Metering inkl. Freiminuten-Fenster (`FreeMinuteGrant`), Live-Ticker, Cutoff, Settlement, Receipt, Tips im Call | M3, M4 |

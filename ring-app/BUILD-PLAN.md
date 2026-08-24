@@ -49,7 +49,7 @@ Dazu kommt **„Meine Statistiken"** als eigener Punkt: Zeitraumwahl über 7 Tag
 
 ### Schutz- und Kommunikationsebene (neu)
 
-Beim Start hilft der **Kontakte-Import in der Registrierung**: Das Telefonbuch wird gegen die Mitglieder abgeglichen, Treffer werden hervorgehoben und lassen sich einzeln oder gesammelt zu den eigenen Kontakten hinzufügen, der Rest kann eingeladen werden. Wie das datenschutzkonform aussieht — Digest statt Klartext, Verwerfen statt Speichern, Auffindbarkeit als Opt-in — steht in §7.2.
+Beim Start hilft der **Kontakte-Import**: Das Telefonbuch wird gegen die Mitglieder abgeglichen, Treffer werden hervorgehoben und lassen sich einzeln oder gesammelt zu den eigenen Kontakten hinzufügen, der Rest kann eingeladen werden. Er steht in der Registrierung und, weil dieser Schritt überspringbar sein muss, auch dauerhaft unter *Me → Freunde finden*. Wie das datenschutzkonform aussieht — Digest statt Klartext, Verwerfen statt Speichern, Auffindbarkeit als Opt-in — steht in §7.2.
 
 **Melden und Blocken** ist keine Zusatzfunktion, sondern Betriebsvoraussetzung — ohne sie ist die App weder DSA-konform noch für Creator zumutbar. Die Semantik (was ein Block sieht, was er nicht verrät, was mit laufenden Calls und Abos passiert) steht in §7.1. Dazu kommen **Sprachnachrichten im Chat** als asynchrones Gegenstück zum bezahlten Call: dieselbe Aufnahme- und Wellenform-Mechanik wie das Voice-Intro der Registrierung, aber als Nachricht im Verlauf.
 
@@ -400,7 +400,8 @@ Der Import des Telefonbuchs in der Registrierung ist die datenschutzkritischste 
 - **Sichtbarkeit ist eine eigene Entscheidung.** Gefunden zu werden ist ein **Opt-in** im Profil, nicht die Voreinstellung. Wer nicht über die eigene Nummer auffindbar sein will, taucht in keinem Abgleich auf — für Creator, die unter Klarnamen erreichbar sind, ist das eine Sicherheitsfrage, keine Komfortfrage.
 - **Einladungen sind nicht unbegrenzt.** Eine Einladung je Nummer, kein automatischer Versand, keine Wiedervorlage, kein Kontaktimport ohne ausdrückliche Betätigung des Buttons. Massenversand über importierte Adressbücher ist nach UWG unzulässig und der schnellste Weg auf eine Spam-Blockliste.
 - **Widerruf.** Der Nutzer kann den Import jederzeit zurücknehmen; dann werden `ContactDigest` und offene `ContactInvite` gelöscht. Die bereits hinzugefügten Kontakte bleiben — das sind ab dann normale Verbindungen in der App, keine Adressbuchdaten mehr.
-- **Der Schritt ist überspringbar.** Ohne Import muss die Registrierung vollständig durchlaufen können; ein erzwungener Adressbuchzugriff wäre nach DSGVO ein Kopplungsverbot-Problem.
+- **Der Schritt ist überspringbar** — und muss deshalb später wieder erreichbar sein. Ohne Import muss die Registrierung vollständig durchlaufen können (ein erzwungener Adressbuchzugriff wäre nach DSGVO ein Kopplungsverbot-Problem), also liegt derselbe Abgleich zusätzlich unter *Me → Konto → Freunde finden*. Beide Zugänge teilen sich einen Zustand: derselbe Abgleichstand, dieselben bereits hinzugefügten Kontakte, kein zweiter Durchlauf beim erneuten Öffnen.
+- **Wiederholter Abgleich braucht einen Anlass.** Ein Adressbuch ändert sich, aber ein automatischer Abgleich im Hintergrund ist etwas anderes als ein vom Nutzer ausgelöster. Erneut abgeglichen wird nur auf Knopfdruck; ein Hintergrund-Sync bräuchte eine eigene Einwilligung und ist bewusst nicht vorgesehen.
 
 ---
 
@@ -418,6 +419,7 @@ Vollständiges Screen-Inventar aus dem Mockup „Ring – Mockup – v6", das pi
 | 3c | Register · **Age** | ✅ | Schieberegler ab 18 |
 | 3d | Register · **Profile picture** | ✅ | Avatar-Auswahl (Demo) |
 | 3e | Register · **Kontakte importieren** | ✅ | Abgleich des Telefonbuchs, Treffer hervorgehoben, einzeln oder gesammelt hinzufügen, Rest einladen (§7.2) |
+| 10c | Settings · **Freunde finden** | ✅ | Derselbe Abgleich wie 3e, für alle die den Schritt übersprungen haben; gemeinsamer Zustand mit der Registrierung |
 | 4 | **Start Recording** (Voice-Intro) | ✅ | Wellenform + Timer, simuliert |
 | 5 | **Home / Discover** | ✅ Swipe-Deck | Like/Pass/Super-Ring/Call, Badges, €/Min |
 | 6 | **Explore** | ✅ | Live-Stories, Creator-Grid |

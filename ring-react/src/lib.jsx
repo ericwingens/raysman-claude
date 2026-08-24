@@ -85,6 +85,7 @@ const SVG = {
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.4" y="5" width="3.6" height="14" rx="1.2"/></svg>',
   chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16"/><rect x="7.5" y="12" width="3" height="5" rx="1" fill="currentColor" stroke="none"/><rect x="12.5" y="8.5" width="3" height="8.5" rx="1" fill="currentColor" stroke="none"/><rect x="17.5" y="5.5" width="3" height="11.5" rx="1" fill="currentColor" stroke="none"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.6"/><path d="M2.5 20c0-3.4 2.9-5.6 6.5-5.6s6.5 2.2 6.5 5.6"/><path d="M16.5 5.2a3.6 3.6 0 0 1 0 6.9M18 14.9c2.1.7 3.5 2.4 3.5 5.1"/></svg>',
 };
 
 /* Voice-message waveform: bar heights in px. Random on purpose — a recording

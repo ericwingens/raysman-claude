@@ -198,6 +198,34 @@ export const PAYOUTS = [
 ];
 
 /* ---------------------------------------------------------------------------
+ * The phone book the user imports during registration. `ring` holds the id of
+ * the ring meApp member this contact turned out to be — null means the number
+ * matched nobody. Numbers are shown partly masked, the way a real client would
+ * render them after the server answered with hashes only.
+ * ------------------------------------------------------------------------- */
+export const PHONE_CONTACTS = [
+  { id: "k1",  name: "Mia Bergmann",     phone: "+49 151 •••• 4021", ring: "mia" },
+  { id: "k2",  name: "Tobias Reinhardt", phone: "+49 170 •••• 8834", ring: null },
+  { id: "k3",  name: "Lea Hoffmann",     phone: "+49 176 •••• 2290", ring: "lea" },
+  { id: "k4",  name: "Katrin Selke",     phone: "+49 152 •••• 6617", ring: null },
+  { id: "k5",  name: "Sofia Kraus",      phone: "+43 664 •••• 3105", ring: "sofia" },
+  { id: "k6",  name: "Daniel Ortmann",   phone: "+49 171 •••• 5522", ring: null },
+  { id: "k7",  name: "Nadia El Amrani",  phone: "+49 157 •••• 7748", ring: "nadia" },
+  { id: "k8",  name: "Bea Lindqvist",    phone: "+49 160 •••• 9031", ring: null },
+  { id: "k9",  name: "Jana Weiß",        phone: "+49 175 •••• 1284", ring: "jana" },
+  { id: "k10", name: "Marc Steinhoff",   phone: "+49 162 •••• 4470", ring: null },
+  { id: "k11", name: "Amira Yildiz",     phone: "+49 159 •••• 6693", ring: "amira" },
+  { id: "k12", name: "Philipp Kern",     phone: "+49 173 •••• 2058", ring: null },
+  { id: "k13", name: "Nora Bachmann",    phone: "+49 155 •••• 8812", ring: null },
+  { id: "k14", name: "Sven Röder",       phone: "+49 178 •••• 3367", ring: null },
+  { id: "k15", name: "Elif Demir",       phone: "+49 163 •••• 7124", ring: null },
+  { id: "k16", name: "Jonas Prantl",     phone: "+43 699 •••• 5540", ring: null },
+];
+
+export const onRing = PHONE_CONTACTS.filter((c) => c.ring);
+export const notOnRing = PHONE_CONTACTS.filter((c) => !c.ring);
+
+/* ---------------------------------------------------------------------------
  * Creator statistics. The numbers are generated, but *deterministically* — the
  * same seed gives the same series in both versions of the app, so the React
  * screen and the single-file prototype always show identical charts.

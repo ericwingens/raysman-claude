@@ -1,14 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { photoStyle, Ico, RingLockup } from "../lib.jsx";
+import { PHONE_CONTACTS, onRing, notOnRing } from "../data.js";
 
 /*
  * Welcome + Register flow, 1:1 after the Figma board:
- * Welcome → Register form → Gender → Looking for → Age → Profile picture → Voice message
+ * Welcome → Register form → Gender → Looking for → Age → Profile picture →
+ * Voice message → Contacts
  */
-export default function Onboarding({ done }) {
-  const [step, setStep] = useState(-1); // -1 welcome, 0..5 register steps
+export default function Onboarding({ done, onContacts }) {
+  const [step, setStep] = useState(-1); // -1 welcome, 0..6 register steps
   const [hide, setHide] = useState(false);
-  const finish = () => { setHide(true); setTimeout(done, 420); };
+  // `ringIds` arrives only from the last step; the welcome links pass an event.
+  const finish = (ringIds) => {
+    if (Array.isArray(ringIds) && ringIds.length && onContacts) onContacts(ringIds);
+    setHide(true);
+    setTimeout(done, 420);
+  };
 
   if (step === -1)
     return (
@@ -59,14 +66,18 @@ function Cluster() {
   );
 }
 
-const STEPS = 6;
+const STEPS = 7;
 
 function Register({ step, setStep, finish }) {
   const [gender, setGender] = useState(null);
   const [looking, setLooking] = useState(null);
   const [age, setAge] = useState(24);
+  const [added, setAdded] = useState(() => new Set());   // contact ids added to Ring
+  const [invited, setInvited] = useState(() => new Set());
 
-  const next = () => (step >= STEPS - 1 ? finish() : setStep(step + 1));
+  const next = () => (step >= STEPS - 1
+    ? finish(PHONE_CONTACTS.filter((c) => added.has(c.id)).map((c) => c.ring))
+    : setStep(step + 1));
   const back = () => (step === 0 ? setStep(-1) : setStep(step - 1));
 
   return (
@@ -131,6 +142,7 @@ function Register({ step, setStep, finish }) {
           </>
         )}
         {step === 5 && <VoiceStep />}
+        {step === 6 && <ContactsStep added={added} setAdded={setAdded} invited={invited} setInvited={setInvited} />}
       </div>
 
       <div className="rfoot">
@@ -141,6 +153,100 @@ function Register({ step, setStep, finish }) {
         </button>
       </div>
     </div>
+  );
+}
+
+/* ---------------------------------------------------------------------------
+ * Contact import. The phone book is matched against ring meApp members; the
+ * hits are highlighted and can be added straight to the user's contacts, the
+ * rest can be invited. Simulated end to end — see the privacy note, which is
+ * what the real implementation has to deliver.
+ * ------------------------------------------------------------------------- */
+function ContactsStep({ added, setAdded, invited, setInvited }) {
+  const [scan, setScan] = useState(null); // null | "scan" | "done"
+  const [prog, setProg] = useState(0);
+
+  useEffect(() => {
+    if (scan !== "scan") return;
+    const iv = setInterval(() => setProg((x) => Math.min(100, x + 8)), 90);
+    const t = setTimeout(() => setScan("done"), 1500);
+    return () => { clearInterval(iv); clearTimeout(t); };
+  }, [scan]);
+
+  const add = (id) => setAdded((a) => new Set(a).add(id));
+  const addAll = () => setAdded(new Set(onRing.map((c) => c.id)));
+  const invite = (id) => setInvited((a) => new Set(a).add(id));
+  const allAdded = onRing.every((c) => added.has(c.id));
+
+  if (scan === null) return (
+    <>
+      <h2>Finde deine Freunde</h2>
+      <p className="muted" style={{ fontSize: 13.5 }}>
+        Wir gleichen dein Telefonbuch mit ring meApp ab und zeigen dir, wer schon dabei ist.
+      </p>
+      <div className="kscan">
+        <div className="ki"><Ico name="users" /></div>
+      </div>
+      <button className="btn btn-primary" onClick={() => { setProg(0); setScan("scan"); }}>
+        <Ico name="users" />Kontakte importieren
+      </button>
+      <div className="warnbox">
+        <b>Was dabei passiert:</b> Deine Nummern verlassen dein Gerät nur als unlesbarer Prüfwert,
+        nie im Klartext. Nummern ohne Treffer werden sofort verworfen und nicht gespeichert.
+      </div>
+      <p className="center muted" style={{ fontSize: 12 }}>Du kannst diesen Schritt überspringen.</p>
+    </>
+  );
+
+  if (scan === "scan") return (
+    <>
+      <h2>Gleiche ab …</h2>
+      <p className="muted" style={{ fontSize: 13.5 }}>{PHONE_CONTACTS.length} Kontakte werden geprüft.</p>
+      <div className="kscan">
+        <div className="ki"><Ico name="users" /></div>
+      </div>
+      <div className="cbar"><i style={{ width: `${prog}%`, transition: "width .09s linear" }} /></div>
+    </>
+  );
+
+  return (
+    <>
+      <h2>{onRing.length} von {PHONE_CONTACTS.length} sind schon dabei</h2>
+      <p className="muted" style={{ fontSize: 13.5, marginTop: 0 }}>
+        Füg sie direkt zu deinen Kontakten hinzu — den Rest kannst du einladen.
+      </p>
+
+      <div className="section-title">
+        Schon bei ring meApp
+        {!allAdded && <a onClick={addAll}>Alle hinzufügen</a>}
+      </div>
+      {onRing.map((c) => (
+        <div key={c.id} className="krow on">
+          <span className="kav" style={photoStyle(c.ring)} />
+          <div style={{ minWidth: 0 }}>
+            <div className="kn">{c.name}<span className="kchip">auf ring meApp</span></div>
+            <div className="kp">{c.phone}</div>
+          </div>
+          {added.has(c.id)
+            ? <span className="kdone"><Ico name="check" />Hinzugefügt</span>
+            : <button className="btn btn-primary btn-sm kb" style={{ width: "auto" }} onClick={() => add(c.id)}>Hinzufügen</button>}
+        </div>
+      ))}
+
+      <div className="section-title">Noch nicht dabei</div>
+      {notOnRing.map((c) => (
+        <div key={c.id} className="krow">
+          <span className="kav ini">{c.name.slice(0, 1)}</span>
+          <div style={{ minWidth: 0 }}>
+            <div className="kn">{c.name}</div>
+            <div className="kp">{c.phone}</div>
+          </div>
+          {invited.has(c.id)
+            ? <span className="kdone" style={{ color: "var(--muted)" }}><Ico name="check" />Eingeladen</span>
+            : <button className="btn btn-ghost btn-sm kb" style={{ width: "auto" }} onClick={() => invite(c.id)}>Einladen</button>}
+        </div>
+      ))}
+    </>
   );
 }
 

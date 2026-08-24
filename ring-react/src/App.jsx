@@ -223,7 +223,13 @@ export default function App() {
       {reportFor && <ReportSheet {...reportFor} ctx={ctx} close={() => setReportFor(null)} />}
       {flying && <div key={flying.key} className="giftfly">{flying.em}</div>}
 
-      {phase === "welcome" && <Onboarding ctx={ctx} done={() => setPhase("main")} />}
+      {phase === "welcome" && (
+        <Onboarding ctx={ctx} done={() => setPhase("main")}
+          onContacts={(ids) => {
+            setLikedPeople((s) => { const n = new Set(s); ids.forEach((i) => n.add(i)); return n; });
+            toast(`${ids.length} Kontakte zu ring meApp hinzugefügt`);
+          }} />
+      )}
 
       {toastMsg && <div className="toast show">{toastMsg}</div>}
     </div>

@@ -13,6 +13,12 @@
       "skillPath": "skills/animejs/SKILL.md",
       "computedHash": "1880b1980cf66aaacdbbcaf17284ed0844b15b9104568165be4568918074d5f5"
     },
+    "belt": {
+      "source": "belt-sh/cli",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/belt/SKILL.md",
+      "computedHash": "ca4ce5eac764749f1f0cc67a94d464c3f66ba687bc9fa315949174770e5fc172"
+    },
     "contribute-catalog": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

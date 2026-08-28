@@ -1,0 +1,318 @@
+# Instincts generated from https://github.com/ericwingens/raysman-claude
+# Generated: 2026-05-30T11:13:28.027Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: raysman-claude-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/ericwingens/raysman-claude
+---
+
+# Raysman Claude Commit Length
+
+## Action
+
+Write moderate-length commit messages (~54 characters)
+
+## Evidence
+
+- Average commit message length: 54 chars
+- Based on 1 commits
+
+---
+id: raysman-claude-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/ericwingens/raysman-claude
+---
+
+# Raysman Claude Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: raysman-claude-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/ericwingens/raysman-claude
+---
+
+# Raysman Claude Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: raysman-claude-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/ericwingens/raysman-claude
+---
+
+# Raysman Claude Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: raysman-claude-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/ericwingens/raysman-claude
+---
+
+# Raysman Claude Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: 
+
+---
+id: raysman-claude-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/ericwingens/raysman-claude
+---
+
+# Raysman Claude Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: raysman-claude-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct File Naming
+
+## Action
+
+Name the file using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.files
+
+---
+id: raysman-claude-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: raysman-claude-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: raysman-claude-instinct-constant-naming
+trigger: "When declaring a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: raysman-claude-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Import Style
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Pattern in importStyle
+
+---
+id: raysman-claude-instinct-export-style
+trigger: "When exporting from a module"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle
+
+---
+id: raysman-claude-instinct-test-file-pattern
+trigger: "When creating a test file"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Test File Pattern
+
+## Action
+
+Name the file with a .test.ts suffix
+
+## Evidence
+
+- Pattern in testing.filePattern
+
+---
+id: raysman-claude-instinct-test-type
+trigger: "When writing tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Test Type
+
+## Action
+
+Write unit tests
+
+## Evidence
+
+- Pattern in testing.testTypes
+
+---
+id: raysman-claude-instinct-test-location
+trigger: "When placing test files"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Test Location
+
+## Action
+
+Mix test files with source files (not in a separate test directory)
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: raysman-claude-instinct-commit-format
+trigger: "When writing a commit message"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: ericwingens/raysman-claude
+---
+
+# Raysman Claude Instinct Commit Format
+
+## Action
+
+Write a freeform commit message without a prefix; keep it concise (around 54 characters)
+
+## Evidence
+
+- Pattern in commits.type
+- Pattern in commits.averageLength
+- Example: 'Add HeyGen HyperFrames skill bundle via npx skills add'
+

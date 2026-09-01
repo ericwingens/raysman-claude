@@ -7,6 +7,12 @@
       "skillPath": "agent_reach/skill/SKILL.md",
       "computedHash": "b3e4a7e1f0bf5b82fc7a88a61bbf0f9b0a3a2bb7aa0b4f3f65a29669cb8e717a"
     },
+    "ai-video-generation": {
+      "source": "skills-101/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/ai-video-generation/SKILL.md",
+      "computedHash": "8524cc49ad3dca2a4502903234061b307636e44b08496e982747cdb9590f5556"
+    },
     "animejs": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

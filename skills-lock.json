@@ -107,6 +107,12 @@
       "skillPath": "skills/waapi/SKILL.md",
       "computedHash": "91d57ea8e36f47ddef497ccd27ffa55b774bb53d988d4f8b6f67860a767930f6"
     },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a"
+    },
     "website-to-hyperframes": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

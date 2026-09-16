@@ -75,8 +75,8 @@ straight from this repo's `.claude/` copy.
 
 ## Agency Agents
 
-The [Agency Agents](https://github.com/msitarzewski/agency-agents) roster (269
-specialized subagents across 17 divisions — engineering, design, marketing,
+The [Agency Agents](https://github.com/msitarzewski/agency-agents) roster (279
+specialized subagents across 18 divisions — engineering, design, marketing,
 security, and more) is vendored into `.claude/agents/` so the agents auto-load
 in every session on this repo (project-level `.claude/` is restored on each
 fresh web container).

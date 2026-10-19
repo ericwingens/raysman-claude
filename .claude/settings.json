@@ -2,11 +2,11 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Skill",
+        "matcher": "Skill|skill",
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/check-gstack.sh\""
+            "command": "node -e \"require(require('path').resolve(process.env.CLAUDE_PROJECT_DIR || '.', '.claude', 'hooks', 'check-gstack.cjs'))\""
           }
         ]
       }

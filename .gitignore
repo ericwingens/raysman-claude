@@ -1,0 +1,4 @@
+
+# teardown intermediate render frames
+teardown-out/*-frames/
+teardown-out/v8-beats.png

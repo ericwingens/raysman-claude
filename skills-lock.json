@@ -13,6 +13,13 @@
       "skillPath": "skills/animejs/SKILL.md",
       "computedHash": "1880b1980cf66aaacdbbcaf17284ed0844b15b9104568165be4568918074d5f5"
     },
+    "archify": {
+      "source": "tt-a1i/archify",
+      "sourceType": "github",
+      "skillPath": "archify/SKILL.md",
+      "computedHash": "e9ef0923cda908886e667eb48e36b29e81d0a7a7b9fe2bc05f3779be271e5119",
+      "installMode": "copy"
+    },
     "contribute-catalog": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",

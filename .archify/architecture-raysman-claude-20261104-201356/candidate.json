@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "raysman-claude: workspace and plugin marketplace",
+    "output": ".archify/architecture-raysman-claude-20261104-201356/raysman-claude.html",
+    "quality_profile": "showcase",
+    "locale": "en",
+    "repository": {
+      "url": "https://github.com/ericwingens/raysman-claude",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "3022719d55abc173a3a4d4043557948e115b07b6"
+    }
+  },
+  "components": [
+    { "id": "moda", "type": "external", "label": "moda MCP server", "sublabel": "HTTP mcp.moda.app", "pos": [40, 40], "size": [150, 60],
+      "sources": [{ "path": ".mcp.json", "line": 1, "end_line": 7 }] },
+    { "id": "session", "type": "external", "label": "Claude Code session", "sublabel": "opens this repo", "pos": [40, 220], "size": [150, 60],
+      "sources": [{ "path": "CLAUDE.md", "line": 1, "end_line": 11 }] },
+    { "id": "gstack", "type": "external", "label": "gstack (global)", "sublabel": "~/.claude/skills/gstack", "pos": [300, 40], "size": [150, 60],
+      "sources": [{ "path": ".claude/hooks/check-gstack.sh", "line": 4, "end_line": 17 }] },
+    { "id": "guard", "type": "security", "label": "PreToolUse guard", "sublabel": "settings.json + hook", "tag": "matcher: Skill", "pos": [300, 220], "size": [150, 64],
+      "sources": [{ "path": ".claude/settings.json", "line": 1, "end_line": 15 }, { "path": ".claude/hooks/check-gstack.sh", "line": 1, "end_line": 20 }] },
+    { "id": "skills", "type": "backend", "label": ".claude/skills", "sublabel": "council, archify + 19 links", "pos": [560, 220], "size": [150, 60],
+      "sources": [{ "path": ".claude/skills/council/SKILL.md", "line": 44, "end_line": 65 }, { "path": ".claude/skills/archify/SKILL.md", "line": 1, "end_line": 20 }] },
+    { "id": "agents", "type": "backend", "label": ".claude/agents", "sublabel": "269 Agency + 18 council", "pos": [820, 220], "size": [150, 60],
+      "sources": [{ "path": "README.md", "line": 76, "end_line": 95 }, { "path": "README.md", "line": 51, "end_line": 57 }] },
+    { "id": "store", "type": "database", "label": ".agents/skills", "sublabel": "link targets, skills-lock", "pos": [560, 380], "size": [150, 60],
+      "sources": [{ "path": "skills-lock.json", "line": 1, "end_line": 124 }] },
+    { "id": "others", "type": "external", "label": "Other sessions", "sublabel": "any repo or machine", "pos": [40, 540], "size": [150, 60],
+      "sources": [{ "path": "README.md", "line": 5, "end_line": 12 }] },
+    { "id": "market", "type": "backend", "label": "Marketplace", "sublabel": ".claude-plugin/", "pos": [300, 540], "size": [150, 60],
+      "sources": [{ "path": ".claude-plugin/marketplace.json", "line": 1, "end_line": 31 }] },
+    { "id": "pguard", "type": "security", "label": "gstack-guard plugin", "sublabel": "same hook, packaged", "pos": [560, 540], "size": [150, 60],
+      "sources": [{ "path": "plugins/gstack-guard/hooks/hooks.json", "line": 1, "end_line": 15 }, { "path": "plugins/gstack-guard/scripts/check-gstack.sh", "line": 5, "end_line": 21 }] },
+    { "id": "installer", "type": "backend", "label": "Council installer", "sublabel": "install-council-global.sh", "pos": [820, 540], "size": [150, 60],
+      "sources": [{ "path": "scripts/install-council-global.sh", "line": 26, "end_line": 82 }] },
+    { "id": "globaldir", "type": "external", "label": "~/.claude (global)", "sublabel": "agents + skills/council", "pos": [1040, 540], "size": [150, 60],
+      "sources": [{ "path": "scripts/install-council-global.sh", "line": 50, "end_line": 66 }] },
+    { "id": "video", "type": "backend", "label": "video-vision plugin", "sublabel": "frame sampling scripts", "pos": [560, 700], "size": [150, 60],
+      "sources": [{ "path": "plugins/video-vision/skills/video-vision/SKILL.md", "line": 1, "end_line": 16 }, { "path": "plugins/video-vision/scripts/extract-frames.sh", "line": 103, "end_line": 112 }] },
+    { "id": "ffmpeg", "type": "external", "label": "ffmpeg / ffprobe", "sublabel": "local binaries", "pos": [1040, 700], "size": [150, 60],
+      "sources": [{ "path": "plugins/video-vision/scripts/extract-frames.sh", "line": 68, "end_line": 69 }] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Repository: raysman-claude", "wraps": ["guard", "skills", "agents", "store", "market", "pguard", "installer", "video"] }
+  ],
+  "connections": [
+    { "id": "session-mcp", "from": "session", "to": "moda", "label": "MCP over HTTP" },
+    { "id": "session-guard", "from": "session", "to": "guard", "label": "Skill call", "variant": "emphasis" },
+    { "id": "guard-gstack", "from": "guard", "to": "gstack", "label": "test -d bin", "variant": "security" },
+    { "id": "guard-skills", "from": "guard", "to": "skills", "label": "allow", "variant": "emphasis" },
+    { "id": "skills-agents", "from": "skills", "to": "agents", "label": "spawns agents" },
+    { "id": "skills-store", "from": "skills", "to": "store", "label": "symlinks", "variant": "dashed" },
+    { "id": "others-market", "from": "others", "to": "market", "label": "plugin add" },
+    { "id": "market-pguard", "from": "market", "to": "pguard", "label": "lists" },
+    { "id": "market-video", "from": "market", "to": "video", "label": "lists" },
+    { "id": "installer-agents", "from": "installer", "to": "agents", "label": "reads council-*" },
+    { "id": "installer-global", "from": "installer", "to": "globaldir", "label": "copies" },
+    { "id": "video-ffmpeg", "from": "video", "to": "ffmpeg", "label": "runs ffmpeg" }
+  ],
+  "cards": [
+    { "dot": "rose", "title": "Gate", "items": ["Every Skill call runs check-gstack.sh first", "Missing gstack: permissionDecision deny", "gstack-guard ships the same check for other repos"] },
+    { "dot": "emerald", "title": "Loaded per session", "items": ["Skills and agents load from project .claude/", "19 skills are symlinks into .agents/skills, sources in skills-lock.json", "moda MCP needs one-time approval"] },
+    { "dot": "cyan", "title": "Distribution", "items": ["Marketplace lists gstack-guard and video-vision", "Council installer is offline and copies only council files"] }
+  ]
+}

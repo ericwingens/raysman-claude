@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "04658a8b-8c54-448f-9e3b-4f5dbb0df340",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/home/user/raysman-claude/.archify/architecture-raysman-claude-20261104-201356/candidate.json",
+  "output": "/home/user/raysman-claude/.archify/architecture-raysman-claude-20261104-201356/raysman-claude.html",
+  "specification": {
+    "sha256": "1541f3850bb03d6a0debf2194b3f06b61453a4905ad5a9eeb2a5e0aee386aeac",
+    "bytes": 6157
+  },
+  "artifact": {
+    "sha256": "212e2d3dea11a683af3fb9ede5d0941ce976cb521ce3c96c70a1e586e090ccf2",
+    "bytes": 859334
+  }
+}

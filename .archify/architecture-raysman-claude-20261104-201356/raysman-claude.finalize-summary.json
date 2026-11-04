@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/home/user/raysman-claude/.archify/architecture-raysman-claude-20261104-201356/candidate.json",
+    "sha256": "1541f3850bb03d6a0debf2194b3f06b61453a4905ad5a9eeb2a5e0aee386aeac",
+    "bytes": 6157
+  },
+  "artifact": {
+    "path": "/home/user/raysman-claude/.archify/architecture-raysman-claude-20261104-201356/raysman-claude.html",
+    "sha256": "212e2d3dea11a683af3fb9ede5d0941ce976cb521ce3c96c70a1e586e090ccf2",
+    "bytes": 859334
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/home/user/raysman-claude/.archify/architecture-raysman-claude-20261104-201356/raysman-claude.finalize.json",
+    "summaryReceipt": "/home/user/raysman-claude/.archify/architecture-raysman-claude-20261104-201356/raysman-claude.finalize-summary.json",
+    "browserCheckReceipt": "/home/user/raysman-claude/.archify/architecture-raysman-claude-20261104-201356/raysman-claude.browser-check.json"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 12314,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

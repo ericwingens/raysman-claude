@@ -44,6 +44,10 @@ export function photoStyle(seed) {
   return { backgroundImage: grad(seed), backgroundColor: "#333", backgroundSize: "cover" };
 }
 
+// Direct URL of a shipped image — for places that address a file by name
+// instead of going through the seed lookup in photoStyle().
+export const imgSrc = (name) => `${IMG_BASE}${name}.jpg`;
+
 export const EUR = (n) =>
   n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
 

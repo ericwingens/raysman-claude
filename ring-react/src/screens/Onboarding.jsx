@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { photoStyle, Ico, RingLockup } from "../lib.jsx";
+import { photoStyle, imgSrc, Ico, RingLockup } from "../lib.jsx";
 import { ContactsPanel } from "../overlays/Contacts.jsx";
 
 /*
@@ -44,11 +44,13 @@ export default function Onboarding({ ctx, done }) {
 export const MEN = ["m1", "m2", "m3", "m4"];           // portraits in public/img
 const PEOPLE = ["mia", "m1", "lea", "m2", "nadia", "m3", "jana", "m4", "sofia", "amira"];
 const CAT_SLOTS = [[0, 1], [1, 4], [2, 1], [1, 1]];   // [column, position] per category
+/* Each category is a real photo; the gradient stays underneath as the ground the
+   tile falls back to while the picture loads. */
 export const CATS = {
-  sport: { label: "Sport", icon: "dumbbell", grad: "linear-gradient(150deg,#FFA048,#F5471F)" },
-  media: { label: "Media", icon: "video", grad: "linear-gradient(150deg,#8A6CFF,#3B2E8F)" },
-  fun: { label: "Unterhaltung", icon: "music", grad: "linear-gradient(150deg,#FF5C94,#8E2A6B)" },
-  food: { label: "Ernährung", icon: "leaf", grad: "linear-gradient(150deg,#45D389,#0E7A4A)" },
+  sport: { label: "Sport", icon: "dumbbell", img: "cat-sport", grad: "linear-gradient(150deg,#FFA048,#F5471F)" },
+  media: { label: "Media", icon: "video", img: "cat-media", grad: "linear-gradient(150deg,#8A6CFF,#3B2E8F)" },
+  fun: { label: "Unterhaltung", icon: "music", img: "cat-fun", grad: "linear-gradient(150deg,#FF5C94,#8E2A6B)" },
+  food: { label: "Ernährung", icon: "leaf", img: "cat-food", grad: "linear-gradient(150deg,#45D389,#0E7A4A)" },
 };
 
 /* Round-robin into three columns, one category dropped into each. Built instead
@@ -74,8 +76,8 @@ function Wall() {
             {[0, 1].map((half) => col.map(([kind, id], i) => (
               kind === "p"
                 ? <div key={half + "-" + i} className="wtile p" style={photoStyle(id)} />
-                : <div key={half + "-" + i} className="wtile c" style={{ backgroundImage: CATS[id].grad }}>
-                    <span className="cmark"><Ico name={CATS[id].icon} /></span>
+                : <div key={half + "-" + i} className="wtile c"
+                       style={{ backgroundImage: `url(${imgSrc(CATS[id].img)}), ${CATS[id].grad}` }}>
                     <span className="clab"><Ico name={CATS[id].icon} />{CATS[id].label}</span>
                   </div>
             )))}

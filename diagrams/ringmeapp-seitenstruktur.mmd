@@ -1,0 +1,96 @@
+graph LR
+  ROOT["ring meApp"]
+
+  %% ============ A — Onboarding ============
+  ROOT --> A["A · Onboarding<br/>vor dem Login"]
+  A --> A1["Welcome"]
+  A --> A2["Registrierung · 7 Schritte"]
+  A2 --> A21["1 · Konto-Formular"]
+  A2 --> A22["2 · Geschlecht"]
+  A2 --> A23["3 · Ich suche"]
+  A2 --> A24["4 · Alter"]
+  A2 --> A25["5 · Profilbild"]
+  A2 --> A26["6 · Sprachnachricht"]
+  A2 --> A27["7 · Kontakte importieren"]
+  A27 --> A271["Abgleich läuft"]
+  A27 --> A272["Trefferliste<br/>schon dabei · noch nicht dabei"]
+
+  %% ============ B — Haupt-App ============
+  ROOT --> B["B · Haupt-App<br/>5 Tabs"]
+
+  B --> B1["Discover"]
+  B1 --> B11["Swipe-Deck"]
+
+  B --> B2["Explore"]
+  B2 --> B21["Tab · Explore"]
+  B21 --> B211["Jetzt Live"]
+  B21 --> B212["In deiner Nähe"]
+  B21 --> B213["Rangliste der Woche"]
+  B21 --> B214["Empfohlene Creator"]
+  B2 --> B22["Tab · Matches"]
+
+  B --> B3["Feed"]
+  B3 --> B31["Beiträge · PPV-gesperrt"]
+
+  B --> B4["Chats"]
+  B4 --> B41["Neue Matches"]
+  B4 --> B42["Unterhaltungen"]
+
+  B --> B5["Me"]
+  B5 --> B51["Profil & Fotos"]
+  B5 --> B52["Konto"]
+  B5 --> B53["Meine Termine"]
+  B5 --> B54["Meine Abos"]
+  B5 --> B55["Sicherheit"]
+  B5 --> B56["Rechtliches"]
+
+  %% ============ C — Overlays ============
+  ROOT --> C["C · Overlays<br/>über jedem Tab erreichbar"]
+
+  C --> C1["C1 · Vollbild"]
+  C1 --> C11["Creator-Profil"]
+  C1 --> C12["Chat-Detail"]
+  C1 --> C13["Termin buchen"]
+  C1 --> C14["Profil bearbeiten"]
+  C14 --> C141["Name"]
+  C14 --> C142["Bio"]
+  C14 --> C143["Geschlecht"]
+  C14 --> C144["Ich suche"]
+  C14 --> C145["Interessen"]
+  C14 --> C146["Fotos"]
+  C14 --> C147["Sprachnachricht"]
+  C14 --> C148["Konto löschen"]
+  C1 --> C15["Creator-Studio"]
+  C1 --> C16["Meine Statistiken"]
+  C1 --> C17["Freunde finden"]
+  C1 --> C18["Blockierte Profile"]
+  C1 --> C19["Rechtliches"]
+  C19 --> C191["Datenschutz"]
+  C19 --> C192["Impressum"]
+
+  C --> C2["C2 · Sheets<br/>von unten"]
+  C2 --> C21["Wallet & Guthaben"]
+  C2 --> C22["Tip senden"]
+
+  C --> C3["C3 · Dialoge<br/>mittig"]
+  C3 --> C31["Geschenk senden"]
+  C3 --> C32["Beitrag teilen"]
+  C3 --> C33["Teilnehmer hinzufügen"]
+  C3 --> C34["Aktionsmenü ⋯"]
+  C3 --> C35["Melden"]
+  C3 --> C36["Bewerten · nach Call"]
+  C3 --> C37["Bild ändern"]
+  C3 --> C38["Konto löschen"]
+
+  C --> C4["C4 · Eigene Ebene"]
+  C4 --> C41["Call-Screen<br/>bezahlter Anruf"]
+
+  classDef root fill:#F5761A,stroke:#C9560A,stroke-width:3px,color:#ffffff
+  classDef main fill:#F5761A,stroke:#C9560A,stroke-width:2px,color:#ffffff
+  classDef group fill:#FDB43C,stroke:#F5761A,stroke-width:2px,color:#17130F
+  classDef leaf fill:#FBF6F0,stroke:#D8CEC4,color:#4A423B
+
+  class ROOT root
+  class A,B,C main
+  class A2,B1,B2,B3,B4,B5,C1,C2,C3,C4,B21,C14,C19 group
+  class A1,A21,A22,A23,A24,A25,A26,A27,A271,A272,B11,B211,B212,B213,B214,B22,B31,B41,B42,B51,B52,B53,B54,B55,B56,C11,C12,C13,C141,C142,C143,C144,C145,C146,C147,C148,C15,C16,C17,C18,C191,C192,C21,C22,C31,C32,C33,C34,C35,C36,C37,C38,C41 leaf

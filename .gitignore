@@ -1,0 +1,4 @@
+
+# gstack /browse runtime state — local only.
+# Includes terminal-internal-token, a credential that must never be pushed.
+.gstack/

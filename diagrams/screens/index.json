@@ -1,0 +1,257 @@
+[
+  {
+    "id": "a-welcome",
+    "label": "Welcome",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-1",
+    "label": "1 · Konto-Formular",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-2",
+    "label": "2 · Geschlecht",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-3",
+    "label": "3 · Ich suche",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-4",
+    "label": "4 · Alter",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-5",
+    "label": "5 · Profilbild",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-6",
+    "label": "6 · Sprachnachricht",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-7",
+    "label": "7 · Kontakte importieren",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-7-scan",
+    "label": "Abgleich läuft",
+    "group": "A"
+  },
+  {
+    "id": "a-reg-7-list",
+    "label": "Trefferliste",
+    "group": "A"
+  },
+  {
+    "id": "b-discover",
+    "label": "Discover · Swipe-Deck",
+    "group": "B"
+  },
+  {
+    "id": "b-explore",
+    "label": "Explore · Jetzt Live",
+    "group": "B"
+  },
+  {
+    "id": "b-explore-nearby",
+    "label": "In deiner Nähe",
+    "group": "B"
+  },
+  {
+    "id": "b-explore-rank",
+    "label": "Rangliste der Woche",
+    "group": "B"
+  },
+  {
+    "id": "b-explore-grid",
+    "label": "Empfohlene Creator",
+    "group": "B"
+  },
+  {
+    "id": "b-explore-matches",
+    "label": "Tab · Matches",
+    "group": "B"
+  },
+  {
+    "id": "b-feed",
+    "label": "Feed · Beiträge",
+    "group": "B"
+  },
+  {
+    "id": "b-chats",
+    "label": "Chats · Neue Matches",
+    "group": "B"
+  },
+  {
+    "id": "b-chats-list",
+    "label": "Unterhaltungen",
+    "group": "B"
+  },
+  {
+    "id": "b-me",
+    "label": "Me · Profil & Fotos",
+    "group": "B"
+  },
+  {
+    "id": "b-me-konto",
+    "label": "Me · Konto",
+    "group": "B"
+  },
+  {
+    "id": "b-me-unten",
+    "label": "Me · Termine, Abos, Sicherheit, Rechtliches",
+    "group": "B"
+  },
+  {
+    "id": "c1-profil",
+    "label": "Creator-Profil",
+    "group": "C1"
+  },
+  {
+    "id": "c1-chat",
+    "label": "Chat-Detail",
+    "group": "C1"
+  },
+  {
+    "id": "c1-buchen",
+    "label": "Termin buchen",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit",
+    "label": "Profil bearbeiten",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit-name",
+    "label": "Name",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit-bio",
+    "label": "Bio",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit-gender",
+    "label": "Geschlecht",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit-looking",
+    "label": "Ich suche",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit-interests",
+    "label": "Interessen",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit-photos",
+    "label": "Fotos",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit-voice",
+    "label": "Sprachnachricht",
+    "group": "C1"
+  },
+  {
+    "id": "c1-edit-delete",
+    "label": "Konto löschen",
+    "group": "C1"
+  },
+  {
+    "id": "c1-studio",
+    "label": "Creator-Studio",
+    "group": "C1"
+  },
+  {
+    "id": "c1-stats",
+    "label": "Meine Statistiken",
+    "group": "C1"
+  },
+  {
+    "id": "c1-contacts",
+    "label": "Freunde finden",
+    "group": "C1"
+  },
+  {
+    "id": "c1-blocked",
+    "label": "Blockierte Profile",
+    "group": "C1"
+  },
+  {
+    "id": "c1-datenschutz",
+    "label": "Datenschutz",
+    "group": "C1"
+  },
+  {
+    "id": "c1-impressum",
+    "label": "Impressum",
+    "group": "C1"
+  },
+  {
+    "id": "c2-wallet",
+    "label": "Wallet & Guthaben",
+    "group": "C2"
+  },
+  {
+    "id": "c2-tip",
+    "label": "Tip senden",
+    "group": "C2"
+  },
+  {
+    "id": "c3-geschenk",
+    "label": "Geschenk senden",
+    "group": "C3"
+  },
+  {
+    "id": "c3-teilen",
+    "label": "Beitrag teilen",
+    "group": "C3"
+  },
+  {
+    "id": "c3-teilnehmer",
+    "label": "Teilnehmer hinzufügen",
+    "group": "C3"
+  },
+  {
+    "id": "c3-aktionen",
+    "label": "Aktionsmenü ⋯",
+    "group": "C3"
+  },
+  {
+    "id": "c3-melden",
+    "label": "Melden",
+    "group": "C3"
+  },
+  {
+    "id": "c3-bewerten",
+    "label": "Bewerten · nach Call",
+    "group": "C3"
+  },
+  {
+    "id": "c3-bild",
+    "label": "Bild ändern",
+    "group": "C3"
+  },
+  {
+    "id": "c3-konto-loeschen",
+    "label": "Konto löschen",
+    "group": "C3"
+  },
+  {
+    "id": "c4-call",
+    "label": "Call-Screen · bezahlter Anruf",
+    "group": "C4"
+  }
+]

@@ -16,11 +16,11 @@ export default function Onboarding({ ctx, done }) {
     return (
       <div className={`onb ${hide ? "hide" : ""}`}>
         <div className="statusbar" style={{ visibility: "hidden" }}><span>9:41</span></div>
-        <Cluster />
+        <Wall />
         <div className="content">
-          <div className="brandrow" style={{ justifyContent: "center" }}><RingLockup height={80} /></div>
-          <p>Finde Menschen und Creator, die zu dir passen — like dich durch, ruf direkt an und unterstütze deine Favoriten mit Abos, Tips & exklusiven Inhalten.</p>
-          <button className="btn btn-primary" style={{ width: "auto", minWidth: 200, padding: "15px 34px" }} onClick={() => setStep(0)}>Los geht's</button>
+          <h2>Menschen und Creator,<br />die zu dir passen.</h2>
+          <p>Like dich durch, ruf direkt an und unterstütze deine Favoriten mit Abos, Tips & exklusiven Inhalten.</p>
+          <button className="btn btn-primary" style={{ width: "auto", minWidth: 220, padding: "16px 36px" }} onClick={() => setStep(0)}>Los geht's</button>
           <div className="fine">Schon dabei? <span className="link" onClick={finish}>Anmelden</span></div>
         </div>
         <div className="footer">
@@ -33,30 +33,69 @@ export default function Onboarding({ ctx, done }) {
   return <Register ctx={ctx} step={step} setStep={setStep} finish={finish} />;
 }
 
-/* Photo cluster on peach circles — coordinates from the Figma welcome screen (428px grid). */
-function Cluster() {
-  const bubbles = [
-    [207, 50, 119, "mia"], [30, 104, 101, "lea"], [150, 193, 101, "nadia"],
-    [326, 178, 71, "amira"], [31, 302, 119, "jana"], [192, 302, 179, "sofia"],
-  ];
-  const hearts = [[364, 302, 14], [139, 79, 13], [24, 243, 12], [368, 490, 13], [336, 378, 11]];
-  const dots = [[156, 161], [143, 458], [378, 121], [59, 446], [382, 80]];
+/*
+ * Welcome wall — three columns of tiles drifting at different speeds behind the
+ * claim: people (photos) mixed with the categories the app is about.
+ * Each column renders its list TWICE and the keyframe moves it by exactly -50%,
+ * so the loop is seamless. That only works because the tiles are spaced with
+ * margin-bottom and not with flex `gap`: a gap would add half a gap to the
+ * travel distance and the seam would jump.
+ */
+export const MEN = ["m1", "m2", "m3", "m4"];           // portraits in public/img
+const PEOPLE = ["mia", "m1", "lea", "m2", "nadia", "m3", "jana", "m4", "sofia", "amira"];
+const CAT_SLOTS = [[0, 1], [1, 4], [2, 1], [1, 1]];   // [column, position] per category
+export const CATS = {
+  sport: { label: "Sport", icon: "dumbbell", grad: "linear-gradient(150deg,#FFA048,#F5471F)" },
+  media: { label: "Media", icon: "video", grad: "linear-gradient(150deg,#8A6CFF,#3B2E8F)" },
+  fun: { label: "Unterhaltung", icon: "music", grad: "linear-gradient(150deg,#FF5C94,#8E2A6B)" },
+  food: { label: "Ernährung", icon: "leaf", grad: "linear-gradient(150deg,#45D389,#0E7A4A)" },
+};
+
+/* Round-robin into three columns, one category dropped into each. Built instead
+   of hard-coded so a portrait that is not shipped just leaves the wall shorter. */
+export function wallColumns() {
+  const cols = [[], [], []];
+  PEOPLE.filter((p) => !/^m\d$/.test(p) || MEN.includes(p))
+    .forEach((p, i) => cols[i % 3].push(["p", p]));
+  CAT_SLOTS.forEach(([col, at], i) => cols[col].splice(at, 0, ["c", Object.keys(CATS)[i]]));
+  return cols;
+}
+
+function Wall() {
+  const cols = wallColumns();
+  const hearts = [[40, 26, 14], [374, 58, 12]];
+  const dots = [[88, 70], [350, 22]];
   return (
-    <div className="cluster">
-      <div className="cin">
-        <div className="peach" style={{ left: 59, top: 121, width: 310, height: 310, background: "#FBE3D3", opacity: 0.55 }} />
-        <div className="peach" style={{ left: 108, top: 170, width: 212, height: 212, background: "#F9D5BC", opacity: 0.55 }} />
-        {bubbles.map((b, i) => (
-          <div key={i} className="pp" style={{
-            left: b[0], top: b[1], width: b[2], height: b[2], ...photoStyle(b[3]),
-            animation: `float ${3 + i * 0.4}s ease-in-out ${i * 0.2}s infinite alternate`,
-          }} />
+    <div className="wall">
+      <div className="glow" />
+      <div className="wcols">
+        {cols.map((col, c) => (
+          <div key={c} className={`wcol ${c === 1 ? "down" : "up"} ${c === 2 ? "slow" : ""}`}>
+            {[0, 1].map((half) => col.map(([kind, id], i) => (
+              kind === "p"
+                ? <div key={half + "-" + i} className="wtile p" style={photoStyle(id)} />
+                : <div key={half + "-" + i} className="wtile c" style={{ backgroundImage: CATS[id].grad }}>
+                    <span className="cmark"><Ico name={CATS[id].icon} /></span>
+                    <span className="clab"><Ico name={CATS[id].icon} />{CATS[id].label}</span>
+                  </div>
+            )))}
+          </div>
         ))}
-        {hearts.map((h, i) => (
-          <span key={"h" + i} className="heart-i" style={{ left: h[0], top: h[1], width: h[2], height: h[2] }}><Ico name="heart" /></span>
-        ))}
-        {dots.map((d, i) => <span key={"d" + i} className="odot" style={{ left: d[0], top: d[1] }} />)}
       </div>
+      <div className="veil" />
+      {hearts.map((h, i) => (
+        <span key={"h" + i} className="heart-i" style={{
+          left: h[0], top: h[1], width: h[2], height: h[2],
+          animation: `float ${3.4 + i * 0.6}s ease-in-out ${i * 0.3}s infinite alternate`,
+        }}><Ico name="heart" /></span>
+      ))}
+      {dots.map((d, i) => (
+        <span key={"d" + i} className="odot" style={{
+          left: d[0], top: d[1],
+          animation: `float ${4 + i * 0.5}s ease-in-out ${i * 0.4}s infinite alternate`,
+        }} />
+      ))}
+      <div className="wbrand"><RingLockup height={56} /></div>
     </div>
   );
 }

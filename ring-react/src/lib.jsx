@@ -23,7 +23,8 @@ export function grad(seed) {
 }
 
 // Real demo photos (AI-generated fictional people, shipped in public/img/).
-const PHOTO_IDS = ["amira", "nadia", "sofia", "jana", "mia", "lea", "you"]; // longest-prefix-safe order
+const PHOTO_IDS = ["amira", "nadia", "sofia", "jana", "mia", "lea", "you",
+  "m1", "m2", "m3", "m4"]; // longest-prefix-safe order; m1..m4 are the welcome-wall portraits
 const POST_PHOTO = { p1: "mia", p2: "nadia", p3: "sofia", p4: "lea" };
 const IMG_BASE = `${import.meta.env.BASE_URL}img/`;
 // Slight per-seed crop variation so galleries don't look like one repeated image.
@@ -86,6 +87,9 @@ const SVG = {
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.4" y="5" width="3.6" height="14" rx="1.2"/></svg>',
   chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16"/><rect x="7.5" y="12" width="3" height="5" rx="1" fill="currentColor" stroke="none"/><rect x="12.5" y="8.5" width="3" height="8.5" rx="1" fill="currentColor" stroke="none"/><rect x="17.5" y="5.5" width="3" height="11.5" rx="1" fill="currentColor" stroke="none"/></svg>',
   users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.6"/><path d="M2.5 20c0-3.4 2.9-5.6 6.5-5.6s6.5 2.2 6.5 5.6"/><path d="M16.5 5.2a3.6 3.6 0 0 1 0 6.9M18 14.9c2.1.7 3.5 2.4 3.5 5.1"/></svg>',
+  dumbbell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5v5M6.5 6.5v11M17.5 6.5v11M21 9.5v5M6.5 12h11"/></svg>',
+  music: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5l11-2v12.5"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>',
+  leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 20C3.5 11.5 8.5 4.5 20 4c1 10.5-4.5 16-12 16H4.5Z"/><path d="M9 19c1.4-4.2 4.1-7.4 8.2-9.4"/></svg>',
 };
 
 /* Voice-message waveform: bar heights in px. Random on purpose — a recording
